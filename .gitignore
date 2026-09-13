@@ -8,3 +8,9 @@ __pycache__/
 data/export/*.csv
 data/export/*.json
 !data/export/.gitkeep
+
+# Airflow runtime
+airflow/logs/**
+!airflow/logs/.gitkeep
+__pycache__/
+*.pyc

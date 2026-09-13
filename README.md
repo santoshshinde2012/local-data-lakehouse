@@ -165,6 +165,79 @@ Design notes:
 
 ---
 
+
+---
+
+## Orchestration with Apache Airflow
+
+Airflow **schedules** the same Spark jobs; it does not replace MinIO, Iceberg, or Spark.
+
+| DAG | Chain | Spark jobs |
+|---|---|---|
+| `lakehouse_retail_medallion` | `land_smoke >> bronze >> silver >> gold >> query_timetravel` | `src/jobs/retail/01` … `05` |
+| `lakehouse_churn_features` | `bronze >> silver >> gold_features >> export_features` | `src/jobs/churn/01` … `04` |
+
+### Full path (lakehouse + Airflow)
+
+```bash
+git clone https://github.com/santoshshinde2012/local-data-lakehouse.git
+cd local-data-lakehouse
+cp .env.example .env
+
+# 1. Lakehouse foundation
+make up
+make wait
+
+# 2. Airflow (separate metadata Postgres + webserver + scheduler)
+make airflow-up
+make airflow-wait
+
+# 3. Trigger DAGs (unpause + run + wait for success)
+make airflow-demo
+```
+
+Or trigger one path:
+
+```bash
+make airflow-trigger-retail
+make airflow-trigger-churn
+```
+
+| Item | Value |
+|---|---|
+| Airflow UI | http://localhost:8080 |
+| Login | `admin` / `admin` (sample-only) |
+| MinIO | http://localhost:9001 (`minioadmin` / `minioadmin`) |
+
+Shell `make demo` remains valid if you skip Airflow. Both paths must produce the same gold contracts and exports.
+
+### Airflow layout
+
+```text
+airflow/
+  dags/           # lakehouse_retail_medallion, lakehouse_churn_features
+  logs/           # runtime (gitignored)
+  plugins/
+docker/airflow/   # Airflow image + Docker CLI (exec into ldl-spark)
+docker-compose.airflow.yml
+```
+
+Each task runs `docker exec ldl-spark spark-submit …` against the existing job scripts. Local demo only: the Airflow containers mount the Docker socket.
+
+### Extra resources
+
+Airflow needs additional RAM beyond the core stack (plan ~4+ GB free for webserver + scheduler + metadata DB).
+
+| Command | What it does |
+|---|---|
+| `make airflow-up` | Build/start Airflow overlay on `ldl-net` |
+| `make airflow-wait` | Wait until http://localhost:8080/health |
+| `make airflow-trigger-retail` | Unpause + run retail DAG |
+| `make airflow-trigger-churn` | Unpause + run churn DAG |
+| `make airflow-demo` | Both DAGs via Airflow |
+| `make airflow-down` | Stop Airflow services only |
+
+
 ## Troubleshooting
 
 | Symptom | Fix |
@@ -176,6 +249,9 @@ Design notes:
 | Missing Iceberg / S3 jars | `docker compose build --no-cache spark && make up` |
 | Dirty warehouse / odd counts | `make reset` then `make churn-e2e` |
 | First `make up` is slow | Normal — Spark image build downloads jars once |
+| Airflow UI never healthy | `make airflow-up` again; check `docker compose -f docker-compose.yml -f docker-compose.airflow.yml logs airflow-webserver` |
+| DAG task cannot `docker exec` | Ensure `ldl-spark` is up (`make ps`); Docker socket mounted in Airflow overlay |
+| Port 8080 busy | Set `AIRFLOW_WEBSERVER_PORT` in `.env` |
 
 ---
 
