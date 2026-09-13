@@ -168,6 +168,18 @@ Design notes:
 
 ---
 
+
+### Component → command map
+
+| Component | Role | How you run it |
+|---|---|---|
+| Sample CSVs | Retail + churn inputs | Shipped under `data/sample/` |
+| MinIO | Object store (`lake`) | `make up` → http://localhost:9001 |
+| Postgres | Iceberg JDBC catalog | `make up` (port `5432`) |
+| Spark + Iceberg | Jobs + ACID tables | `make e2e` / `make churn-e2e` |
+| Airflow | DAG orchestration | `make airflow-up` → http://localhost:8080 |
+| Gold / export | Metrics + feature files | `make demo` or `make airflow-demo` |
+
 ## Orchestration with Apache Airflow
 
 Airflow **schedules** the same Spark jobs; it does not replace MinIO, Iceberg, or Spark.
