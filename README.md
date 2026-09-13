@@ -16,6 +16,54 @@ This repository is the **hands-on companion** to the article *Stop Reading About
 1. **Retail** — bronze → silver → gold metrics + Iceberg time travel  
 2. **Churn features** — AI-platform usage / tickets / payments → `gold.churn_user_features` → CSV + JSON export  
 
+## Architecture
+
+End-to-end path on your laptop — doodle map with commands highlighted on every stage:
+
+![laptop lakehouse — end to end](docs/demo/architecture-e2e.png)
+
+| Stage | Role | Command |
+|---|---|---|
+| **sources** | Sample CSVs (retail + churn) | `data/sample/` |
+| **MinIO** | Object store, bucket `lake` | `make up` → http://localhost:9001 |
+| **Parquet** | Files under the warehouse | `s3a://lake/warehouse` |
+| **Iceberg** | ACID tables | catalog: **Postgres** (`make up`) |
+| **Spark** | Ingest / transform / SQL | `make e2e` · `make churn-e2e` |
+| **gold / BI** | Metrics + feature export | `make demo` → `data/export/` |
+| **Airflow** *(optional)* | Same jobs, scheduled | `make airflow-demo` → http://localhost:8080 |
+
+```mermaid
+flowchart LR
+  subgraph pipeline["laptop lakehouse — end to end"]
+    direction LR
+    S["sources · messy in<br/><b>data/sample/*.csv</b>"]
+    M["MinIO · object store<br/><b>make up → :9001</b>"]
+    P["Parquet · files underneath<br/><b>s3a://lake/warehouse</b>"]
+    I["Iceberg · ACID tables<br/><b>catalog · Postgres (:5432)</b>"]
+    SP["Spark · transform + SQL<br/><b>make e2e · make churn-e2e</b>"]
+    G["gold / BI · answers out<br/><b>make demo → data/export/</b>"]
+
+    S --> M -.-> P --> I -.-> SP --> G
+  end
+
+  AF["Airflow optional<br/><b>make airflow-demo → :8080</b>"]
+  AF -.-> SP
+
+  FULL["<b>make up && make wait && make demo</b>"]
+  G --> FULL
+
+  style S fill:#d6eaf8,stroke:#333
+  style M fill:#fdebd0,stroke:#333
+  style P fill:#d6eaf8,stroke:#333
+  style I fill:#fdebd0,stroke:#333
+  style SP fill:#d6eaf8,stroke:#333
+  style G fill:#fdebd0,stroke:#333
+  style AF fill:#f5f5f5,stroke:#666,stroke-dasharray: 5 5
+  style FULL fill:#1a1a1a,color:#7CFC98,stroke:#1a1a1a
+```
+
+Full path: `make up && make wait && make demo`.
+
 ---
 
 ## Prerequisites
