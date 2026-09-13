@@ -6,13 +6,13 @@ import json
 import os
 from pathlib import Path
 
-from pyspark.sql import SparkSession, functions as F
+from pyspark.sql import SparkSession
 
 EXPORT_DIR = os.environ.get("CHURN_EXPORT_DIR", "/opt/data/export")
 
 
 def main() -> None:
-    spark = SparkSession.builder.appName("09_export_churn_for_xgboost").getOrCreate()
+    spark = SparkSession.builder.appName("04_export_churn_features").getOrCreate()
     spark.sparkContext.setLogLevel("WARN")
 
     out = Path(EXPORT_DIR)
@@ -39,9 +39,7 @@ def main() -> None:
         w.writeheader()
         w.writerows(rows)
 
-    santosh_rows = [
-        r for r in rows if r.get("user_name") == "Santosh Shinde"
-    ]
+    santosh_rows = [r for r in rows if r.get("user_name") == "Santosh Shinde"]
     if not santosh_rows:
         raise SystemExit("Santosh Shinde not found in gold.churn_user_features")
     record = {k: v for k, v in santosh_rows[0].items() if k != "churned"}
@@ -53,9 +51,7 @@ def main() -> None:
     print(f"Wrote {train_path} ({len(rows)} rows)")
     print(f"Wrote {json_path}")
     print("Santosh inference keys:", sorted(record.keys()))
-    print(
-        "Next: use these exports with https://github.com/santoshshinde2012/downstream ML"
-    )
+    print("Next: feed these exports into your churn training or scoring pipeline.")
     print("Export OK.")
     spark.stop()
 
