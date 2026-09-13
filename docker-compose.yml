@@ -1,0 +1,99 @@
+# Local data lakehouse — MinIO + Postgres (Iceberg JDBC) + Spark 3.5
+# Usage: cp .env.example .env && make up && make wait && make demo
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ldl-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-iceberg}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-iceberg}
+      POSTGRES_DB: ${POSTGRES_DB:-iceberg}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-iceberg} -d ${POSTGRES_DB:-iceberg}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    networks:
+      - lakehouse
+
+  minio:
+    image: quay.io/minio/minio:latest
+    container_name: ldl-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    ports:
+      - "${MINIO_API_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 5s bash -c ':> /dev/tcp/127.0.0.1/9000' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    networks:
+      - lakehouse
+
+  minio-init:
+    image: quay.io/minio/mc:latest
+    container_name: ldl-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 $${MINIO_ROOT_USER:-minioadmin} $${MINIO_ROOT_PASSWORD:-minioadmin};
+      mc mb --ignore-existing local/lake;
+      mc anonymous set none local/lake;
+      echo 'Bucket lake ready';
+      "
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    networks:
+      - lakehouse
+    restart: "no"
+
+  spark:
+    build:
+      context: ./docker/spark
+    container_name: ldl-spark
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+    environment:
+      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-minioadmin}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      AWS_REGION: us-east-1
+      WAREHOUSE: ${WAREHOUSE:-s3a://lake/warehouse}
+      SAMPLE_DATA_DIR: /opt/data/sample
+    ports:
+      - "${SPARK_UI_PORT:-4040}:4040"
+    volumes:
+      - ./config/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
+      - ./src/jobs:/opt/jobs:ro
+      - ./data/sample:/opt/data/sample:ro
+      - ./data/export:/opt/data/export
+      - ./sql:/opt/sql:ro
+    networks:
+      - lakehouse
+
+volumes:
+  postgres-data:
+  minio-data:
+
+networks:
+  lakehouse:
+    name: ldl-net
