@@ -169,10 +169,32 @@ Also verify:
 | Artifact | Location |
 |---|---|
 | Gold table | `lakehouse.gold.churn_user_features` |
-| Train CSV | `data/export/churn_user_features.csv` (10 users) |
+| Train CSV | `data/export/churn_user_features.csv` (N users; 5000 after `make churn-sample`) |
 | Inference JSON | `data/export/santosh_inference_record.json` |
 
-User `u-01` / **Santosh Shinde** appears in gold and in the inference export.
+User **Santosh Shinde** (`user_name` exact match; id `u-0001` after scaled generate, or `u-01` in the tiny fixture) appears in gold and in the inference export.
+
+### Scaling churn for Retention Radar
+
+Tiny fixture (10 users) lives at `data/sample/churn/fixtures/tiny/` for quick demos.
+
+Research-scale bronze CSVs (default **N_USERS=5000**, seed **42**):
+
+```bash
+make churn-sample          # writes data/sample/churn/*.csv
+make churn-e2e             # Spark gold + export (needs Docker stack)
+# OR without Docker:
+make churn-gold-local      # pandas Spark-parity export → data/export/
+```
+
+Then feed exports into [xgboost-ai-churn](https://github.com/santoshshinde2012/xgboost-ai-churn) (`data/external/` ingest path).
+
+| Knob | Env / Make | Default |
+|------|------------|---------|
+| Users | `N_USERS=5000` | 5000 |
+| Seed | `CHURN_SEED=42` | 42 |
+| As-of | `CHURN_AS_OF=2024-03-02` | 2024-03-02 |
+| Usage window | `CHURN_USAGE_DAYS=40` | 40 days ending at as-of |
 
 ---
 

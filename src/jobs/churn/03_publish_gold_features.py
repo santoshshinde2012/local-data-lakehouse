@@ -108,8 +108,11 @@ def main() -> None:
         )
         .withColumn(
             "engagement_trend",
-            F.col("sessions_last_7d")
-            / F.greatest(F.lit(1.0), F.col("sessions_last_30d") / F.lit(4.0)),
+            F.least(
+                F.lit(5.0),
+                F.col("sessions_last_7d")
+                / F.greatest(F.lit(1.0), F.col("sessions_last_30d") / F.lit(4.0)),
+            ),
         )
         .withColumn(
             "last_active_days_ago",

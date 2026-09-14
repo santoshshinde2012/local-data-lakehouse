@@ -1,0 +1,11 @@
+user_id,user_name,plan_tier,signup_date,city,nps_score,churned
+u-01,Santosh Shinde,pro,2023-06-01,Pune,7.0,0
+u-02,Priya Sharma,starter,2023-08-12,Bengaluru,8.0,0
+u-03,Jordan Miles,free,2024-01-05,Austin,5.0,1
+u-04,Aisha Khan,pro,2023-04-20,Hyderabad,9.0,0
+u-05,Emily Carter,enterprise,2022-11-02,Seattle,8.5,0
+u-06,Rahul Mehta,starter,2023-09-18,Mumbai,6.0,0
+u-07,Marcus Chen,pro,2023-03-10,San Francisco,4.0,1
+u-08,Ananya Iyer,free,2024-02-01,Chennai,7.5,0
+u-09,Sofia Ramirez,starter,2023-07-22,Chicago,3.0,1
+u-10,Vikram Patel,enterprise,2022-05-15,Ahmedabad,9.0,0

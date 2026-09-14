@@ -14,3 +14,7 @@ airflow/logs/**
 !airflow/logs/.gitkeep
 __pycache__/
 *.pyc
+
+# Generated research-scale churn bronze (rebuild: make churn-sample)
+data/sample/churn/*.csv
+!data/sample/churn/fixtures/
