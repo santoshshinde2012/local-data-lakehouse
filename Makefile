@@ -36,7 +36,11 @@ e2e: wait
 	./pipelines/run_retail_e2e.sh
 
 churn-e2e: wait
-	@test -f data/sample/churn/users.csv || $(MAKE) churn-sample
+	@if [ ! -f data/sample/churn/users.csv ]; then \
+	  if [ -f data/sample/churn/fixtures/tiny/users.csv ]; then \
+	    cp data/sample/churn/fixtures/tiny/*.csv data/sample/churn/; \
+	  else $(MAKE) churn-sample; fi; \
+	fi
 	./pipelines/run_churn_e2e.sh
 
 churn-sample:
