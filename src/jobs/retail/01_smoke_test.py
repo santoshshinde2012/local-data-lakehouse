@@ -30,7 +30,7 @@ def main() -> None:
         f"""
         INSERT INTO lakehouse.bronze.smoke_demo VALUES
           (1, 'hello lakehouse', TIMESTAMP '{now}'),
-          (2, 'minio + iceberg + spark', TIMESTAMP '{now}')
+          (2, 'silo + iceberg + spark', TIMESTAMP '{now}')
         """
     )
 

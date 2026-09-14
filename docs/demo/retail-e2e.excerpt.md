@@ -1,7 +1,7 @@
 # Retail E2E excerpt (verified)
 
 ```text
-Stack: postgres=healthy minio=healthy spark=running
+Stack: postgres=healthy silo=healthy spark=running
 Jobs: 01_smoke_test → 02_ingest_bronze → 03_transform_silver → 04_publish_gold → 05_query_and_timetravel
 
 Bronze orders: 22 → Silver orders: 19  (pending dropped; o-1003 / o-1006 deduped)

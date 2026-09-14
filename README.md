@@ -1,15 +1,17 @@
 # local-data-lakehouse
 
-Open-source **data lakehouse on your laptop** — MinIO, PostgreSQL (Iceberg JDBC catalog), Apache Spark 3.5, and Apache Iceberg.
+Open-source **data lakehouse on your laptop** — Silo (S3-compatible object store), PostgreSQL (Iceberg JDBC catalog), Apache Spark 3.5, and Apache Iceberg.
 
 This repository is the **hands-on companion** to the article *Stop Reading About Lakehouses. Build One Locally.* It contains Compose, jobs, sample data, and verified end-to-end demos only (no article prose).
 
 | Component | Role |
 |---|---|
-| **MinIO** | S3-compatible object store |
+| **Silo** | S3-compatible object store (MinIO lineage; [why we left MinIO](docs/object-store.md)) |
 | **PostgreSQL** | Iceberg JDBC catalog |
 | **Apache Spark 3.5** | Ingest, transform, query |
 | **Apache Iceberg** | ACID tables, snapshots, time travel |
+
+> **Why Silo (not MinIO)?** The MinIO community GitHub is archived (maintenance mode). This repo uses **SILO** (`pgsty/silo`) — a drop-in MinIO-compatible fork that keeps `MINIO_*` env names, disk format, and S3A/Iceberg paths working. Garage and RustFS were considered but not chosen for this teaching stack (partial S3 vs still-maturing Spark 3.5 path). Details: [docs/object-store.md](docs/object-store.md) · [silo.pgsty.com](https://silo.pgsty.com) · [github.com/pgsty/silo](https://github.com/pgsty/silo) · optional background: [maholick.com — MinIO is dead](https://maholick.com/blog/minio-is-dead-the-end-of-an-era-in-open-source-object-storage).
 
 **Two runnable paths**
 
@@ -25,7 +27,7 @@ End-to-end path on your laptop — doodle map with commands highlighted on every
 | Stage | Role | Command |
 |---|---|---|
 | **sources** | Sample CSVs (retail + churn) | `data/sample/` |
-| **MinIO** | Object store, bucket `lake` | `make up` → http://localhost:9001 |
+| **Silo** | Object store, bucket `lake` | `make up` → http://localhost:9001 |
 | **Parquet** | Files under the warehouse | `s3a://lake/warehouse` |
 | **Iceberg** | ACID tables | catalog: **Postgres** (`make up`) |
 | **Spark** | Ingest / transform / SQL | `make e2e` · `make churn-e2e` |
@@ -37,7 +39,7 @@ flowchart LR
   subgraph pipeline["laptop lakehouse — end to end"]
     direction LR
     S["sources · messy in<br/><b>data/sample/*.csv</b>"]
-    M["MinIO · object store<br/><b>make up → :9001</b>"]
+    M["Silo · object store<br/><b>make up → :9001</b>"]
     P["Parquet · files underneath<br/><b>s3a://lake/warehouse</b>"]
     I["Iceberg · ACID tables<br/><b>catalog · Postgres (:5432)</b>"]
     SP["Spark · transform + SQL<br/><b>make e2e · make churn-e2e</b>"]
@@ -94,7 +96,7 @@ cp .env.example .env
 # 3. Start the stack (builds the Spark image on first run)
 make up
 
-# 4. Wait until MinIO, Postgres, and Spark are healthy
+# 4. Wait until Silo, Postgres, and Spark are healthy
 make wait
 
 # 5. Run the full demo: retail medallion + churn gold export
@@ -106,7 +108,7 @@ That is the complete path. When it finishes you should see:
 - Retail gold metrics matching the contract below  
 - `data/export/churn_user_features.csv`  
 - `data/export/santosh_inference_record.json`  
-- MinIO console at http://localhost:9001 (`minioadmin` / `minioadmin`), bucket `lake`
+- Silo console at http://localhost:9001 (`minioadmin` / `minioadmin`), bucket `lake`
 
 ### Step-by-step (what each command does)
 
@@ -114,7 +116,7 @@ That is the complete path. When it finishes you should see:
 |---:|---|---|
 | 1 | `git clone …` | Fetch this repository |
 | 2 | `cp .env.example .env` | Local env (Compose already copies this on `make up` if missing) |
-| 3 | `make up` | `docker compose up -d --build` — MinIO, Postgres, Spark |
+| 3 | `make up` | `docker compose up -d --build` — Silo, Postgres, Spark |
 | 4 | `make wait` | Polls health until the catalog and object store answer |
 | 5a | `make e2e` | Retail jobs `src/jobs/retail/01` … `05` |
 | 5b | `make churn-e2e` | Churn jobs `src/jobs/churn/01` … `04` |
@@ -169,10 +171,32 @@ Also verify:
 | Artifact | Location |
 |---|---|
 | Gold table | `lakehouse.gold.churn_user_features` |
-| Train CSV | `data/export/churn_user_features.csv` (10 users) |
+| Train CSV | `data/export/churn_user_features.csv` (N users; 5000 after `make churn-sample`) |
 | Inference JSON | `data/export/santosh_inference_record.json` |
 
-User `u-01` / **Santosh Shinde** appears in gold and in the inference export.
+User **Santosh Shinde** (`user_name` exact match; id `u-0001` after scaled generate, or `u-01` in the tiny fixture) appears in gold and in the inference export.
+
+### Scaling churn for Retention Radar
+
+Tiny fixture (10 users) lives at `data/sample/churn/fixtures/tiny/` for quick demos.
+
+Research-scale bronze CSVs (default **N_USERS=5000**, seed **42**):
+
+```bash
+make churn-sample          # writes data/sample/churn/*.csv
+make churn-e2e             # Spark gold + export (needs Docker stack)
+# OR without Docker:
+make churn-gold-local      # pandas Spark-parity export → data/export/
+```
+
+Then feed exports into [xgboost-ai-churn](https://github.com/santoshshinde2012/xgboost-ai-churn) (`data/external/` ingest path).
+
+| Knob | Env / Make | Default |
+|------|------------|---------|
+| Users | `N_USERS=5000` | 5000 |
+| Seed | `CHURN_SEED=42` | 42 |
+| As-of | `CHURN_AS_OF=2024-03-02` | 2024-03-02 |
+| Usage window | `CHURN_USAGE_DAYS=40` | 40 days ending at as-of |
 
 ---
 
@@ -180,10 +204,10 @@ User `u-01` / **Santosh Shinde** appears in gold and in the inference export.
 
 | Service | URL | Credentials |
 |---|---|---|
-| MinIO console | http://localhost:9001 | `minioadmin` / `minioadmin` |
+| Silo console | http://localhost:9001 | `minioadmin` / `minioadmin` |
 | Spark UI | http://localhost:4040 | (while a job is running) |
 
-Warehouse prefix in MinIO: bucket `lake` → Iceberg table folders under the warehouse path.
+Warehouse prefix in Silo: bucket `lake` → Iceberg table folders under the warehouse path.
 
 ---
 
@@ -222,7 +246,7 @@ Design notes:
 | Component | Role | How you run it |
 |---|---|---|
 | Sample CSVs | Retail + churn inputs | Shipped under `data/sample/` |
-| MinIO | Object store (`lake`) | `make up` → http://localhost:9001 |
+| Silo | Object store (`lake`) | `make up` → http://localhost:9001 |
 | Postgres | Iceberg JDBC catalog | `make up` (port `5432`) |
 | Spark + Iceberg | Jobs + ACID tables | `make e2e` / `make churn-e2e` |
 | Airflow | DAG orchestration | `make airflow-up` → http://localhost:8080 |
@@ -230,7 +254,7 @@ Design notes:
 
 ## Orchestration with Apache Airflow
 
-Airflow **schedules** the same Spark jobs; it does not replace MinIO, Iceberg, or Spark.
+Airflow **schedules** the same Spark jobs; it does not replace Silo, Iceberg, or Spark.
 
 | DAG | Chain | Spark jobs |
 |---|---|---|
@@ -267,7 +291,7 @@ make airflow-trigger-churn
 |---|---|
 | Airflow UI | http://localhost:8080 |
 | Login | `admin` / `admin` (sample-only) |
-| MinIO | http://localhost:9001 (`minioadmin` / `minioadmin`) |
+| Silo | http://localhost:9001 (`minioadmin` / `minioadmin`) |
 
 Shell `make demo` remains valid if you skip Airflow. Both paths must produce the same gold contracts and exports.
 
