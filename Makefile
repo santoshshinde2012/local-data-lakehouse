@@ -5,7 +5,7 @@ COMPOSE_AIRFLOW := docker compose -f docker-compose.yml -f docker-compose.airflo
 
 help:
 	@echo "local-data-lakehouse"
-	@echo "  make up                  Start MinIO + Postgres + Spark"
+	@echo "  make up                  Start Silo + Postgres + Spark"
 	@echo "  make wait                Wait until lakehouse healthy"
 	@echo "  make e2e                 Retail medallion (shell)"
 	@echo "  make churn-e2e           Churn gold + export (shell / Spark)"
@@ -52,7 +52,7 @@ churn-gold-local: churn-sample
 demo: e2e churn-e2e
 	@echo ""
 	@echo "==> Full demo complete."
-	@echo "    MinIO console: http://localhost:9001  (minioadmin / minioadmin)"
+	@echo "    Silo console: http://localhost:9001  (minioadmin / minioadmin)"
 	@echo "    Exports:       data/export/"
 
 airflow-up: wait
@@ -78,7 +78,7 @@ airflow-demo: airflow-trigger-retail airflow-trigger-churn
 	@echo ""
 	@echo "==> Airflow demo complete."
 	@echo "    Airflow UI: http://localhost:$${AIRFLOW_WEBSERVER_PORT:-8080}  (admin / admin)"
-	@echo "    MinIO:      http://localhost:9001  (minioadmin / minioadmin)"
+	@echo "    Silo:      http://localhost:9001  (minioadmin / minioadmin)"
 	@echo "    Exports:    data/export/"
 
 reset:

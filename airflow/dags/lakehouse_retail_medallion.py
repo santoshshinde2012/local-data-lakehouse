@@ -3,7 +3,7 @@ Retail medallion DAG — mirrors the article chain:
 
     land/smoke >> bronze >> silver >> gold >> query
 
-Airflow schedules; MinIO + Iceberg + Spark remain the lakehouse foundation.
+Airflow schedules; Silo + Iceberg + Spark remain the lakehouse foundation.
 """
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-# Spark 3.5 + Iceberg runtime + Hadoop AWS (MinIO/S3A) + Postgres JDBC
+# Spark 3.5 + Iceberg runtime + Hadoop AWS (Silo/S3A) + Postgres JDBC
 FROM apache/spark:3.5.3-java17
 
 USER root

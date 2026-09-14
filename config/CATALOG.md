@@ -6,7 +6,7 @@
 
 - Easy to run in Docker Compose (one `postgres` service).
 - Works with Spark’s Iceberg runtime without a separate REST process.
-- Warehouse data still lives in MinIO at `s3a://lake/warehouse`; Postgres only stores Iceberg metadata pointers (namespaces, table metadata locations).
+- Warehouse data still lives in Silo (S3-compatible) at `s3a://lake/warehouse`; Postgres only stores Iceberg metadata pointers (namespaces, table metadata locations).
 
 ## Spark wiring
 

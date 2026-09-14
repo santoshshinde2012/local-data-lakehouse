@@ -1,5 +1,8 @@
-# Local data lakehouse — MinIO + Postgres (Iceberg JDBC) + Spark 3.5
+# Local data lakehouse — Silo (S3-compatible) + Postgres (Iceberg JDBC) + Spark 3.5
 # Usage: cp .env.example .env && make up && make wait && make demo
+#
+# Object store: SILO (pgsty fork of the archived MinIO community line).
+# See docs/object-store.md. Pin immutable tags — never :latest for server/client.
 
 services:
   postgres:
@@ -21,36 +24,41 @@ services:
     networks:
       - lakehouse
 
-  minio:
-    image: quay.io/minio/minio:latest
-    container_name: ldl-minio
+  silo:
+    image: docker.io/pgsty/silo:RELEASE.2026-09-03T13-18-01Z
+    container_name: ldl-silo
     command: server /data --console-address ":9001"
     environment:
+      # SILO preserves the MinIO env contract (MINIO_ROOT_*).
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
     ports:
       - "${MINIO_API_PORT:-9000}:9000"
       - "${MINIO_CONSOLE_PORT:-9001}:9001"
     volumes:
-      - minio-data:/data
+      # One-time note: existing MinIO volume users can
+      #   docker volume ls | grep minio
+      # then rename (docker volume create + copy) or re-init with make reset.
+      - silo-data:/data
     healthcheck:
-      test: ["CMD-SHELL", "timeout 5s bash -c ':> /dev/tcp/127.0.0.1/9000' || exit 1"]
+      # Classic image ships the silo binary; same probe as distroless.
+      test: ["CMD", "silo", "healthcheck", "ready"]
       interval: 5s
-      timeout: 5s
+      timeout: 10s
       retries: 12
-      start_period: 10s
+      start_period: 15s
     networks:
       - lakehouse
 
-  minio-init:
-    image: quay.io/minio/mc:latest
-    container_name: ldl-minio-init
+  silo-init:
+    image: docker.io/pgsty/mc:RELEASE.2026-09-03T07-13-05Z
+    container_name: ldl-silo-init
     depends_on:
-      minio:
+      silo:
         condition: service_healthy
     entrypoint: >
       /bin/sh -c "
-      mc alias set local http://minio:9000 $${MINIO_ROOT_USER:-minioadmin} $${MINIO_ROOT_PASSWORD:-minioadmin};
+      mc alias set local http://silo:9000 $${MINIO_ROOT_USER:-minioadmin} $${MINIO_ROOT_PASSWORD:-minioadmin};
       mc mb --ignore-existing local/lake;
       mc anonymous set none local/lake;
       echo 'Bucket lake ready';
@@ -69,9 +77,9 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      minio:
+      silo:
         condition: service_healthy
-      minio-init:
+      silo-init:
         condition: service_completed_successfully
     environment:
       AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-minioadmin}
@@ -92,7 +100,7 @@ services:
 
 volumes:
   postgres-data:
-  minio-data:
+  silo-data:
 
 networks:
   lakehouse:
