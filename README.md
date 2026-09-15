@@ -189,6 +189,8 @@ make churn-e2e             # Spark gold + export (needs Docker stack)
 make churn-gold-local      # pandas Spark-parity export → data/export/
 ```
 
+Sufficiency audit (schema · volume · slices · SILO · consumer): [docs/churn-gold-sufficiency.md](docs/churn-gold-sufficiency.md).
+
 Then feed exports into [retention-radar](https://github.com/santoshshinde2012/retention-radar) (`data/external/` ingest path — public code home). Models **consume gold features**; algorithm choice (ladder / CatBoost / Optuna XGB) lives in retention-radar — not in this lakehouse.
 
 | Knob | Env / Make | Default |
