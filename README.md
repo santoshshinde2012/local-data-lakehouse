@@ -189,7 +189,7 @@ make churn-e2e             # Spark gold + export (needs Docker stack)
 make churn-gold-local      # pandas Spark-parity export → data/export/
 ```
 
-Then feed exports into [xgboost-ai-churn](https://github.com/santoshshinde2012/xgboost-ai-churn) (`data/external/` ingest path).
+Then feed exports into [retention-radar](https://github.com/santoshshinde2012/retention-radar) (`data/external/` ingest path — public code home).
 
 | Knob | Env / Make | Default |
 |------|------------|---------|
@@ -338,6 +338,16 @@ Airflow needs additional RAM beyond the core stack (plan ~4+ GB free for webserv
 | Port 8080 busy | Set `AIRFLOW_WEBSERVER_PORT` in `.env` |
 
 ---
+
+
+## Related repos
+
+| Repo | Role |
+|------|------|
+| [retention-radar](https://github.com/santoshshinde2012/retention-radar) | **Public** Retention Radar code + benchmarks + results (gold CSV/JSON consumer) |
+| This repo | **Public** data foundation / feature SoR (SILO · bronze→silver→gold→export) |
+
+Medium / reader surfaces cite **only** these two public repos.
 
 ## License
 
