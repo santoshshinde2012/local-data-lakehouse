@@ -1,5 +1,5 @@
 -- Gold churn features contract (Spark: src/jobs/churn/03_publish_gold_features.py)
--- Aligned with xgboost-ai-churn schemas/user_record.schema.json (+ churned for train)
+-- Aligned with retention-radar schemas/user_record.schema.json (+ churned for train)
 --
 -- Grain: one row per user_id as-of CHURN_AS_OF (default 2024-03-02)
 -- Build: make churn-e2e  OR  make churn-gold-local (pandas parity, no Docker)
