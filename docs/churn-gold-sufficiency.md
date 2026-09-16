@@ -12,7 +12,7 @@ Verified: **2026-09-15** · seed **42** · path `make churn-gold-local` (pandas 
 
 | Criterion | Result |
 |-----------|--------|
-| Schema | Train CSV = 22 features + `user_id` / `user_name` + `churned` (25 cols). Serve JSON = 24 fields (no label). Matches radar `FEATURE_COLUMNS` + `schemas/user_record.schema.json`. |
+| Schema | Train CSV = 22 features + `user_id` / `user_name` + `churned` (25 cols). Serve JSON = 24 fields (no label). Matches radar `FEATURE_COLUMNS` + `configs/schemas/user_record.schema.json`. |
 | Volume | **N=5000**, train-capable; stratified churn **17.0%** (target band 15–25%). |
 | Nulls | **0%** nulls on all export columns after gold fill. |
 | Hero user | **Santosh Shinde** `u-0001` present; inference JSON has no `churned`. |
