@@ -349,7 +349,7 @@ Airflow needs additional RAM beyond the core stack (plan ~4+ GB free for webserv
 
 ## Related repos
 
-**Reader start (churn ML path):** after gold export, open [retention-radar](https://github.com/santoshshinde2012/retention-radar) and follow that README’s **Start here** (or **Quick start** until that heading lands).
+**Reader start (churn ML path):** after gold export, open [retention-radar](https://github.com/santoshshinde2012/retention-radar) and follow that README’s **Start here**.
 
 | Repo | Role |
 |------|------|
