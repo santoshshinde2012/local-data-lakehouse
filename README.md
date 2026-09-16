@@ -18,6 +18,9 @@ This repository is the **hands-on companion** to the article *Stop Reading About
 1. **Retail** — bronze → silver → gold metrics + Iceberg time travel  
 2. **Churn features** — AI-platform usage / tickets / payments → `gold.churn_user_features` → CSV + JSON export  
 
+
+> **TEACHING-ONLY — NOT PRODUCTION.** Default Silo (`minioadmin` / `minioadmin`) and Airflow (`admin` / `admin`) passwords are **sample credentials for local learning**. The optional Airflow overlay mounts the host **Docker socket** (`/var/run/docker.sock`) and runs as root so DAGs can `docker exec` into `ldl-spark`. Do **not** expose this stack on a network, reuse these passwords, or copy the socket mount into a real environment.
+
 ## Architecture
 
 End-to-end path on your laptop — doodle map with commands highlighted on every stage:
@@ -204,9 +207,11 @@ Then feed exports into [retention-radar](https://github.com/santoshshinde2012/re
 
 ## UIs while the stack is up
 
+> **Sample credentials only** (see teaching banner above). Never reuse in production.
+
 | Service | URL | Credentials |
 |---|---|---|
-| Silo console | http://localhost:9001 | `minioadmin` / `minioadmin` |
+| Silo console | http://localhost:9001 | `minioadmin` / `minioadmin` (**sample-only**) |
 | Spark UI | http://localhost:4040 | (while a job is running) |
 
 Warehouse prefix in Silo: bucket `lake` → Iceberg table folders under the warehouse path.
@@ -292,8 +297,8 @@ make airflow-trigger-churn
 | Item | Value |
 |---|---|
 | Airflow UI | http://localhost:8080 |
-| Login | `admin` / `admin` (sample-only) |
-| Silo | http://localhost:9001 (`minioadmin` / `minioadmin`) |
+| Login | `admin` / `admin` (**sample-only** — teaching laptop) |
+| Silo | http://localhost:9001 (`minioadmin` / `minioadmin`, **sample-only**) |
 
 Shell `make demo` remains valid if you skip Airflow. Both paths must produce the same gold contracts and exports.
 
@@ -308,7 +313,7 @@ docker/airflow/   # Airflow image + Docker CLI (exec into ldl-spark)
 docker-compose.airflow.yml
 ```
 
-Each task runs `docker exec ldl-spark spark-submit …` against the existing job scripts. Local demo only: the Airflow containers mount the Docker socket.
+Each task runs `docker exec ldl-spark spark-submit …` against the existing job scripts. **Teaching-only:** Airflow containers mount the host **Docker socket** and run as root so the DAG can reach `ldl-spark`. That is a full host-docker privilege — fine on a closed laptop demo; **never** ship this pattern to a shared or production host.
 
 ### Extra resources
 
@@ -344,9 +349,11 @@ Airflow needs additional RAM beyond the core stack (plan ~4+ GB free for webserv
 
 ## Related repos
 
+**Reader start (churn ML path):** after gold export, open [retention-radar](https://github.com/santoshshinde2012/retention-radar) and follow that README’s **Start here** (or **Quick start** until that heading lands).
+
 | Repo | Role |
 |------|------|
-| [retention-radar](https://github.com/santoshshinde2012/retention-radar) | **Public** Retention Radar code + benchmarks + results (gold CSV/JSON consumer) |
+| [retention-radar](https://github.com/santoshshinde2012/retention-radar) | **Public** Retention Radar code + benchmarks + results (gold CSV/JSON consumer) — **start here** for train → serve |
 | This repo | **Public** data foundation / feature SoR (SILO · bronze→silver→gold→export) |
 | Articles | Written in a separate **internal** workspace (not a reader destination) |
 
