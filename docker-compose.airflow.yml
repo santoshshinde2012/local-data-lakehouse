@@ -1,6 +1,11 @@
 # Apache Airflow overlay — join the lakehouse network and schedule Spark jobs.
 # Usage: make up && make wait && make airflow-up && make airflow-wait
 # Requires core stack (ldl-net) already running.
+#
+# TEACHING-ONLY / NOT PRODUCTION:
+# - Default UI login admin/admin (override via .env).
+# - Mounts host Docker socket + runs as root so DAGs can `docker exec` into ldl-spark.
+#   That is full host-docker privilege. Use only on a closed laptop demo.
 
 x-airflow-common: &airflow-common
   build:
@@ -22,8 +27,9 @@ x-airflow-common: &airflow-common
     - ./airflow/dags:/opt/airflow/dags
     - ./airflow/logs:/opt/airflow/logs
     - ./airflow/plugins:/opt/airflow/plugins
+    # TEACHING-ONLY: host Docker socket (never copy to production)
     - /var/run/docker.sock:/var/run/docker.sock
-  user: "0:0"
+  user: "0:0"  # TEACHING-ONLY: root so socket + docker exec work locally
   networks:
     - lakehouse
   depends_on:
