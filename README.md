@@ -348,8 +348,9 @@ Airflow needs additional RAM beyond the core stack (plan ~4+ GB free for webserv
 |------|------|
 | [retention-radar](https://github.com/santoshshinde2012/retention-radar) | **Public** Retention Radar code + benchmarks + results (gold CSV/JSON consumer) |
 | This repo | **Public** data foundation / feature SoR (SILO · bronze→silver→gold→export) |
+| Articles | Written in a separate **internal** workspace (not a reader destination) |
 
-Medium / reader surfaces cite **only** these two public repos.
+Medium / reader surfaces cite **only** the two public repos above.
 
 ## License
 
