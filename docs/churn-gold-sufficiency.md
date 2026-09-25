@@ -55,4 +55,4 @@ make churn-check   # columns · nulls · tiers · leakage · Santosh · schema r
 CHURN_DATA_SOURCE=lakehouse pytest -q
 ```
 
-Radar verify (box, 2026-09-25): **33 passed** with `CHURN_DATA_SOURCE=lakehouse` after sync; `./scripts/run_lakehouse_e2e.sh` green (calibrated test AUC ≈ 0.702, Santosh u-0001 → low / nurture); committed `models/` left unchanged. CI (`.github/workflows/ci.yml`) re-runs the no-Docker path, the contract check, and a Retention Radar ingest + batch-score on every push.
+Radar verify (box, 2026-09-25): **33 passed** with `CHURN_DATA_SOURCE=lakehouse` after sync; `./scripts/run_lakehouse_e2e.sh` green on Python 3.12 (calibrated test AUC ≈ 0.694, Santosh u-0001 0.399 → 0.170 → low / nurture); committed `models/` left unchanged. CI (`.github/workflows/ci.yml`) re-runs the no-Docker path, the contract check, and a Retention Radar ingest + batch-score on every push.
