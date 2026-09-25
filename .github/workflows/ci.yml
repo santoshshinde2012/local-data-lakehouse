@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  churn-gold-local:
+    # No-Docker churn path: bronze sample → pandas Spark-parity gold → export contract.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install host requirements
+        run: pip install -r requirements.txt
+
+      - name: Syntax check (Python + shell)
+        run: |
+          python -m py_compile $(git ls-files '*.py')
+          for f in $(git ls-files '*.sh'); do bash -n "$f"; done
+
+      - name: Tiny fixture → gold → contract
+        env:
+          CHURN_SAMPLE_DIR: data/sample/churn/fixtures/tiny
+          CHURN_EXPORT_DIR: ${{ runner.temp }}/tiny_export
+        run: |
+          python scripts/build_churn_gold_local.py
+          python scripts/check_churn_export.py
+
+      - name: Seed-42 N=5000 sample → gold → contract (strict)
+        run: |
+          make churn-gold-local
+          python scripts/check_churn_export.py --strict
+
+      - name: Retention Radar consumes the export
+        run: |
+          git clone --depth 1 https://github.com/santoshshinde2012/retention-radar.git "$RUNNER_TEMP/retention-radar"
+          cd "$RUNNER_TEMP/retention-radar"
+          pip install -r requirements.txt && pip install -e .
+          ./scripts/sync_lakehouse_exports.sh "$GITHUB_WORKSPACE/data/export"
+          CHURN_DATA_SOURCE=lakehouse PYTHONPATH=src python -m retention_radar.cli.ingest
+          CHURN_DATA_SOURCE=lakehouse PYTHONPATH=src python -m retention_radar.cli.batch_score \
+            --csv data/external/churn_user_features.csv --out "$RUNNER_TEMP/scores.csv"
+
+  compose-config:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Compose files
+        run: |
+          cp .env.example .env
+          docker compose config -q
+          docker compose -f docker-compose.yml -f docker-compose.airflow.yml config -q

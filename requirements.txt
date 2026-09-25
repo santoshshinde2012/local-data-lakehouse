@@ -1,0 +1,4 @@
+# Host-side Python for the no-Docker churn path (make churn-sample / churn-gold-local /
+# churn-check). Spark jobs run inside the ldl-spark image and do not use this file.
+pandas>=2.0
+numpy>=1.24

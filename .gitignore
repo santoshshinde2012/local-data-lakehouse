@@ -12,8 +12,6 @@ data/export/*.json
 # Airflow runtime
 airflow/logs/**
 !airflow/logs/.gitkeep
-__pycache__/
-*.pyc
 
 # Generated research-scale churn bronze (rebuild: make churn-sample)
 data/sample/churn/*.csv

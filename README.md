@@ -79,6 +79,7 @@ Full path: `make up && make wait && make demo`.
 | Make | Ships with macOS / most Linux |
 | RAM | ~8–16 GB recommended |
 | Ports free | `9000`, `9001`, `5432`, `4040` |
+| Python 3.10+ *(no-Docker churn path only)* | `pip install -r requirements.txt` (pandas + numpy) for `make churn-sample` / `churn-gold-local` / `churn-check` |
 
 Apple Silicon (arm64) is supported.
 
@@ -189,8 +190,12 @@ Research-scale bronze CSVs (default **N_USERS=5000**, seed **42**):
 make churn-sample          # writes data/sample/churn/*.csv
 make churn-e2e             # Spark gold + export (needs Docker stack)
 # OR without Docker:
-make churn-gold-local      # pandas Spark-parity export → data/export/
+pip install -r requirements.txt
+make churn-gold-local      # pandas Spark-parity export → data/export/ (+ contract check)
+make churn-check           # re-validate data/export/ against the retention-radar contract
 ```
+
+`churn-check` fails on structural breaks (columns, nulls, plan tiers, label leakage, missing Santosh) and warns on retention-radar schema range breaches (`--strict` to fail). The 10-user tiny fixture warns once by design: `u-10` is a heavy IDE user (577 plugin sessions / 30d vs the 500 soft cap).
 
 Sufficiency audit (schema · volume · slices · SILO · consumer): [docs/churn-gold-sufficiency.md](docs/churn-gold-sufficiency.md).
 
@@ -241,9 +246,6 @@ Design notes:
 - **Single responsibility** — each job owns one stage; pipelines only sequence `spark-submit`  
 - **Open for extension** — add a domain folder under `src/jobs/` without touching retail  
 - **Stable contracts** — table names and gold metrics documented here and under `sql/`
-
----
-
 
 ---
 
@@ -361,4 +363,4 @@ Medium / reader surfaces cite **only** the two public repos above.
 
 ## License
 
-Use freely for learning and demos. Add a `LICENSE` file if your organization requires an explicit SPDX choice.
+MIT © Santosh Shinde — see [LICENSE](LICENSE).

@@ -1,6 +1,6 @@
 COMPOSE_AIRFLOW := docker compose -f docker-compose.yml -f docker-compose.airflow.yml
 
-.PHONY: help up down wait e2e churn-e2e churn-sample churn-gold-local demo reset ps \
+.PHONY: help up down wait e2e churn-e2e churn-sample churn-gold-local churn-check demo reset ps \
 	airflow-up airflow-down airflow-wait airflow-trigger-retail airflow-trigger-churn airflow-demo
 
 help:
@@ -11,6 +11,7 @@ help:
 	@echo "  make churn-e2e           Churn gold + export (shell / Spark)"
 	@echo "  make churn-sample        Generate scalable bronze CSVs (N_USERS=5000 default)"
 	@echo "  make churn-gold-local    Spark-parity gold export without Docker"
+	@echo "  make churn-check         Validate data/export/ against the retention-radar contract"
 	@echo "  make demo                Full shell demo (retail then churn)"
 	@echo "  make airflow-up          Start Airflow (needs make up first)"
 	@echo "  make airflow-wait        Wait for Airflow UI"
@@ -48,6 +49,10 @@ churn-sample:
 
 churn-gold-local: churn-sample
 	python3 scripts/build_churn_gold_local.py
+	python3 scripts/check_churn_export.py
+
+churn-check:
+	python3 scripts/check_churn_export.py
 
 demo: e2e churn-e2e
 	@echo ""

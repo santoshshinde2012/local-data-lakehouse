@@ -4,7 +4,7 @@ Audit checklist for the **data foundation** that feeds
 [retention-radar](https://github.com/santoshshinde2012/retention-radar).
 Gold features are the SoR; **algorithms live in Retention Radar**.
 
-Verified: **2026-09-15** · seed **42** · path `make churn-gold-local` (pandas Spark-parity).
+Verified: **2026-09-25** · seed **42** · path `make churn-gold-local` (pandas Spark-parity) + `make churn-check` (export contract).
 
 ## Verdict
 
@@ -48,10 +48,11 @@ Verified: **2026-09-15** · seed **42** · path `make churn-gold-local` (pandas 
 N_USERS=5000 CHURN_SEED=42 make churn-gold-local
 # → data/export/churn_user_features.csv
 # → data/export/santosh_inference_record.json
+make churn-check   # columns · nulls · tiers · leakage · Santosh · schema ranges
 
 # retention-radar (beside this repo)
 ./scripts/sync_lakehouse_exports.sh ../local-data-lakehouse/data/export
 CHURN_DATA_SOURCE=lakehouse pytest -q
 ```
 
-Radar verify (box, 2026-09-15): **21 passed** with `CHURN_DATA_SOURCE=lakehouse` after sync; committed `models/` left unchanged.
+Radar verify (box, 2026-09-25): **33 passed** with `CHURN_DATA_SOURCE=lakehouse` after sync; `./scripts/run_lakehouse_e2e.sh` green (calibrated test AUC ≈ 0.702, Santosh u-0001 → low / nurture); committed `models/` left unchanged. CI (`.github/workflows/ci.yml`) re-runs the no-Docker path, the contract check, and a Retention Radar ingest + batch-score on every push.
