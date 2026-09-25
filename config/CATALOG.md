@@ -21,9 +21,9 @@ See `spark-defaults.conf`:
 
 | Namespace | Tables |
 |-----------|--------|
-| `bronze`  | `orders_raw`, `customers_raw` |
-| `silver`  | `orders`, `customers` |
-| `gold`    | `daily_order_metrics` |
+| `bronze`  | `orders_raw`, `customers_raw`, `smoke_demo`, `churn_users_raw`, `churn_usage_raw`, `churn_tickets_raw`, `churn_payments_raw` |
+| `silver`  | `orders`, `customers`, `churn_users`, `churn_usage_daily`, `churn_tickets`, `churn_payments` |
+| `gold`    | `daily_order_metrics`, `churn_user_features` |
 
 Fully qualified example: `lakehouse.bronze.orders_raw` (or `bronze.orders_raw` when default catalog is set).
 

@@ -55,7 +55,7 @@ Compose renamed `minio-data` → `silo-data`. Existing MinIO volume users can:
 
 | Component | Current pin | Note |
 |-----------|-------------|------|
-| Spark image | `apache/spark:3.5.3-java17` | Kept; no newer 3.5.x confirmed for this bump |
+| Spark image | `apache/spark:3.5.3-java17` | Kept; newer 3.5.x tags (up to 3.5.8) exist but were not tested for this bump |
 | Iceberg runtime | `1.6.1` (`iceberg-spark-runtime-3.5_2.12`) | Latest **1.6.x**; 1.7+/1.11 exist on Maven but are minor/major jumps — left alone for this object-store PR |
 
 ## Rollback
