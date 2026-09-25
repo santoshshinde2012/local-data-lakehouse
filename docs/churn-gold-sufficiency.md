@@ -4,7 +4,7 @@ Audit checklist for the **data foundation** that feeds
 [retention-radar](https://github.com/santoshshinde2012/retention-radar).
 Gold features are the SoR; **algorithms live in Retention Radar**.
 
-Verified: **2026-09-15** · seed **42** · path `make churn-gold-local` (pandas Spark-parity).
+Verified: **2026-09-25** · seed **42** · path `make churn-gold-local` (pandas Spark-parity) + `make churn-check` (export contract).
 
 ## Verdict
 
@@ -32,7 +32,7 @@ Verified: **2026-09-15** · seed **42** · path `make churn-gold-local` (pandas 
 
 - Overall and free/starter/pro slices are thick enough for teaching stratified metrics.
 - **Enterprise** is the thinnest (47 positives). Fine for demos that mention the tier; thin if you want enterprise-only model tuning.
-- Optional: `N_USERS=10000 CHURN_SEED=42 make churn-sample && make churn-gold-local` (~2× enterprise mass) — keep seed 42 for reproducibility. Default stays **5000**.
+- Optional: `N_USERS=10000 CHURN_SEED=42 make churn-gold-local` (~2× enterprise mass; `churn-gold-local` re-runs `churn-sample` with the same env) — keep seed 42 for reproducibility. Default stays **5000**.
 
 ## Quality / honesty
 
@@ -48,10 +48,11 @@ Verified: **2026-09-15** · seed **42** · path `make churn-gold-local` (pandas 
 N_USERS=5000 CHURN_SEED=42 make churn-gold-local
 # → data/export/churn_user_features.csv
 # → data/export/santosh_inference_record.json
+make churn-check   # columns · nulls · tiers · leakage · Santosh · schema ranges
 
 # retention-radar (beside this repo)
 ./scripts/sync_lakehouse_exports.sh ../local-data-lakehouse/data/export
 CHURN_DATA_SOURCE=lakehouse pytest -q
 ```
 
-Radar verify (box, 2026-09-15): **21 passed** with `CHURN_DATA_SOURCE=lakehouse` after sync; committed `models/` left unchanged.
+Radar verify (box, 2026-09-25): retention-radar `pytest -q` green (63 passed at `dac04a6`) with `CHURN_DATA_SOURCE=lakehouse` after sync; `./scripts/run_lakehouse_e2e.sh` green on Python 3.12 (calibrated test AUC ≈ 0.694, Santosh u-0001 0.399 → 0.170 → low / nurture); committed `models/` left unchanged. CI (`.github/workflows/ci.yml`) re-runs the no-Docker path, the contract check, and a Retention Radar ingest + batch-score on every push to `main` and every PR.

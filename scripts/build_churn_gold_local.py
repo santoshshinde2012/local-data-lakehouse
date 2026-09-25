@@ -35,9 +35,14 @@ def main() -> None:
     tickets = pd.read_csv(SAMPLE / "support_tickets.csv", parse_dates=["created_date"])
     payments = pd.read_csv(SAMPLE / "payments.csv", parse_dates=["payment_date"])
 
+    # Silver parity with src/jobs/churn/02_transform_silver.py
     users["plan_tier"] = users["plan_tier"].str.lower().str.strip()
+    users["user_name"] = users["user_name"].str.strip()
+    users["city"] = users["city"].str.strip()
     users = users.drop_duplicates("user_id", keep="last")
     users = users[users["plan_tier"].isin(["free", "starter", "pro", "enterprise"])]
+    usage = usage[usage["event_date"].notna() & (usage["sessions"] >= 0)].copy()
+    usage["sessions"] = usage["sessions"].astype(int)
 
     as_of = pd.Timestamp(AS_OF)
     u7 = usage[(usage["event_date"] > as_of - pd.Timedelta(days=7)) & (usage["event_date"] <= as_of)]
