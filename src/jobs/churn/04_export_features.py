@@ -1,4 +1,9 @@
-"""Export gold churn features for downstream ML training/scoring (train CSV + Santosh inference JSON)."""
+"""Export gold renewal features for retention-radar.
+
+  churn_user_features.csv      rows routed to the model: 24-field contract + churned
+  churn_renewals_audit.csv     every renewal with outcome, route and dates
+  hero_inference_record.json   today's T-7 record for CHURN_HERO_ID (no label)
+"""
 from __future__ import annotations
 
 import csv
@@ -9,50 +14,55 @@ from pathlib import Path
 from pyspark.sql import SparkSession
 
 EXPORT_DIR = os.environ.get("CHURN_EXPORT_DIR", "/opt/data/export")
+HERO_ID = os.environ.get("CHURN_HERO_ID", "sub_maya")
+TRAIN_COLUMNS = [
+    "user_id", "user_name", "plan_tier", "renewals_completed", "active_days_7d", "active_days_28d",
+    "engagement_trend", "last_active_days_ago", "agent_requests_28d", "allowance_used_pct",
+    "limit_hits_14d", "cheap_model_share_28d", "overage_usd_28d", "overage_toggled_off",
+    "suggestion_accept_rate_28d", "accept_rate_change", "agent_task_success_rate",
+    "failed_requests_rate", "incident_exposed_28d", "support_tickets_90d", "ide_sessions_28d",
+    "cli_sessions_28d", "weekend_usage_ratio", "first_renewal_after_pricing_change", "churned",
+]
+AUDIT_EXTRA = ["outcome", "route", "feature_as_of", "renewal_date", "city", "built_at"]
+
+
+def _plain(v):
+    if hasattr(v, "isoformat"):
+        return v.isoformat() if not hasattr(v, "hour") else v.strftime("%Y-%m-%d %H:%M:%S")
+    return v
+
+
+def _write_csv(path: Path, rows: list[dict], cols: list[str]) -> None:
+    with path.open("w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=cols)
+        w.writeheader()
+        for r in rows:
+            w.writerow({c: _plain(r[c]) for c in cols})
 
 
 def main() -> None:
-    spark = SparkSession.builder.appName("04_export_churn_features").getOrCreate()
+    spark = SparkSession.builder.appName("churn_04_export_features").getOrCreate()
     spark.sparkContext.setLogLevel("WARN")
-
     out = Path(EXPORT_DIR)
     out.mkdir(parents=True, exist_ok=True)
 
-    df = spark.table("lakehouse.gold.churn_user_features")
-    train_cols = [c for c in df.columns if c not in ("city", "feature_as_of", "built_at")]
-    rows = [r.asDict(recursive=True) for r in df.select(*train_cols).orderBy("user_id").collect()]
-    if not rows:
-        raise SystemExit("gold.churn_user_features is empty")
+    g = spark.table("lakehouse.gold.churn_renewal_features")
+    audit = [r.asDict() for r in g.orderBy("user_id").collect()]
+    if not audit:
+        raise SystemExit("gold.churn_renewal_features is empty")
+    _write_csv(out / "churn_renewals_audit.csv", audit, TRAIN_COLUMNS + AUDIT_EXTRA)
+    train = [r for r in audit if r["route"] == "model"]
+    _write_csv(out / "churn_user_features.csv", train, TRAIN_COLUMNS)
 
-    def normalize(v):
-        if hasattr(v, "item"):
-            return v.item()
-        if hasattr(v, "isoformat"):
-            return str(v)
-        return v
+    hero = [r for r in audit if r["user_id"] == HERO_ID and r["route"] == "score_today"]
+    if not hero:
+        raise SystemExit(f"{HERO_ID} has no T-7 snapshot for today")
+    record = {c: _plain(hero[0][c]) for c in TRAIN_COLUMNS if c != "churned"}
+    (out / "hero_inference_record.json").write_text(json.dumps(record, indent=2) + "\n")
 
-    rows = [{k: normalize(v) for k, v in r.items()} for r in rows]
-
-    train_path = out / "churn_user_features.csv"
-    with train_path.open("w", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
-        w.writeheader()
-        w.writerows(rows)
-
-    santosh_rows = [r for r in rows if r.get("user_name") == "Santosh Shinde"]
-    if not santosh_rows:
-        raise SystemExit("Santosh Shinde not found in gold.churn_user_features")
-    record = {k: v for k, v in santosh_rows[0].items() if k != "churned"}
-    json_path = out / "santosh_inference_record.json"
-    with json_path.open("w") as f:
-        json.dump(record, f, indent=2, default=str)
-        f.write("\n")
-
-    print(f"Wrote {train_path} ({len(rows)} rows)")
-    print(f"Wrote {json_path}")
-    print("Santosh inference keys:", sorted(record.keys()))
-    print("Next: feed these exports into your churn training or scoring pipeline.")
-    print("Export OK.")
+    print(f"Wrote {out / 'churn_user_features.csv'} ({len(train)} renewals routed to the model)")
+    print(f"Wrote {out / 'churn_renewals_audit.csv'} ({len(audit)} renewals)")
+    print(f"Wrote {out / 'hero_inference_record.json'} ({HERO_ID})")
     spark.stop()
 
 

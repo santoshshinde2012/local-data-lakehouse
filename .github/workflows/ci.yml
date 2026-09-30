@@ -35,10 +35,22 @@ jobs:
           python scripts/build_churn_gold_local.py
           python scripts/check_churn_export.py
 
-      - name: Seed-42 N=5000 sample → gold → contract (strict)
+      - name: Seed-42 N=8000 events → gold → contract (strict)
         run: |
           make churn-gold-local
           python scripts/check_churn_export.py --strict
+
+      - name: Set up Java 17 (local Spark)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Spark SQL gold vs pandas gold (tiny fixture + full sample)
+        run: |
+          pip install "pyspark==3.5.3" setuptools
+          CHURN_SAMPLE_DIR=data/sample/churn/fixtures/tiny python scripts/check_gold_parity.py
+          python scripts/check_gold_parity.py
 
       - name: Retention Radar consumes the export
         run: |

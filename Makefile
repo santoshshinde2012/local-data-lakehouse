@@ -1,6 +1,6 @@
 COMPOSE_AIRFLOW := docker compose -f docker-compose.yml -f docker-compose.airflow.yml
 
-.PHONY: help up down wait e2e churn-e2e churn-sample churn-gold-local churn-check demo reset ps \
+.PHONY: help up down wait e2e churn-e2e churn-sample churn-gold-local churn-check churn-parity demo reset ps \
 	airflow-up airflow-down airflow-wait airflow-trigger-retail airflow-trigger-churn airflow-demo
 
 help:
@@ -8,10 +8,11 @@ help:
 	@echo "  make up                  Start Silo + Postgres + Spark"
 	@echo "  make wait                Wait until lakehouse healthy"
 	@echo "  make e2e                 Retail medallion (shell)"
-	@echo "  make churn-e2e           Churn gold + export (shell / Spark)"
-	@echo "  make churn-sample        Generate scalable bronze CSVs (N_USERS=5000 default)"
-	@echo "  make churn-gold-local    Spark-parity gold export without Docker"
+	@echo "  make churn-e2e           Renewal gold (T-7 features) + export via Spark"
+	@echo "  make churn-sample        Generate bronze billing + usage events (N_USERS=8000 default)"
+	@echo "  make churn-gold-local    Same gold export in pandas, without Docker"
 	@echo "  make churn-check         Validate data/export/ against the retention-radar contract"
+	@echo "  make churn-parity        Spark SQL (local mode) vs pandas gold, row by row (needs pyspark + Java 17)"
 	@echo "  make demo                Full shell demo (retail then churn)"
 	@echo "  make airflow-up          Start Airflow (needs make up first)"
 	@echo "  make airflow-wait        Wait for Airflow UI"
@@ -37,15 +38,15 @@ e2e: wait
 	./pipelines/run_retail_e2e.sh
 
 churn-e2e: wait
-	@if [ ! -f data/sample/churn/users.csv ]; then \
-	  if [ -f data/sample/churn/fixtures/tiny/users.csv ]; then \
+	@if [ ! -f data/sample/churn/subscription_snapshots.csv ]; then \
+	  if [ -f data/sample/churn/fixtures/tiny/subscription_snapshots.csv ]; then \
 	    cp data/sample/churn/fixtures/tiny/*.csv data/sample/churn/; \
 	  else $(MAKE) churn-sample; fi; \
 	fi
 	./pipelines/run_churn_e2e.sh
 
 churn-sample:
-	N_USERS=$${N_USERS:-5000} CHURN_SEED=$${CHURN_SEED:-42} python3 scripts/generate_churn_sample.py
+	N_USERS=$${N_USERS:-8000} CHURN_SEED=$${CHURN_SEED:-42} python3 scripts/generate_churn_sample.py
 
 churn-gold-local: churn-sample
 	python3 scripts/build_churn_gold_local.py
@@ -53,6 +54,9 @@ churn-gold-local: churn-sample
 
 churn-check:
 	python3 scripts/check_churn_export.py
+
+churn-parity:
+	python3 scripts/check_gold_parity.py
 
 demo: e2e churn-e2e
 	@echo ""
