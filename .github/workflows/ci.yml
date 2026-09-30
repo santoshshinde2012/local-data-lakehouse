@@ -54,7 +54,11 @@ jobs:
 
       - name: Retention Radar consumes the export
         run: |
-          git clone --depth 1 https://github.com/santoshshinde2012/retention-radar.git "$RUNNER_TEMP/retention-radar"
+          URL=https://github.com/santoshshinde2012/retention-radar.git
+          BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+          if git ls-remote --exit-code --heads "$URL" "$BRANCH" >/dev/null; then REF="$BRANCH"; else REF=main; fi
+          echo "retention-radar ref: $REF"
+          git clone --depth 1 --branch "$REF" "$URL" "$RUNNER_TEMP/retention-radar"
           cd "$RUNNER_TEMP/retention-radar"
           pip install -r requirements.txt && pip install -e .
           ./scripts/sync_lakehouse_exports.sh "$GITHUB_WORKSPACE/data/export"
