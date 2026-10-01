@@ -1,0 +1,32 @@
+# Graph-on-gold agent harness + local LLM eval (Python 3.12 only, via uv). LOCAL ONLY: CI never
+# calls a model; it installs this file only for the deterministic replay test (no model, no network).
+#
+# A superset of requirements-graph.in, resolved against requirements-graph.txt as constraints so the
+# shared packages (mcp, pydantic, pandas, pyarrow, ladybug, ...) keep exactly the core venv's versions.
+#
+# Lock (hashes for every platform):
+#   uv pip compile --universal --generate-hashes --python-version 3.12 \
+#     -c requirements-graph.txt requirements-graph-eval.in -o requirements-graph-eval.txt
+# Install (hash-checked):
+#   uv venv --python 3.12 .venv-graph-eval
+#   uv pip sync --python .venv-graph-eval/bin/python --require-hashes requirements-graph-eval.txt
+#
+# Every direct dependency is open source (OSI). The model (Ollama + qwen3:4b, Apache-2.0) is not a Python
+# package; the optional Claude arm talks to a proprietary model through the MIT `anthropic` SDK.
+
+-r requirements-graph.in
+
+# Agent loop, OllamaModel (OpenAI-compatible /v1), AnthropicModel, MCPToolset over stdio. License: MIT.
+# Exact pin: the harness depends on verified 2.52 behaviour (profile overrides, NativeOutput, MCPToolset hooks).
+# The extras pull fastmcp-slim (Apache-2.0), openai (Apache-2.0), anthropic (MIT) and httpx2 (BSD-3-Clause).
+pydantic-ai-slim[mcp,openai,anthropic]==2.52.0
+
+# evals/graph_cases.yaml. License: MIT.
+pyyaml>=6,<7
+
+# SE arm only (eval): the same precomputed Parquet behind one SELECT-only tool on in-memory DuckDB.
+# License: MIT. 1.5.x is EOL on 2026-11-01 (PLAN 14 decision 11): eval-only, never a product dependency.
+duckdb==1.5.6
+
+# scripts/graph_bench.py: max RSS of the MCP server children. License: BSD-3-Clause.
+psutil>=7,<8
