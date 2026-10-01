@@ -9,6 +9,7 @@ from __future__ import annotations
 import csv
 import json
 import os
+from decimal import Decimal
 from pathlib import Path
 
 from pyspark.sql import SparkSession
@@ -24,20 +25,37 @@ TRAIN_COLUMNS = [
     "cli_sessions_28d", "weekend_usage_ratio", "first_renewal_after_pricing_change", "churned",
 ]
 AUDIT_EXTRA = ["outcome", "route", "feature_as_of", "renewal_date", "city", "built_at"]
+EXPORTS = ("churn_renewals_audit.csv", "churn_user_features.csv", "hero_inference_record.json")
 
 
 def _plain(v):
+    if isinstance(v, Decimal):   # DECIMAL gold columns (Spark SQL decimal literals): JSON has no Decimal
+        return float(v)
     if hasattr(v, "isoformat"):
         return v.isoformat() if not hasattr(v, "hour") else v.strftime("%Y-%m-%d %H:%M:%S")
     return v
 
 
+def _staged(path: Path) -> Path:
+    """Hidden sibling an export is written to first; main() moves all three into place together.
+
+    The staged file is created in the export directory, so the directory itself (not only the
+    previous exports) must be writable by the job's user. The three moves are separate renames:
+    an OS error between two of them can still leave new and previous exports mixed (rerun the job).
+    """
+    return path.with_name(f".{path.name}.tmp")
+
+
 def _write_csv(path: Path, rows: list[dict], cols: list[str]) -> None:
-    with path.open("w", newline="") as f:
+    with _staged(path).open("w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=cols)
         w.writeheader()
         for r in rows:
             w.writerow({c: _plain(r[c]) for c in cols})
+
+
+def _write_text(path: Path, text: str) -> None:
+    _staged(path).write_text(text)
 
 
 def main() -> None:
@@ -50,15 +68,21 @@ def main() -> None:
     audit = [r.asDict() for r in g.orderBy("user_id").collect()]
     if not audit:
         raise SystemExit("gold.churn_renewal_features is empty")
-    _write_csv(out / "churn_renewals_audit.csv", audit, TRAIN_COLUMNS + AUDIT_EXTRA)
-    train = [r for r in audit if r["route"] == "model"]
-    _write_csv(out / "churn_user_features.csv", train, TRAIN_COLUMNS)
+    try:
+        _write_csv(out / "churn_renewals_audit.csv", audit, TRAIN_COLUMNS + AUDIT_EXTRA)
+        train = [r for r in audit if r["route"] == "model"]
+        _write_csv(out / "churn_user_features.csv", train, TRAIN_COLUMNS)
 
-    hero = [r for r in audit if r["user_id"] == HERO_ID and r["route"] == "score_today"]
-    if not hero:
-        raise SystemExit(f"{HERO_ID} has no T-7 snapshot for today")
-    record = {c: _plain(hero[0][c]) for c in TRAIN_COLUMNS if c != "churned"}
-    (out / "hero_inference_record.json").write_text(json.dumps(record, indent=2) + "\n")
+        hero = [r for r in audit if r["user_id"] == HERO_ID and r["route"] == "score_today"]
+        if not hero:
+            raise SystemExit(f"{HERO_ID} has no T-7 snapshot for today")
+        record = {c: _plain(hero[0][c]) for c in TRAIN_COLUMNS if c != "churned"}
+        _write_text(out / "hero_inference_record.json", json.dumps(record, indent=2) + "\n")
+        for name in EXPORTS:   # all three are written: only now replace the previous exports
+            os.replace(_staged(out / name), out / name)
+    finally:
+        for name in EXPORTS:   # a failed run leaves the previous exports and no staged file behind
+            _staged(out / name).unlink(missing_ok=True)
 
     print(f"Wrote {out / 'churn_user_features.csv'} ({len(train)} renewals routed to the model)")
     print(f"Wrote {out / 'churn_renewals_audit.csv'} ({len(audit)} renewals)")
