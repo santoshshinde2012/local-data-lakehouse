@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="349" viewBox="0 0 760 349" role="img" font-family="system-ui, -apple-system, &#x27;Segoe UI&#x27;, sans-serif">
+<title>Blast radius of inc-002 by plan: who was active inside the feature window</title>
+<desc>Stacked horizontal bars of renewals exposed to inc-002 by plan: pro 606 (renewed 488, voluntary lapse 57, cancel flow 33, dunning 28); pro_plus 185 (renewed 152, voluntary lapse 10, cancel flow 11, dunning 12); ultra 46 (renewed 39, voluntary lapse 5, cancel flow 0, dunning 2). A naive graph would add 329.</desc>
+<rect width="760" height="349" rx="8" fill="#1a1a19"/>
+<text x="24" y="38" font-size="15" fill="#ffffff" font-weight="600">Blast radius of inc-002 by plan: who was active inside the feature window</text>
+<text x="24" y="58" font-size="12" fill="#c3c2b7">837 renewals were active during inc-002 inside their 28-day window before as_of. A graph without the as_of bound would add</text>
+<text x="24" y="75" font-size="12" fill="#c3c2b7">329 more. Descriptive, not causal.</text>
+<rect x="24" y="93" width="12" height="10" fill="#3987e5" rx="2"/>
+<text x="42" y="102" font-size="11" fill="#c3c2b7">renewed</text>
+<rect x="102.72" y="93" width="12" height="10" fill="#d95926" rx="2"/>
+<text x="120.72" y="102" font-size="11" fill="#c3c2b7">voluntary lapse</text>
+<rect x="215.13" y="93" width="12" height="10" fill="#199e70" rx="2"/>
+<text x="233.13" y="102" font-size="11" fill="#c3c2b7">cancel flow</text>
+<rect x="306.8" y="93" width="12" height="10" fill="#c98500" rx="2"/>
+<text x="324.8" y="102" font-size="11" fill="#c3c2b7">dunning</text>
+<text x="293.02" y="132" font-size="10.5" fill="#c3c2b7">renewed</text>
+<line x1="314.36" y1="135" x2="314.36" y2="161" stroke="#383835" stroke-width="1"/>
+<text x="531.1" y="132" font-size="10.5" fill="#c3c2b7">voluntary lapse</text>
+<line x1="568.52" y1="135" x2="568.52" y2="161" stroke="#383835" stroke-width="1"/>
+<text x="582.97" y="144" font-size="10.5" fill="#c3c2b7">cancel flow</text>
+<line x1="610.49" y1="147" x2="610.49" y2="161" stroke="#383835" stroke-width="1"/>
+<text x="619.14" y="132" font-size="10.5" fill="#c3c2b7">dunning</text>
+<line x1="638.94" y1="135" x2="638.94" y2="161" stroke="#383835" stroke-width="1"/>
+<text x="76.78" y="175" font-size="12" fill="#ffffff" text-anchor="end">pro</text>
+<g><title>pro renewed: 488</title>
+<path d="M86.78 162H541.94V180H86.78Z" fill="#3987e5"/>
+<text x="314.36" y="175" font-size="10.5" fill="#0b0b0b" text-anchor="middle" font-variant-numeric="tabular-nums">488</text>
+</g>
+<g><title>pro voluntary lapse: 57</title>
+<path d="M543.94 162H595.11V180H543.94Z" fill="#d95926"/>
+<text x="569.52" y="175" font-size="10.5" fill="#0b0b0b" text-anchor="middle" font-variant-numeric="tabular-nums">57</text>
+</g>
+<g><title>pro cancel flow: 33</title>
+<path d="M597.11 162H625.88V180H597.11Z" fill="#199e70"/>
+<text x="611.49" y="175" font-size="10.5" fill="#0b0b0b" text-anchor="middle" font-variant-numeric="tabular-nums">33</text>
+</g>
+<g><title>pro dunning: 28</title>
+<path d="M627.88 162H648A4 4 0 0 1 652 166V176A4 4 0 0 1 648 180H627.88Z" fill="#c98500"/>
+<text x="639.94" y="175" font-size="10.5" fill="#0b0b0b" text-anchor="middle" font-variant-numeric="tabular-nums">28</text>
+</g>
+<text x="658" y="175" font-size="11" fill="#c3c2b7" font-variant-numeric="tabular-nums">606 exposed</text>
+<text x="76.78" y="209" font-size="12" fill="#ffffff" text-anchor="end">pro_plus</text>
+<g><title>pro_plus renewed: 152</title>
+<path d="M86.78 196H228.55V214H86.78Z" fill="#3987e5"/>
+<text x="157.67" y="209" font-size="10.5" fill="#0b0b0b" text-anchor="middle" font-variant-numeric="tabular-nums">152</text>
+</g>
+<g><title>pro_plus voluntary lapse: 10</title>
+<path d="M230.55 196H237.88V214H230.55Z" fill="#d95926"/>
+</g>
+<g><title>pro_plus cancel flow: 11</title>
+<path d="M239.88 196H248.14V214H239.88Z" fill="#199e70"/>
+</g>
+<g><title>pro_plus dunning: 12</title>
+<path d="M250.14 196H255.33A4 4 0 0 1 259.33 200V210A4 4 0 0 1 255.33 214H250.14Z" fill="#c98500"/>
+</g>
+<text x="265.33" y="209" font-size="11" fill="#c3c2b7" font-variant-numeric="tabular-nums">185 exposed</text>
+<text x="76.78" y="243" font-size="12" fill="#ffffff" text-anchor="end">ultra</text>
+<g><title>ultra renewed: 39</title>
+<path d="M86.78 230H123.16V248H86.78Z" fill="#3987e5"/>
+<text x="104.97" y="243" font-size="10.5" fill="#0b0b0b" text-anchor="middle" font-variant-numeric="tabular-nums">39</text>
+</g>
+<g><title>ultra voluntary lapse: 5</title>
+<path d="M125.16 230H127.82V248H125.16Z" fill="#d95926"/>
+</g>
+<g><title>ultra dunning: 2</title>
+</g>
+<text x="135.69" y="243" font-size="11" fill="#c3c2b7" font-variant-numeric="tabular-nums">46 exposed</text>
+<line x1="86.78" y1="152" x2="86.78" y2="258" stroke="#383835" stroke-width="1"/>
+<text x="24" y="278" font-size="11" fill="#c3c2b7">Exposed = an active usage day during the incident inside (as_of-28, as_of]; renewed and voluntary lapse are model-routed renewals.</text>
+<text x="24" y="293" font-size="11" fill="#c3c2b7">Source: graph build 28f3af496493 · profile s42 · seed 42, N_USERS 8000 (verified) · data_end 2026-09-30 · renewal-graph/v1 · commit</text>
+<text x="24" y="308" font-size="11" fill="#c3c2b7">d317368 (dirty) · regenerate with scripts/graph_evidence.py.</text>
+</svg>

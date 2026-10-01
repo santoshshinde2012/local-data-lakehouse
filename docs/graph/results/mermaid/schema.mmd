@@ -1,0 +1,23 @@
+flowchart LR
+  Subscription["Subscription<br/>8,001"]
+  Renewal["Renewal<br/>8,001"]
+  Plan["Plan<br/>3"]
+  Incident["Incident<br/>3"]
+  PricingChange["PricingChange<br/>2"]
+  LimitHit["LimitHit<br/>10,602"]
+  OverageChange["OverageChange<br/>849"]
+  OverageCharge["OverageCharge<br/>470"]
+  Ticket["Ticket<br/>2,134"]
+  BillingEvent["BillingEvent<br/>10,139"]
+  Subscription -->|"HAS_RENEWAL 8,001"| Renewal
+  Renewal -->|"ON_PLAN 8,001"| Plan
+  Subscription -->|"HIT_LIMIT 10,602"| LimitHit
+  Subscription -->|"CHANGED_OVERAGE 849"| OverageChange
+  Subscription -->|"CHARGED_OVERAGE 470"| OverageCharge
+  Subscription -->|"OPENED 2,134"| Ticket
+  Subscription -->|"BILLED 10,139"| BillingEvent
+  Subscription -->|"EXPOSED_TO 7,651"| Incident
+  Renewal -->|"FIRST_RENEWAL_AFTER 2,503"| PricingChange
+  PricingChange -->|"CUT_CAP 6"| Plan
+  Renewal_SIMILAR_TO{{"SIMILAR_TO 80,010<br/>Renewal to another Renewal"}}
+  Renewal -.- Renewal_SIMILAR_TO

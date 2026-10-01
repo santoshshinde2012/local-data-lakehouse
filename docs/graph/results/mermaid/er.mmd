@@ -1,0 +1,77 @@
+erDiagram
+  Subscription {
+    string subscription_id PK
+    string user_name
+    string city
+    string plan_tier
+    date started_at
+  }
+  Renewal {
+    string renewal_id PK
+    string subscription_id
+    string plan_tier
+    date as_of
+    date renewal_date
+    float features_21 "the 21 numeric gold features"
+    int churned
+    string outcome
+    string route
+    bool is_reference
+    date outcome_observed_on
+    int cuts_so_far
+    float allowance_at_as_of
+  }
+  Plan {
+    string plan_tier PK
+    float price_usd
+    int base_allowance_28d
+  }
+  Incident {
+    string incident_id PK
+    date starts_on
+    date ends_on
+    int days
+  }
+  PricingChange {
+    string change_id PK
+    date effective_date
+    string description
+    float cap_multiplier
+  }
+  LimitHit {
+    string event_id PK
+    date event_date
+    string limit_type
+  }
+  OverageChange {
+    string event_id PK
+    date event_date
+    string state
+  }
+  OverageCharge {
+    string event_id PK
+    date event_date
+    float amount_usd
+  }
+  Ticket {
+    string ticket_id PK
+    date event_date
+  }
+  BillingEvent {
+    string event_id PK
+    date event_date
+    string event_type
+    float amount_usd
+    int attempt
+  }
+  Subscription ||--|{ Renewal : HAS_RENEWAL
+  Renewal }o--|| Plan : ON_PLAN
+  Subscription ||--o{ LimitHit : HIT_LIMIT
+  Subscription ||--o{ OverageChange : CHANGED_OVERAGE
+  Subscription ||--o{ OverageCharge : CHARGED_OVERAGE
+  Subscription ||--o{ Ticket : OPENED
+  Subscription ||--o{ BillingEvent : BILLED
+  Subscription }o--o{ Incident : EXPOSED_TO
+  Renewal }o--o{ PricingChange : FIRST_RENEWAL_AFTER
+  PricingChange }o--|{ Plan : CUT_CAP
+  Renewal }o--o{ Renewal : SIMILAR_TO

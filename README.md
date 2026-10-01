@@ -69,6 +69,79 @@ flowchart LR
 
 Full path: `make up && make wait && make demo`.
 
+### Graph on gold: an agent layer over the renewal gold
+
+The renewal gold also feeds a small, deterministic graph that an AI agent can query. Every event edge
+carries its date, so the agent can cite exactly what the model could see at T-7, show similar past
+renewals with their outcomes, count the blast radius of incidents and pricing changes, and trace any
+feature back through the pipeline. It explains; it does not predict. Everything runs locally with
+open-source parts (LadybugDB, NetworkX, sqlglot, the MCP Python SDK, Ollama), and the default path needs
+no Docker.
+
+```mermaid
+flowchart TB
+  subgraph LAKE["1 · lakehouse gold product"]
+    direction LR
+    BR["bronze events<br/><b>make churn-sample</b>"] --> GD["gold.churn_renewal_features<br/>Spark + Iceberg <b>make churn-e2e</b><br/>or pandas twin <b>make churn-gold-local</b>"]
+  end
+
+  subgraph BUILD["2 · graph build · no LLM · seconds"]
+    direction LR
+    GB["graph builder<br/>dated event edges + SIMILAR_TO"] --> PQ[("Parquet nodes + edges<br/>manifest.json")] --> LB[("graph.lbdb<br/>LadybugDB")] --> CK{"strict point-in-time<br/>contract<br/><b>make graph-local</b>"}
+    LX["lineage graph<br/>sqlglot + ast over repo code"]
+    CO["feature cohorts<br/>NetworkX"]
+  end
+
+  subgraph SERVE["3 · serve · read-only · macOS sandbox"]
+    MCP["MCP servers <b>scripts/graph_mcp.sh</b><br/>graph · metrics · lineage · cohorts<br/>14 typed tools · provenance on every answer"]
+  end
+
+  subgraph AGENTS["4 · agents"]
+    direction LR
+    CC["Claude Code<br/>.mcp.json + skill<br/><b>scripts/graph_ask.sh</b>"]
+    OSS["open-source agent<br/>Pydantic AI + Ollama qwen3:4b<br/><b>scripts/graph_chat.py</b>"]
+    UI["local chat UI<br/>Streamlit on 127.0.0.1"]
+  end
+
+  TWIN["Docker overlay + Airflow DAG<br/>Spark writes gold.graph_* and tags every input<br/><b>pipelines/run_graph_e2e.sh</b>"]
+
+  GD --> GB
+  GD -.-> TWIN
+  TWIN -.->|PyIceberg read pinned by tag + snapshot| GB
+  CK -->|pass, then promote| MCP
+  LX --> MCP
+  CO --> MCP
+  MCP --> CC
+  MCP --> OSS
+  MCP -.-> UI
+
+  style BR fill:#d6eaf8,stroke:#333
+  style GD fill:#fdebd0,stroke:#333
+  style GB fill:#d6eaf8,stroke:#333
+  style PQ fill:#fdebd0,stroke:#333
+  style LB fill:#fdebd0,stroke:#333
+  style CK fill:#e8f6e8,stroke:#333
+  style LX fill:#d6eaf8,stroke:#333
+  style CO fill:#d6eaf8,stroke:#333
+  style MCP fill:#1a1a1a,color:#7CFC98,stroke:#1a1a1a
+  style CC fill:#f5f5f5,stroke:#333
+  style OSS fill:#f5f5f5,stroke:#333
+  style UI fill:#f5f5f5,stroke:#666,stroke-dasharray: 5 5
+  style TWIN fill:#f5f5f5,stroke:#666,stroke-dasharray: 5 5
+```
+
+| Stage | What happens | Command |
+|---|---|---|
+| **gold** | The renewal gold, from Spark + Iceberg or its pandas twin | `make churn-e2e` · `make churn-gold-local` |
+| **graph build** | 40,204 nodes / 130,366 edges at seed 42, built in seconds; the contract proves point-in-time parity with gold and that a naive traversal is wrong | `make graph-venv && make graph-local && make graph-promote` |
+| **lineage + cohorts** | A lineage graph of the pipeline code and feature cohorts, beside the business graph | `scripts/build_lineage_local.py` · `scripts/build_graph_cohorts.py` |
+| **serve** | Read-only MCP servers over the promoted build, under `sandbox-exec` on macOS | `.mcp.json` · `scripts/graph_mcp.sh` |
+| **agents** | Claude Code limited to the lakehouse servers, or a fully local open-source agent | `scripts/graph_ask.sh` · `scripts/graph_chat.py` |
+| **Docker path** *(optional)* | Spark publishes `gold.graph_*` to Iceberg with tags; the same builder reads them back by tag | `pipelines/run_graph_e2e.sh` |
+
+Dashed boxes are optional paths (Docker) or still being finished (the local UI). Docs, results and charts: [docs/graph/README.md](docs/graph/README.md).
+The graph layer has its own TEACHING-ONLY banner and threat model in [docs/graph/agent.md](docs/graph/agent.md).
+
 ---
 
 ## Prerequisites

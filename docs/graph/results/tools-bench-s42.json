@@ -1,0 +1,132 @@
+{
+ "bench": {
+  "in_process": {
+   "cohort_list": {
+    "p50": 24.77,
+    "p95": 32.06
+   },
+   "cohort_summary": {
+    "p50": 2.91,
+    "p95": 3.77
+   },
+   "graph_describe": {
+    "p50": 0.61,
+    "p95": 0.73
+   },
+   "graph_exposure": {
+    "p50": 2.98,
+    "p95": 3.76
+   },
+   "graph_find": {
+    "p50": 0.23,
+    "p95": 0.24
+   },
+   "graph_renewal_evidence": {
+    "p50": 4.6,
+    "p95": 5.3
+   },
+   "graph_similar_renewals": {
+    "p50": 14.31,
+    "p95": 16.5
+   },
+   "lineage_guards": {
+    "p50": 2.15,
+    "p95": 4.9
+   },
+   "lineage_pit": {
+    "p50": 1.97,
+    "p95": 2.57
+   },
+   "lineage_trace": {
+    "p50": 2.83,
+    "p95": 3.11
+   },
+   "lineage_unused": {
+    "p50": 1.7,
+    "p95": 2.21
+   },
+   "metric_feature_card": {
+    "p50": 0.22,
+    "p95": 0.23
+   },
+   "metric_lapse_rate": {
+    "p50": 3.68,
+    "p95": 4.42
+   },
+   "metric_route_counts": {
+    "p50": 1.26,
+    "p95": 1.49
+   }
+  },
+  "rss_kb": {
+   "cohorts": 185520,
+   "graph": 288832,
+   "lineage": 298720,
+   "metrics": 174736
+  },
+  "stdio": {
+   "cohort_list": {
+    "p50": 25.58,
+    "p95": 30.48
+   },
+   "cohort_summary": {
+    "p50": 5.44,
+    "p95": 9.84
+   },
+   "graph_describe": {
+    "p50": 1.91,
+    "p95": 2.4
+   },
+   "graph_exposure": {
+    "p50": 4.56,
+    "p95": 5.47
+   },
+   "graph_find": {
+    "p50": 1.39,
+    "p95": 1.55
+   },
+   "graph_renewal_evidence": {
+    "p50": 6.59,
+    "p95": 8.0
+   },
+   "graph_similar_renewals": {
+    "p50": 16.58,
+    "p95": 25.48
+   },
+   "lineage_guards": {
+    "p50": 2.72,
+    "p95": 3.89
+   },
+   "lineage_pit": {
+    "p50": 3.2,
+    "p95": 6.05
+   },
+   "lineage_trace": {
+    "p50": 3.74,
+    "p95": 3.87
+   },
+   "lineage_unused": {
+    "p50": 3.96,
+    "p95": 10.77
+   },
+   "metric_feature_card": {
+    "p50": 1.74,
+    "p95": 1.9
+   },
+   "metric_lapse_rate": {
+    "p50": 6.36,
+    "p95": 8.66
+   },
+   "metric_route_counts": {
+    "p50": 3.11,
+    "p95": 3.43
+   }
+  }
+ },
+ "bench_calls": 20,
+ "build_id": "28f3af496493",
+ "commit": "d317368",
+ "generated_by": "scripts/graph_evidence.py",
+ "platform": "macosx_arm64",
+ "profile": "s42"
+}
