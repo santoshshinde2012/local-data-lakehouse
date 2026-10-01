@@ -1,0 +1,44 @@
+# Graph-on-gold Python dependencies (Python 3.12 only, via uv). Kept separate from
+# requirements.txt, which is the radar / no-Docker churn path and stays unchanged.
+#
+# Lock (hashes for every platform):
+#   uv pip compile --universal --generate-hashes --python-version 3.12 \
+#     requirements-graph.in -o requirements-graph.txt
+# Install (hash-checked):
+#   make graph-venv            # uv venv --python 3.12 .venv-graph + uv pip sync --require-hashes
+#   pip install --require-hashes -r requirements-graph.txt   # CI (GRAPH_PY=python)
+#
+# Every direct dependency is open source (OSI); copyleft is flagged. igraph (GPL-2.0+)
+# and leidenalg (GPL-3.0+) are deliberately NOT used: NetworkX (BSD-3) covers
+# Louvain/Leiden for the later cohort phase.
+
+# LadybugDB embedded graph engine (Kuzu fork). License: MIT.
+# Exact pin: pre-1.0 weekly releases, and the PyPI name was reused from an unrelated
+# 2014 package, so the version AND the wheel hashes below are part of the contract.
+# Rebuild the graph on every bump; never migrate a .lbdb file.
+ladybug==0.21.1
+
+# Canonical Parquet node/edge tables with explicit schemas. License: Apache-2.0.
+pyarrow==25.0.1
+
+# pandas gold twin (scripts/build_churn_gold_local.py), graph builder, oracle. License: BSD-3-Clause.
+pandas>=3.0,<4
+
+# SIMILAR_TO kNN (brute force, float64). License: BSD-3-Clause.
+numpy>=2.5,<3
+
+# Oracle: SIMILAR_TO components / weighted shortest paths; later: Louvain/Leiden cohorts.
+# License: BSD-3-Clause. Needs Python >=3.12, !=3.14.1.
+networkx==3.7
+
+# MCP Python SDK (MCPServer, stdio) for the agent toolsets (PR2). License: MIT.
+mcp>=2.2,<3
+
+# Tool argument validation (enums, id regexes, caps) (PR2). License: MIT.
+pydantic>=2,<3
+
+# Tier-0 lineage extraction over sql/churn/*.sql (PR3). License: MIT.
+sqlglot==30.20.0
+
+# Test runner for tests/graph. License: MIT.
+pytest>=8

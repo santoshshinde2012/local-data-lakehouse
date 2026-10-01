@@ -1,0 +1,107 @@
+# Graph-on-gold overlay: a Python 3.12 container (ldl-graph) that reads the lakehouse through
+# PyIceberg and builds / checks / serves the renewal graph, plus one extra mount on the Spark
+# service so the Spark graph job and ldl-graph share $GRAPH_ROOT.
+#
+# Always pass BOTH files, base first (this file is not a valid project on its own):
+#   docker compose -f docker-compose.yml -f docker-compose.graph.yml up -d --build spark graph
+#   ./pipelines/run_graph_e2e.sh          # Spark publish -> PyIceberg build -> contract -> ... -> promote
+# Stop ldl-graph BEFORE `make down` (the base project file does not know it):
+#   docker compose -f docker-compose.yml -f docker-compose.graph.yml stop graph && make down
+# Switching between plain `make up` and this overlay recreates ldl-spark (its config hash changes).
+#
+# TEACHING-ONLY / NOT PRODUCTION:
+# - Same sample credentials as the base stack (.env.example): Postgres iceberg/iceberg and the Silo
+#   ROOT key. The Postgres side can be narrowed to a SELECT-only role: create it with
+#   config/graph/postgres_graph_ro.sql (idempotent; how to run it is in its header), then start this
+#   service with GRAPH_PG_USER=graph_ro GRAPH_PG_PASSWORD=<the same password>. That password goes
+#   verbatim into the SQLAlchemy URI below, so it must be URL-safe (letters, digits, . _ ~ -; the
+#   role script refuses anything else). The S3 side cannot be narrowed without a second Silo user,
+#   so a bug in this container could still write objects to the bucket.
+# - No published ports, no Docker socket, non-root, read-only root filesystem, every capability
+#   dropped. The only writable paths are ./data/graph and a tmpfs /tmp.
+# GRAPH_HOST_ROOT (default ./data/graph) is the host directory behind /opt/data/graph in both
+# containers (for example a scratch directory for a verification run); it must exist before `up`.
+
+services:
+  spark:
+    # Merged into the base service: `volumes` are appended (unique by container path) and
+    # `environment` keys added; nothing of the base service changes.
+    environment:
+      GRAPH_ROOT: /opt/data/graph
+    volumes:
+      - ${GRAPH_HOST_ROOT:-./data/graph}:/opt/data/graph
+
+  graph:
+    build:
+      context: .
+      dockerfile: docker/graph/Dockerfile
+    image: ldl-graph:local
+    container_name: ldl-graph
+    depends_on:
+      postgres:
+        condition: service_healthy
+      silo:
+        condition: service_healthy
+      silo-init:
+        condition: service_completed_successfully
+    environment:
+      GRAPH_ROOT: /opt/data/graph
+      # The default profile's bronze CSVs and exports inside this container (the repo's own by default;
+      # e.g. GRAPH_CHURN_SAMPLE_DIR=/opt/lakehouse/data/sample/churn/fixtures/tiny after loading the
+      # lakehouse from the tiny fixture). Every `docker exec` (the lakehouse_graph DAG) inherits them.
+      CHURN_SAMPLE_DIR: ${GRAPH_CHURN_SAMPLE_DIR:-/opt/lakehouse/data/sample/churn}
+      CHURN_EXPORT_DIR: ${GRAPH_CHURN_EXPORT_DIR:-/opt/lakehouse/data/export}
+      PYTHONPATH: /opt/lakehouse/src
+      PYTHONDONTWRITEBYTECODE: "1"
+      HOME: /tmp
+      # PyIceberg SqlCatalog over the SAME Postgres JDBC catalog Spark uses (config/spark-defaults.conf).
+      # The catalog name must stay `lakehouse` (the catalog_name column of iceberg_tables).
+      # init_catalog_tables=false is NOT set here: PyIceberg ignores that variable (it becomes
+      # `init-catalog-tables`); src/lakehouse_graph/iceberg_source.py passes it in code and never sets
+      # schema_version. GRAPH_PG_USER / GRAPH_PG_PASSWORD (optional, URL-safe): the SELECT-only role of
+      # config/graph/postgres_graph_ro.sql instead of the catalog owner.
+      PYICEBERG_CATALOG__LAKEHOUSE__TYPE: sql
+      PYICEBERG_CATALOG__LAKEHOUSE__URI: postgresql+psycopg2://${GRAPH_PG_USER:-${POSTGRES_USER:-iceberg}}:${GRAPH_PG_PASSWORD:-${POSTGRES_PASSWORD:-iceberg}}@postgres:5432/${POSTGRES_DB:-iceberg}
+      PYICEBERG_CATALOG__LAKEHOUSE__WAREHOUSE: ${WAREHOUSE:-s3a://lake/warehouse}
+      PYICEBERG_CATALOG__LAKEHOUSE__PY_IO_IMPL: pyiceberg.io.pyarrow.PyArrowFileIO
+      PYICEBERG_CATALOG__LAKEHOUSE__S3__ENDPOINT: http://silo:9000
+      PYICEBERG_CATALOG__LAKEHOUSE__S3__ACCESS_KEY_ID: ${MINIO_ROOT_USER:-minioadmin}
+      PYICEBERG_CATALOG__LAKEHOUSE__S3__SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      # Always next to the endpoint: without a region PyIceberg asks real AWS about bucket `lake`.
+      PYICEBERG_CATALOG__LAKEHOUSE__S3__REGION: us-east-1
+    working_dir: /opt/lakehouse
+    volumes:
+      # Repo-shaped, read-only tree (lakehouse_graph.spec.repo_root() = /opt/lakehouse).
+      - ./src:/opt/lakehouse/src:ro
+      - ./scripts:/opt/lakehouse/scripts:ro
+      - ./config:/opt/lakehouse/config:ro
+      - ./sql:/opt/lakehouse/sql:ro
+      - ./data/sample:/opt/lakehouse/data/sample:ro
+      - ./data/export:/opt/lakehouse/data/export:ro
+      # Read by the Tier-0 lineage extractor only.
+      - ./airflow/dags:/opt/lakehouse/airflow/dags:ro
+      - ./pipelines:/opt/lakehouse/pipelines:ro
+      - ./.github/workflows:/opt/lakehouse/.github/workflows:ro
+      - ./Makefile:/opt/lakehouse/Makefile:ro
+      - ./README.md:/opt/lakehouse/README.md:ro
+      # The only writable mount: graph builds, logs, lock (the same container path as in ldl-spark).
+      - ${GRAPH_HOST_ROOT:-./data/graph}:/opt/data/graph
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m,mode=1777
+    # Linux hosts: run as your own uid so ./data/graph stays yours (GRAPH_UID=$(id -u) GRAPH_GID=$(id -g)).
+    # Docker Desktop / Colima (virtiofs) map ownership for you; the default matches the image user.
+    user: "${GRAPH_UID:-10001}:${GRAPH_GID:-10001}"
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    init: true
+    # The seed-42 build from Iceberg holds the Iceberg-sourced and the local-path tables at once,
+    # plus the Ladybug loader subprocess: measured peak in the Docker run is recorded in docs.
+    mem_limit: 1536m
+    pids_limit: 256
+    command: ["sleep", "infinity"]
+    networks:
+      - lakehouse
+    # No ports: MCP is stdio (docker compose ... exec -T graph ...), nothing listens.

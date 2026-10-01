@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="654" viewBox="0 0 760 654" role="img" font-family="system-ui, -apple-system, &#x27;Segoe UI&#x27;, sans-serif">
+<title>The 10 renewals most similar to sub_maya, and how they ended</title>
+<desc>Radial graph: sub_maya at the centre and its 10 nearest renewals by SIMILAR_TO rank. rank 1 sub_07200:2026-08-17 distance 2.258 voluntary_lapse; rank 2 sub_06614:2026-08-21 distance 2.365 renewed; rank 3 sub_01541:2026-08-16 distance 2.370 renewed; rank 4 sub_04760:2026-09-09 distance 2.510 renewed; rank 5 sub_01355:2026-09-05 distance 2.570 voluntary_lapse; rank 6 sub_05564:2026-08-20 distance 2.693 renewed; rank 7 sub_01475:2026-08-19 distance 2.713 renewed; rank 8 sub_04856:2026-08-22 distance 2.715 renewed; rank 9 sub_01888:2026-08-23 distance 2.740 renewed; rank 10 sub_00228:2026-08-03 distance 2.777 renewed. 2 of 10 lapsed.</desc>
+<rect width="760" height="654" rx="8" fill="#fcfcfb"/>
+<text x="24" y="38" font-size="15" fill="#0b0b0b" font-weight="600">The 10 renewals most similar to sub_maya, and how they ended</text>
+<text x="24" y="58" font-size="12" fill="#52514e">2 of 10 lapsed (Wilson 95% 0.057-0.510); outcomes visible today (a current renewal). Edges are labelled by rank; distance</text>
+<text x="24" y="75" font-size="12" fill="#52514e">from the centre is the SIMILAR_TO distance (feature space, same plan; the rings start above 0). Narrative evidence, not a risk</text>
+<text x="24" y="92" font-size="12" fill="#52514e">estimate.</text>
+<circle cx="30" cy="115" r="6" fill="#fcfcfb"/>
+<circle cx="30" cy="115" r="4" fill="#2a78d6"/>
+<text x="42" y="119" font-size="11" fill="#52514e">renewed</text>
+<rect x="102.92" y="109.2" width="11.6" height="11.6" fill="#fcfcfb" rx="2"/>
+<rect x="104.92" y="111.2" width="7.6" height="7.6" fill="#eb6834" rx="1.5"/>
+<text x="120.72" y="119" font-size="11" fill="#52514e">voluntary lapse</text>
+<circle cx="380" cy="361" r="87.14" fill="none" stroke="#e1e0d9" stroke-width="1"/>
+<circle cx="380" cy="361" r="121.43" fill="none" stroke="#e1e0d9" stroke-width="1"/>
+<circle cx="380" cy="361" r="155.71" fill="none" stroke="#e1e0d9" stroke-width="1"/>
+<circle cx="380" cy="361" r="190" fill="none" stroke="#e1e0d9" stroke-width="1"/>
+<text x="470.14" y="357" font-size="9.5" fill="#52514e">2.2</text>
+<text x="504.43" y="357" font-size="9.5" fill="#52514e">2.4</text>
+<text x="538.71" y="357" font-size="9.5" fill="#52514e">2.6</text>
+<text x="573" y="357" font-size="9.5" fill="#52514e">2.8 distance</text>
+<line x1="380" y1="361" x2="380" y2="263.89" stroke="#c3c2b7" stroke-width="1.5"/>
+<line x1="380" y1="361" x2="447.85" y2="267.61" stroke="#c3c2b7" stroke-width="1.5"/>
+<line x1="380" y1="361" x2="490.59" y2="325.07" stroke="#c3c2b7" stroke-width="1.5"/>
+<line x1="380" y1="361" x2="513.43" y2="404.36" stroke="#c3c2b7" stroke-width="1.5"/>
+<line x1="380" y1="361" x2="468.49" y2="482.8" stroke="#c3c2b7" stroke-width="1.5"/>
+<line x1="380" y1="361" x2="380" y2="532.59" stroke="#c3c2b7" stroke-width="1.5"/>
+<line x1="380" y1="361" x2="277.04" y2="502.71" stroke="#c3c2b7" stroke-width="1.5"/>
+<line x1="380" y1="361" x2="213.15" y2="415.21" stroke="#c3c2b7" stroke-width="1.5"/>
+<line x1="380" y1="361" x2="209.12" y2="305.48" stroke="#c3c2b7" stroke-width="1.5"/>
+<line x1="380" y1="361" x2="270.6" y2="210.43" stroke="#c3c2b7" stroke-width="1.5"/>
+<circle cx="380" cy="312.45" r="8.5" fill="#fcfcfb" stroke="#e1e0d9" stroke-width="1"/>
+<text x="380" y="315.95" font-size="9.5" fill="#52514e" text-anchor="middle" font-variant-numeric="tabular-nums">1</text>
+<circle cx="413.92" cy="314.31" r="8.5" fill="#fcfcfb" stroke="#e1e0d9" stroke-width="1"/>
+<text x="413.92" y="317.81" font-size="9.5" fill="#52514e" text-anchor="middle" font-variant-numeric="tabular-nums">2</text>
+<circle cx="435.3" cy="343.03" r="8.5" fill="#fcfcfb" stroke="#e1e0d9" stroke-width="1"/>
+<text x="435.3" y="346.53" font-size="9.5" fill="#52514e" text-anchor="middle" font-variant-numeric="tabular-nums">3</text>
+<circle cx="446.72" cy="382.68" r="8.5" fill="#fcfcfb" stroke="#e1e0d9" stroke-width="1"/>
+<text x="446.72" y="386.18" font-size="9.5" fill="#52514e" text-anchor="middle" font-variant-numeric="tabular-nums">4</text>
+<circle cx="424.24" cy="421.9" r="8.5" fill="#fcfcfb" stroke="#e1e0d9" stroke-width="1"/>
+<text x="424.24" y="425.4" font-size="9.5" fill="#52514e" text-anchor="middle" font-variant-numeric="tabular-nums">5</text>
+<circle cx="380" cy="446.8" r="8.5" fill="#fcfcfb" stroke="#e1e0d9" stroke-width="1"/>
+<text x="380" y="450.3" font-size="9.5" fill="#52514e" text-anchor="middle" font-variant-numeric="tabular-nums">6</text>
+<circle cx="328.52" cy="431.86" r="8.5" fill="#fcfcfb" stroke="#e1e0d9" stroke-width="1"/>
+<text x="328.52" y="435.36" font-size="9.5" fill="#52514e" text-anchor="middle" font-variant-numeric="tabular-nums">7</text>
+<circle cx="296.58" cy="388.11" r="8.5" fill="#fcfcfb" stroke="#e1e0d9" stroke-width="1"/>
+<text x="296.58" y="391.61" font-size="9.5" fill="#52514e" text-anchor="middle" font-variant-numeric="tabular-nums">8</text>
+<circle cx="294.56" cy="333.24" r="8.5" fill="#fcfcfb" stroke="#e1e0d9" stroke-width="1"/>
+<text x="294.56" y="336.74" font-size="9.5" fill="#52514e" text-anchor="middle" font-variant-numeric="tabular-nums">9</text>
+<circle cx="325.3" cy="285.71" r="8.5" fill="#fcfcfb" stroke="#e1e0d9" stroke-width="1"/>
+<text x="325.3" y="289.21" font-size="9.5" fill="#52514e" text-anchor="middle" font-variant-numeric="tabular-nums">10</text>
+<g><title>rank 1: sub_07200:2026-08-17, distance 2.258, voluntary_lapse</title>
+<rect x="371.82" y="255.72" width="16.35" height="16.35" fill="#fcfcfb" rx="2"/>
+<rect x="373.82" y="257.72" width="12.35" height="12.35" fill="#eb6834" rx="1.5"/>
+</g>
+<text x="380" y="249.89" font-size="11" fill="#0b0b0b" text-anchor="middle">sub_07200 · lapsed</text>
+<g><title>rank 2: sub_06614:2026-08-21, distance 2.365, renewed</title>
+<circle cx="447.85" cy="267.61" r="8.5" fill="#fcfcfb"/>
+<circle cx="447.85" cy="267.61" r="6.5" fill="#2a78d6"/>
+</g>
+<text x="461.85" y="271.61" font-size="11" fill="#0b0b0b">sub_06614 · renewed</text>
+<g><title>rank 3: sub_01541:2026-08-16, distance 2.370, renewed</title>
+<circle cx="490.59" cy="325.07" r="8.5" fill="#fcfcfb"/>
+<circle cx="490.59" cy="325.07" r="6.5" fill="#2a78d6"/>
+</g>
+<text x="504.59" y="329.07" font-size="11" fill="#0b0b0b">sub_01541 · renewed</text>
+<g><title>rank 4: sub_04760:2026-09-09, distance 2.510, renewed</title>
+<circle cx="513.43" cy="404.36" r="8.5" fill="#fcfcfb"/>
+<circle cx="513.43" cy="404.36" r="6.5" fill="#2a78d6"/>
+</g>
+<text x="527.43" y="408.36" font-size="11" fill="#0b0b0b">sub_04760 · renewed</text>
+<g><title>rank 5: sub_01355:2026-09-05, distance 2.570, voluntary_lapse</title>
+<rect x="460.31" y="474.62" width="16.35" height="16.35" fill="#fcfcfb" rx="2"/>
+<rect x="462.31" y="476.62" width="12.35" height="12.35" fill="#eb6834" rx="1.5"/>
+</g>
+<text x="482.49" y="486.8" font-size="11" fill="#0b0b0b">sub_01355 · lapsed</text>
+<g><title>rank 6: sub_05564:2026-08-20, distance 2.693, renewed</title>
+<circle cx="380" cy="532.59" r="8.5" fill="#fcfcfb"/>
+<circle cx="380" cy="532.59" r="6.5" fill="#2a78d6"/>
+</g>
+<text x="380" y="554.59" font-size="11" fill="#0b0b0b" text-anchor="middle">sub_05564 · renewed</text>
+<g><title>rank 7: sub_01475:2026-08-19, distance 2.713, renewed</title>
+<circle cx="277.04" cy="502.71" r="8.5" fill="#fcfcfb"/>
+<circle cx="277.04" cy="502.71" r="6.5" fill="#2a78d6"/>
+</g>
+<text x="263.04" y="506.71" font-size="11" fill="#0b0b0b" text-anchor="end">sub_01475 · renewed</text>
+<g><title>rank 8: sub_04856:2026-08-22, distance 2.715, renewed</title>
+<circle cx="213.15" cy="415.21" r="8.5" fill="#fcfcfb"/>
+<circle cx="213.15" cy="415.21" r="6.5" fill="#2a78d6"/>
+</g>
+<text x="199.15" y="419.21" font-size="11" fill="#0b0b0b" text-anchor="end">sub_04856 · renewed</text>
+<g><title>rank 9: sub_01888:2026-08-23, distance 2.740, renewed</title>
+<circle cx="209.12" cy="305.48" r="8.5" fill="#fcfcfb"/>
+<circle cx="209.12" cy="305.48" r="6.5" fill="#2a78d6"/>
+</g>
+<text x="195.12" y="309.48" font-size="11" fill="#0b0b0b" text-anchor="end">sub_01888 · renewed</text>
+<g><title>rank 10: sub_00228:2026-08-03, distance 2.777, renewed</title>
+<circle cx="270.6" cy="210.43" r="8.5" fill="#fcfcfb"/>
+<circle cx="270.6" cy="210.43" r="6.5" fill="#2a78d6"/>
+</g>
+<text x="256.6" y="214.43" font-size="11" fill="#0b0b0b" text-anchor="end">sub_00228 · renewed</text>
+<circle cx="380" cy="361" r="12" fill="#fcfcfb"/>
+<circle cx="380" cy="361" r="10" fill="#0b0b0b"/>
+<rect x="331.38" y="377" width="97.24" height="31" fill="#fcfcfb" rx="4"/>
+<text x="380" y="390" font-size="11.5" fill="#0b0b0b" text-anchor="middle" font-weight="600">sub_maya</text>
+<text x="380" y="404" font-size="10.5" fill="#52514e" text-anchor="middle">as_of 2026-09-30</text>
+<text x="24" y="599" font-size="11" fill="#52514e">SIMILAR_TO spec similar_to/renewal-v1: blocked by plan, 20 features, persisted z-score scaler, rank on floor(d2*1e9 + 0.5) then dst.</text>
+<text x="24" y="614" font-size="11" fill="#52514e">Source: graph build 28f3af496493 · profile s42 · seed 42, N_USERS 8000 (verified) · data_end 2026-09-30 · renewal-graph/v1 · commit</text>
+<text x="24" y="629" font-size="11" fill="#52514e">d317368 (dirty) · regenerate with scripts/graph_evidence.py.</text>
+</svg>

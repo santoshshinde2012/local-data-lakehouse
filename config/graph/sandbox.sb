@@ -1,0 +1,196 @@
+;; config/graph/sandbox.sb -- macOS Seatbelt profile for the lakehouse stdio MCP servers.
+;;
+;; Used ONLY through scripts/graph_mcp.sh, which passes every path as a REAL path (symlinks and
+;; /tmp -> /private/tmp resolved; Seatbelt matches the resolved vnode path and a rule written
+;; with a non-canonical path silently never matches):
+;;
+;;   sandbox-exec -f config/graph/sandbox.sb \
+;;     -D REPO_ROOT=... -D SRC_DIR=... -D VENV=... -D PY_BASE=... -D PY_EXE=... \
+;;     -D GRAPH_ROOT=... -D BUILD_DIR=... -D LOGS_DIR=... -D HOME_DIR=... \
+;;     -D EVIDENCE_DB=... -D EVIDENCE_META=... \
+;;     <venv>/bin/python -P -m lakehouse_graph.mcp_server ...
+;;
+;; A missing -D makes sandbox-exec exit 65 before anything runs (fail closed).
+;;
+;; Two shapes of the same policy (graph_mcp.sh picks the parameters):
+;;   * template servers: GRAPH_ROOT and BUILD_DIR are the graph root and the build; EVIDENCE_* = /dev/null;
+;;   * the guarded raw-Cypher server (--enable-cypher): GRAPH_ROOT = BUILD_DIR = SRC_DIR and EVIDENCE_* are
+;;     <build>/evidence.lbdb and <build>/evidence.json, the ONLY data the process can read: the build's graph.lbdb,
+;;     Parquet and manifest (which hold the labels) stay unreadable, so a statement that gets past the Cypher guard
+;;     still reads no label, no file and no network (scripts/graph_sandbox_check.py --cypher proves it).
+;;
+;; Model: DENY BY DEFAULT for every operation class (files, network, mach IPC, process, shm),
+;; then allow exactly what CPython 3.12 + numpy/pandas/pyarrow + ladybug + the MCP SDK (anyio,
+;; asyncio selector loop, stdio pipes) were measured to need, then re-deny the sensitive trees.
+;; An allowlist fails closed when something new appears (a dotfile, a mach service, a credential
+;; store); a deny-list fails open.
+;;
+;; Rule precedence (measured): a rule WITHOUT a filter only sets the default for its operation,
+;; wherever it appears; among rules WITH a filter the LATER one wins. So section 2 (quiet denies)
+;; stays BEFORE the allows and section 8 (explicit re-denies) stays AFTER them.
+;;
+;; Verified on macOS 26.6.2 (25G83), arm64 (scripts/graph_sandbox_check.py). sandbox-exec(1) is
+;; marked DEPRECATED by Apple; it still ships and uses the same Seatbelt machinery as the profiles in
+;; /System/Library/Sandbox. Never use its named profiles (-n); this file is the whole policy.
+;;
+;; What it does NOT do: data in the readable trees can still leave through tool answers; the logs
+;; dir is writable (a compromised server can fill or truncate files there); no CPU / memory / file
+;; size limits (the engine caps and query timeout do that); sysctl-read and the metadata of the
+;; ancestors of the allowed trees stay visible. It is macOS only: Linux runs without an OS sandbox.
+(version 1)
+
+;; ---- 1. deny everything -------------------------------------------------------------------------
+(deny default)
+;; Operation families that a version-1 `default` does not cover (Apple's own profiles add them
+;; the same way, e.g. application.sb: "(deny default file-link)").
+(deny file-link)                 ; no hard links (a hard link into LOGS_DIR would alias a secret)
+(deny file-map-executable)       ; no dlopen/mmap(PROT_EXEC) except the trees allowed in section 5
+(deny dynamic-code-generation)   ; no MAP_JIT
+(deny process-info*)
+(deny nvram*)
+(deny iokit-get-properties)
+(deny socket-ioctl)
+;; Explicit defaults for the big three, so that a careless future allow cannot widen them silently.
+(deny network*)
+(deny mach-lookup)
+(deny process-fork)
+
+;; ---- parameters ---------------------------------------------------------------------------------
+(define repo-root  (param "REPO_ROOT"))
+(define src-dir    (param "SRC_DIR"))
+(define venv       (param "VENV"))
+(define py-base    (param "PY_BASE"))
+(define py-exe     (param "PY_EXE"))
+(define graph-root (param "GRAPH_ROOT"))
+(define build-dir  (param "BUILD_DIR"))
+(define logs-dir   (param "LOGS_DIR"))
+(define home       (param "HOME_DIR"))
+(define evidence-db   (param "EVIDENCE_DB"))     ; a regular file (or /dev/null): read by literal, never a tree
+(define evidence-meta (param "EVIDENCE_META"))
+
+;; ---- 2. quiet denies (still denied, just not reported to the unified log) -----------------------
+;; dyld (dtrace helper), OpenSSL (config file), libnotify, CoreFoundation (home dir stat) and
+;; libarrow's static initialisers (curl/AWS SDK: proxy settings via configd + CFPreferences,
+;; getpwuid via opendirectoryd and /etc/passwd, os_log via logd) probe these at import time and
+;; work fine without them. Kept BEFORE the allows so an allow below can still win.
+(deny file-read* file-write* file-ioctl (literal "/dev/dtracehelper") (with no-report))
+(deny file-read*
+  (regex #"/openssl\.cnf$")
+  (literal "/private/etc/passwd")
+  (literal "/Library/Preferences/.GlobalPreferences.plist")
+  (with no-report))
+(deny file-read-metadata (literal home) (with no-report))
+(deny mach-lookup
+  (global-name "com.apple.system.notification_center")
+  (global-name "com.apple.system.opendirectoryd.libinfo")
+  (global-name "com.apple.SystemConfiguration.configd")
+  (global-name "com.apple.logd")
+  (with no-report))
+
+;; ---- 3. process ---------------------------------------------------------------------------------
+;; sandbox-exec execs the interpreter; a framework build (Homebrew, python.org) re-execs
+;; <py-base>/Resources/Python.app/Contents/MacOS/Python, hence the subpath.
+;; No process-fork: no subprocesses at all (curl, open, osascript, security, sh ...).
+(allow process-exec (literal py-exe) (subpath py-base))
+(allow process-info-pidinfo (target self))   ; required: without it the process dies with SIGTRAP
+(allow sysctl-read)              ; required: os.uname() (import ctypes), hw.ncpu, libSystem init
+(allow signal (target self))     ; not needed by the measured paths; kept for abort()/faulthandler
+
+;; ---- 4. trees -----------------------------------------------------------------------------------
+;; Interpreter + native libraries. The Homebrew trees are static because the ladybug 0.21.1
+;; wheels link OpenSSL by absolute path (arm64: /opt/homebrew/opt/openssl@3/lib/libssl.3.dylib,
+;; x86_64: /usr/local/opt/openssl@3/...), as do Homebrew CPython's _ssl/_hashlib/_lzma/_decimal,
+;; and a Homebrew venv's bin/python is a symlink through /opt/homebrew/opt/python@3.12.
+;; Only Cellar and opt are opened: NOT <brew>/etc or <brew>/var (service configs and data).
+(define runtime-trees
+  (list venv py-base
+        "/opt/homebrew/Cellar" "/opt/homebrew/opt"
+        "/usr/local/Cellar" "/usr/local/opt"))
+;; /usr/share and /private/var/db/timezone: the tz database (/usr/share/zoneinfo is a symlink
+;; into /var/db/timezone), ICU data, locale files.
+(define system-trees
+  (list "/usr/lib" "/usr/share" "/System" "/private/var/db/timezone"))
+;; src/ (PYTHONPATH) and the graph root (the build, the audit key, the sandbox check's fixtures).
+;; The repository root itself is deliberately NOT readable: graph_mcp.sh refuses a GRAPH_ROOT that is
+;; /, the account's home, the repo root or a parent of one of them, and one that is not laid out as a
+;; graph root (.lock or <profile>/builds/), so this subtree never opens the home or the repository.
+(define data-trees
+  (list src-dir graph-root build-dir))
+
+;; ---- 5. file reads ------------------------------------------------------------------------------
+(allow file-read*
+  (literal "/")                                     ; required (dyld / getcwd); aborts without it
+  (literal "/dev/null") (literal "/dev/urandom")    ; os.urandom() itself uses getentropy(2), no file
+  (apply subpath system-trees)
+  (apply subpath runtime-trees)
+  (apply subpath data-trees)
+  (literal evidence-db) (literal evidence-meta))   ; the evidence graph's two files, by exact path
+;; stat/lstat/readlink only:
+;;  * the standard system symlinks (the same four Apple's system.sb allows). /var, /etc and
+;;    /private/etc/localtime are on the way to the tz database: without them zoneinfo raises and
+;;    the LOCAL time zone silently becomes UTC. /tmp is lstat'ed by realpath() when a tree lives
+;;    under /private/tmp;
+;;  * the path components that lead to the allowed trees, so os.stat()/Path.exists()/realpath()
+;;    of an ancestor directory answer correctly (and do not spam the unified log).
+(allow file-read-metadata
+  (literal "/etc") (literal "/tmp") (literal "/var") (literal "/private/etc/localtime")
+  (apply path-ancestors runtime-trees)
+  (apply path-ancestors data-trees)
+  (path-ancestors logs-dir)
+  (path-ancestors evidence-db))
+(allow file-map-executable
+  (apply subpath system-trees)
+  (apply subpath runtime-trees))
+
+;; ---- 6. file writes: regular files inside LOGS_DIR, nothing else --------------------------------
+;; create + write/append only: no unlink/rename/chmod/xattr, no directories, symlinks, sockets
+;; or FIFOs. (Rotate logs from outside the sandbox.)
+(allow file-write-create file-write-data
+  (require-all (subpath logs-dir) (vnode-type REGULAR-FILE)))
+(allow file-write-data (literal "/dev/null"))
+;; stat of the files the server appends to (Python's append-mode open looks first). A template server gets this
+;; from the readable graph root; a cypher server, whose graph root is not readable, needs it said. Never their data.
+(allow file-read-metadata (subpath logs-dir))
+
+;; ---- 7. network, mach IPC, shm: nothing is allowed ----------------------------------------------
+;; No network-outbound/-inbound/-bind (TCP, UDP, AF_UNIX such as /var/run/mDNSResponder = DNS,
+;; the Docker socket), no mach-lookup (com.apple.dnssd.service, securityd/keychain, pasteboard,
+;; LaunchServices ...), no POSIX shm/semaphores. socketpair() and inherited pipes (asyncio
+;; self-pipe, MCP stdio) need no rule.
+
+;; ---- 8. explicit re-denies (must stay AFTER all allows: the later filtered rule wins) -----------
+;; What was written into LOGS_DIR can never be read back, mapped or executed.
+(deny file-read-data file-map-executable (subpath logs-dir))
+;; Repo secrets and VCS / agent metadata: any path component that starts with ".env"
+;; (.env, .env.local, .envrc, .env-prod and everything inside a directory named .env).
+(deny file-read* file-write*
+  (regex #"/\.env[^/]*(/|$)")
+  (subpath (string-append repo-root "/.git"))
+  (subpath (string-append repo-root "/.claude")))
+;; Credential stores in $HOME (they matter when an allowed tree sits inside $HOME).
+(deny file-read* file-write*
+  (subpath (string-append home "/.ssh"))
+  (subpath (string-append home "/.aws"))
+  (subpath (string-append home "/.config"))
+  (subpath (string-append home "/.docker"))
+  (subpath (string-append home "/.gnupg"))
+  (subpath (string-append home "/.kube"))
+  (subpath (string-append home "/.claude"))
+  (literal (string-append home "/.claude.json"))
+  (literal (string-append home "/.netrc"))
+  (literal (string-append home "/.pgpass"))
+  (literal (string-append home "/.git-credentials"))
+  (subpath (string-append home "/Library/Keychains"))
+  (subpath (string-append home "/Library/Cookies"))
+  (subpath (string-append home "/Library/Application Support"))
+  (subpath "/Library/Keychains"))
+;; (subpath "/System") also opens the non-firmlinked part of /System/Volumes (the data volume's
+;; top level, swap file names, Preboot): close it. Firmlinked aliases are matched canonically.
+;; libSystem looks up the OS cryptex and stats the data volume's mount point at every start; denying
+;; those two reports a denial (and a syslog attempt) on every start, so they stay readable: OS code
+;; (the same class as /System/Library) and one stat. Listing Data, VM or Preboot stays denied.
+(deny file-read* (subpath "/System/Volumes"))
+(allow file-read* (subpath "/System/Volumes/Preboot/Cryptexes/OS"))
+(allow file-read-metadata
+  (path-ancestors "/System/Volumes/Preboot/Cryptexes/OS")
+  (literal "/System/Volumes/Data"))

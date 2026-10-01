@@ -1,0 +1,30 @@
+flowchart LR
+  subgraph source["source"]
+    n8["limit_events.hit_at"]
+    n9["limit_events.subscription_id"]
+    n10["subscription_snapshots.snapshot_date"]
+  end
+  subgraph bronze["bronze"]
+    n0["churn_limit_events_raw.hit_at"]
+    n1["churn_limit_events_raw.subscription_id"]
+    n2["churn_subscription_snapshots_raw.snapshot_date"]
+  end
+  subgraph silver["silver"]
+    n4["churn_limit_events (table)"]
+    n5["churn_limit_events.hit_date"]
+    n6["churn_limit_events.subscription_id"]
+    n7["churn_subscription_snapshots.snapshot_date"]
+  end
+  subgraph gold["gold"]
+    n3["churn_renewal_features.limit_hits_14d"]
+  end
+  n4 -->|"COUNTS_ROWS_OF (as_of-14, as_of]"| n3
+  n5 -->|"WINDOW_BOUND (as_of-14, as_of]"| n3
+  n6 -->|"JOIN_KEY (as_of-14, as_of]"| n3
+  n7 -->|"ANCHOR as as_of"| n3
+  n0 -->|"VALUE F.to_date('hit_at')"| n5
+  n1 -->|"VALUE"| n6
+  n2 -->|"VALUE"| n7
+  n8 -->|"VALUE CAST(TIMESTAMP)"| n0
+  n9 -->|"VALUE CAST(STRING)"| n1
+  n10 -->|"VALUE CAST(DATE)"| n2
