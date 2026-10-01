@@ -1,0 +1,543 @@
+{
+ "generated_by": "python -m lakehouse_graph.oracle --build <build_dir> --print-golden (never edit by hand)",
+ "golden_version": 1,
+ "key": {
+  "inputs_combined_sha256": "1affd3ea0a5407a61679cf30f262da974e2aa2cedfa628597c038a442b948b08",
+  "inputs_sha256": {
+   "daily_usage.csv": "9dcc3d772bc0c3d6f182667db43fa4c33dd7aa150e84f6cca1abdf68135a1dad",
+   "incidents.csv": "552a282cd92b2d451538e83e70fbd6b7e6ecb401c118eaaa042e87c1520d4238",
+   "invoices.csv": "c62d3a6f1ee2e60d4b4ab4abfc72da5c531b54215d2a8c2cc3d9dcb2aa615076",
+   "limit_events.csv": "051fc055eb0f3c87b96b1f2c84ff53d1ccb7bf2d19718a84112023aa38fe53c4",
+   "overage_charges.csv": "b81197e81ec1b3af00a2743acfdf6e1c89bffeb7d613c37c6d3d0e72acac2ec2",
+   "overage_settings.csv": "6d5704efa647253a0425331573215b8f19602bebb248735fe61d4f41e965118e",
+   "pricing_changes.csv": "7f1289bb9be60b7b35bd3e7fb7cf1066c8f0279398d5935daa3a8108eb91a293",
+   "subscription_events.csv": "3bd57cf047af54d89e47ad9ffb017376a2f2f56364ed22ce481cf90ea376809e",
+   "subscription_snapshots.csv": "262666ad3baa400132b399d89fb18ed0ea81255529676f7f696043bd0e780523",
+   "support_tickets.csv": "e352d1e40474cba2cb9bf59b0f8ea8bee0c3688c288f70c76edb7f14e1bd558b"
+  },
+  "n_users": 8000,
+  "seed": 42,
+  "seed_n_status": "verified"
+ },
+ "measured_on": {
+  "platform": "macosx_arm64",
+  "versions": {
+   "ladybug": "0.21.1",
+   "numpy": "2.5.3",
+   "pandas": "3.0.6",
+   "pyarrow": "25.0.1",
+   "python": "3.12.9"
+  }
+ },
+ "spec": {
+  "contract": "renewal-graph/v1",
+  "graph": "renewal-graph/v1",
+  "similar_to": "similar_to/renewal-v1"
+ },
+ "values": {
+  "counts": {
+   "edges": {
+    "BILLED": 10139,
+    "CHANGED_OVERAGE": 849,
+    "CHARGED_OVERAGE": 470,
+    "CUT_CAP": 6,
+    "EXPOSED_TO": 7651,
+    "FIRST_RENEWAL_AFTER": 2503,
+    "HAS_RENEWAL": 8001,
+    "HIT_LIMIT": 10602,
+    "ON_PLAN": 8001,
+    "OPENED": 2134,
+    "SIMILAR_TO": 80010
+   },
+   "nodes": {
+    "BillingEvent": 10139,
+    "Incident": 3,
+    "LimitHit": 10602,
+    "OverageChange": 849,
+    "OverageCharge": 470,
+    "Plan": 3,
+    "PricingChange": 2,
+    "Renewal": 8001,
+    "Subscription": 8001,
+    "Ticket": 2134
+   },
+   "total_edges": 130366,
+   "total_nodes": 40204
+  },
+  "goldens": {
+   "exposure_incident": {
+    "inc-001": {
+     "by_plan": {
+      "pro": {
+       "cancel_flow": 46,
+       "dunning": 46,
+       "exposed": 1234,
+       "model": 1142,
+       "voluntary_lapses": 113
+      },
+      "pro_plus": {
+       "cancel_flow": 9,
+       "dunning": 13,
+       "exposed": 338,
+       "model": 316,
+       "voluntary_lapses": 22
+      },
+      "ultra": {
+       "cancel_flow": 2,
+       "dunning": 4,
+       "exposed": 94,
+       "model": 88,
+       "voluntary_lapses": 2
+      }
+     },
+     "naive_additional": 313,
+     "total": 1666
+    },
+    "inc-002": {
+     "by_plan": {
+      "pro": {
+       "cancel_flow": 33,
+       "dunning": 28,
+       "exposed": 606,
+       "model": 545,
+       "voluntary_lapses": 57
+      },
+      "pro_plus": {
+       "cancel_flow": 11,
+       "dunning": 12,
+       "exposed": 185,
+       "model": 162,
+       "voluntary_lapses": 10
+      },
+      "ultra": {
+       "cancel_flow": 0,
+       "dunning": 2,
+       "exposed": 46,
+       "model": 44,
+       "voluntary_lapses": 5
+      }
+     },
+     "naive_additional": 329,
+     "total": 837
+    },
+    "inc-003": {
+     "by_plan": {
+      "pro": {
+       "cancel_flow": 0,
+       "dunning": 1,
+       "exposed": 16,
+       "model": 14,
+       "voluntary_lapses": 0
+      },
+      "pro_plus": {
+       "cancel_flow": 0,
+       "dunning": 1,
+       "exposed": 12,
+       "model": 11,
+       "voluntary_lapses": 0
+      }
+     },
+     "naive_additional": 245,
+     "total": 28
+    }
+   },
+   "exposure_pricing_change": {
+    "cap-cut-2026-08": {
+     "known_by_as_of_false": 495,
+     "total": 2502
+    },
+    "cap-cut-2026-09": {
+     "known_by_as_of_false": 0,
+     "total": 1
+    }
+   },
+   "first_renewal_after_by_plan": {
+    "pro": {
+     "with": {
+      "lapses": 189,
+      "n": 1799,
+      "rate": 0.1051
+     },
+     "without": {
+      "lapses": 275,
+      "n": 4016,
+      "rate": 0.0685
+     }
+    },
+    "pro_plus": {
+     "with": {
+      "lapses": 30,
+      "n": 387,
+      "rate": 0.0775
+     },
+     "without": {
+      "lapses": 43,
+      "n": 871,
+      "rate": 0.0494
+     }
+    },
+    "ultra": {
+     "with": {
+      "lapses": 8,
+      "n": 106,
+      "rate": 0.0755
+     },
+     "without": {
+      "lapses": 3,
+      "n": 208,
+      "rate": 0.0144
+     }
+    }
+   },
+   "hero": {
+    "as_of": "2026-09-30",
+    "city": "Pune",
+    "evidence": [
+     {
+      "declared_exception": false,
+      "detail": "via plan pro",
+      "event_date": "2026-08-15",
+      "feeds_feature": "allowance_used_pct",
+      "in_feature_window": true,
+      "known_by_as_of": true,
+      "relation": "CUT_CAP",
+      "target_id": "cap-cut-2026-08"
+     },
+     {
+      "declared_exception": false,
+      "detail": null,
+      "event_date": "2026-08-25",
+      "feeds_feature": "incident_exposed_28d",
+      "in_feature_window": false,
+      "known_by_as_of": true,
+      "relation": "EXPOSED_TO",
+      "target_id": "inc-002"
+     },
+     {
+      "declared_exception": false,
+      "detail": null,
+      "event_date": "2026-09-09",
+      "feeds_feature": "incident_exposed_28d",
+      "in_feature_window": true,
+      "known_by_as_of": true,
+      "relation": "EXPOSED_TO",
+      "target_id": "inc-003"
+     },
+     {
+      "declared_exception": false,
+      "detail": "via plan pro",
+      "event_date": "2026-09-20",
+      "feeds_feature": "allowance_used_pct",
+      "in_feature_window": true,
+      "known_by_as_of": true,
+      "relation": "CUT_CAP",
+      "target_id": "cap-cut-2026-09"
+     },
+     {
+      "declared_exception": false,
+      "detail": null,
+      "event_date": "2026-09-20",
+      "feeds_feature": "first_renewal_after_pricing_change",
+      "in_feature_window": true,
+      "known_by_as_of": true,
+      "relation": "FIRST_RENEWAL_AFTER",
+      "target_id": "cap-cut-2026-09"
+     },
+     {
+      "declared_exception": false,
+      "detail": "weekly",
+      "event_date": "2026-09-24",
+      "feeds_feature": "limit_hits_14d",
+      "in_feature_window": true,
+      "known_by_as_of": true,
+      "relation": "HIT_LIMIT",
+      "target_id": "lh:sub_maya:001"
+     },
+     {
+      "declared_exception": false,
+      "detail": "weekly",
+      "event_date": "2026-09-25",
+      "feeds_feature": "limit_hits_14d",
+      "in_feature_window": true,
+      "known_by_as_of": true,
+      "relation": "HIT_LIMIT",
+      "target_id": "lh:sub_maya:002"
+     },
+     {
+      "declared_exception": false,
+      "detail": "weekly",
+      "event_date": "2026-09-27",
+      "feeds_feature": "limit_hits_14d",
+      "in_feature_window": true,
+      "known_by_as_of": true,
+      "relation": "HIT_LIMIT",
+      "target_id": "lh:sub_maya:003"
+     }
+    ],
+    "evidence_hidden_after_as_of": 0,
+    "nearest_lapses": [
+     {
+      "path_dist": 2.2581,
+      "renewal_id": "sub_07200:2026-08-17"
+     },
+     {
+      "path_dist": 2.5699,
+      "renewal_id": "sub_01355:2026-09-05"
+     },
+     {
+      "path_dist": 4.6438,
+      "renewal_id": "sub_05762:2026-09-11"
+     }
+    ],
+    "plan_tier": "pro",
+    "renewal_date": "2026-10-07",
+    "renewal_id": "sub_maya:2026-10-07",
+    "route": "score_today",
+    "sharing_neighbours_by_route": {
+     "cancel_flow": 9,
+     "dunning": 6,
+     "model": 84
+    },
+    "top10": [
+     {
+      "d2_q": 5099099315,
+      "outcome": "voluntary_lapse",
+      "rank": 1,
+      "renewal_id": "sub_07200:2026-08-17",
+      "route": "model"
+     },
+     {
+      "d2_q": 5593304415,
+      "outcome": "renewed",
+      "rank": 2,
+      "renewal_id": "sub_06614:2026-08-21",
+      "route": "model"
+     },
+     {
+      "d2_q": 5616850275,
+      "outcome": "renewed",
+      "rank": 3,
+      "renewal_id": "sub_01541:2026-08-16",
+      "route": "model"
+     },
+     {
+      "d2_q": 6300541441,
+      "outcome": "renewed",
+      "rank": 4,
+      "renewal_id": "sub_04760:2026-09-09",
+      "route": "model"
+     },
+     {
+      "d2_q": 6604184020,
+      "outcome": "voluntary_lapse",
+      "rank": 5,
+      "renewal_id": "sub_01355:2026-09-05",
+      "route": "model"
+     },
+     {
+      "d2_q": 7250182869,
+      "outcome": "renewed",
+      "rank": 6,
+      "renewal_id": "sub_05564:2026-08-20",
+      "route": "model"
+     },
+     {
+      "d2_q": 7362875678,
+      "outcome": "renewed",
+      "rank": 7,
+      "renewal_id": "sub_01475:2026-08-19",
+      "route": "model"
+     },
+     {
+      "d2_q": 7371318997,
+      "outcome": "renewed",
+      "rank": 8,
+      "renewal_id": "sub_04856:2026-08-22",
+      "route": "model"
+     },
+     {
+      "d2_q": 7506448249,
+      "outcome": "renewed",
+      "rank": 9,
+      "renewal_id": "sub_01888:2026-08-23",
+      "route": "model"
+     },
+     {
+      "d2_q": 7713654324,
+      "outcome": "renewed",
+      "rank": 10,
+      "renewal_id": "sub_00228:2026-08-03",
+      "route": "model"
+     }
+    ],
+    "top10_voluntary_lapses": 2
+   },
+   "motif_limit_hit_then_overage_off": {
+    "lapses": 39,
+    "rate": 0.1639,
+    "renewals": 238
+   }
+  },
+  "invariants": {
+   "as_of_not_t_minus_7": 0,
+   "billed": {
+    "cancel_flow_iff_mismatches": 0,
+    "cancel_flow_renewals": 287,
+    "not_outcome_evidence_edges": 287,
+    "on_or_before_all_cancel_scheduled": true,
+    "on_or_before_as_of": 287,
+    "outcome_evidence_flag_mismatches": 0
+   },
+   "first_renewal_after_as_of_filtered_mismatches": 495,
+   "has_renewal_as_of_mismatches": 0,
+   "leak_surface": {
+    "by_type": {
+     "BILLED": {
+      "edges": 10139,
+      "post_as_of": 9852,
+      "renewals": 8000
+     },
+     "CHANGED_OVERAGE": {
+      "edges": 849,
+      "post_as_of": 0,
+      "renewals": 0
+     },
+     "CHARGED_OVERAGE": {
+      "edges": 470,
+      "post_as_of": 0,
+      "renewals": 0
+     },
+     "EXPOSED_TO": {
+      "edges": 7651,
+      "post_as_of": 1401,
+      "renewals": 985
+     },
+     "FIRST_RENEWAL_AFTER": {
+      "edges": 2503,
+      "post_as_of": 495,
+      "renewals": 495
+     },
+     "HIT_LIMIT": {
+      "edges": 10602,
+      "post_as_of": 3000,
+      "renewals": 1165
+     },
+     "OPENED": {
+      "edges": 2134,
+      "post_as_of": 114,
+      "renewals": 114
+     }
+    },
+    "declared_exception_by_change": {
+     "cap-cut-2026-08": 495
+    },
+    "declared_exception_on_model_rows": 455,
+    "event_edges": 34348,
+    "known_by_as_of_flag_mismatches": 0,
+    "post_as_of_total": 14862
+   },
+   "naive_mismatches": {
+    "incident_exposed_28d": 681,
+    "limit_hits_14d": 1165,
+    "support_tickets_90d": 114
+   },
+   "parity_mismatches": {
+    "first_renewal_after_pricing_change": 0,
+    "incident_exposed_28d": 0,
+    "limit_hits_14d": 0,
+    "overage_toggled_off": 0,
+    "overage_usd_28d": 0,
+    "support_tickets_90d": 0
+   },
+   "renewal_id_format_mismatches": 0,
+   "similar_to": {
+    "cross_plan_edges": 0,
+    "cut_order_violations": 0,
+    "cut_quantised_ties_broken_by_dst": 37,
+    "cut_rows": 8001,
+    "d2_q_key_mismatches": 0,
+    "dist_mismatches": 0,
+    "distinct_dst": 7281,
+    "dst_not_model": 0,
+    "edges": 80010,
+    "exact_halves": 0,
+    "max_in_degree": 49,
+    "max_in_degree_renewal": "sub_00440:2026-06-16",
+    "mutual_flag_mismatches": 0,
+    "mutual_pairs": 19569,
+    "out_degree_histogram": {
+     "10": 8001
+    },
+    "out_degree_not_k_eff": 0,
+    "rank_not_contiguous": 0,
+    "rank_order_violations": 0,
+    "reference_components": [
+     5760,
+     1258,
+     314,
+     55
+    ],
+    "reference_never_chosen": 106,
+    "reference_rows": 7387,
+    "scaler_features": [
+     "renewals_completed",
+     "active_days_7d",
+     "active_days_28d",
+     "engagement_trend",
+     "last_active_days_ago",
+     "allowance_used_pct",
+     "limit_hits_14d",
+     "cheap_model_share_28d",
+     "overage_usd_28d",
+     "overage_toggled_off",
+     "suggestion_accept_rate_28d",
+     "accept_rate_change",
+     "agent_task_success_rate",
+     "failed_requests_rate",
+     "incident_exposed_28d",
+     "support_tickets_90d",
+     "ide_sessions_28d",
+     "cli_sessions_28d",
+     "weekend_usage_ratio",
+     "first_renewal_after_pricing_change"
+    ],
+    "scaler_n_ref": 7387,
+    "self_loops": 0,
+    "sources": 8001,
+    "spec_version_mismatches": 0,
+    "spot_check_mismatches": 0,
+    "spot_check_sources": 201,
+    "undirected_edges": 60441,
+    "weak_components_all_nodes": 4
+   },
+   "subscriptions_without_exactly_one_renewal": 0
+  },
+  "model_lapses": 548,
+  "model_lapses_by_plan": {
+   "pro": {
+    "lapses": 464,
+    "n": 5815
+   },
+   "pro_plus": {
+    "lapses": 73,
+    "n": 1258
+   },
+   "ultra": {
+    "lapses": 11,
+    "n": 314
+   }
+  },
+  "outcomes": {
+   "involuntary_lapse": 326,
+   "pending": 1,
+   "renewed": 6839,
+   "voluntary_lapse": 835
+  },
+  "routes": {
+   "cancel_flow": 287,
+   "dunning": 326,
+   "model": 7387,
+   "score_today": 1
+  }
+ }
+}

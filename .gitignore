@@ -16,3 +16,11 @@ airflow/logs/**
 # Generated research-scale churn bronze (rebuild: make churn-sample)
 data/sample/churn/*.csv
 !data/sample/churn/fixtures/
+
+# Graph on gold: build trees (GRAPH_ROOT default), graph venvs, agent worktrees
+data/graph/
+.venv-graph*/
+.claude/worktrees/
+
+# Test caches
+.pytest_cache/
