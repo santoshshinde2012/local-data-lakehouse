@@ -1,0 +1,32 @@
+{
+  "mcpServers": {
+    "lakehouse-graph": {
+      "type": "stdio",
+      "command": "scripts/graph_mcp.sh",
+      "args": ["--toolset", "graph"],
+      "env": {"GRAPH_LOG_LEVEL": "WARNING"},
+      "timeout": 30000
+    },
+    "lakehouse-metrics": {
+      "type": "stdio",
+      "command": "scripts/graph_mcp.sh",
+      "args": ["--toolset", "metrics"],
+      "env": {"GRAPH_LOG_LEVEL": "WARNING"},
+      "timeout": 30000
+    },
+    "lakehouse-lineage": {
+      "type": "stdio",
+      "command": "scripts/graph_mcp.sh",
+      "args": ["--toolset", "lineage"],
+      "env": {"GRAPH_LOG_LEVEL": "WARNING"},
+      "timeout": 30000
+    },
+    "lakehouse-cohorts": {
+      "type": "stdio",
+      "command": "scripts/graph_mcp.sh",
+      "args": ["--toolset", "cohorts"],
+      "env": {"GRAPH_LOG_LEVEL": "WARNING"},
+      "timeout": 30000
+    }
+  }
+}

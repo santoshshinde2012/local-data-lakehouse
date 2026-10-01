@@ -1,0 +1,24 @@
+{
+  "//": [
+    "NOT loaded by default: .mcp.json never starts this server. Guarded raw Cypher (graph_cypher, PLAN Later A) over",
+    "<build>/evidence.lbdb ONLY (cut at every renewal's as_of, label-free, no SIMILAR_TO). Opt-in and sandbox-only:",
+    "scripts/graph_mcp.sh --enable-cypher runs it under config/graph/sandbox.sb with nothing readable but the two",
+    "evidence files (macOS); it refuses GRAPH_SANDBOX=0, and on Linux it refuses unless",
+    "GRAPH_ALLOW_UNSANDBOXED_CYPHER=1 (a loud banner, no OS layer). Build the evidence graph first:",
+    "  python scripts/build_evidence_graph.py --profile default",
+    "To try it in a session of its own: copy this file to .mcp.cypher.json (git-ignored or not, your choice) and run",
+    "  claude --strict-mcp-config --mcp-config .mcp.cypher.json",
+    "or merge the lakehouse-cypher entry into your own MCP config. Do not hand it to a small local model: measured",
+    "text-to-Cypher with qwen3:4b is 6/10 (JSON output) or 5/10 (thinking on) on 10 evidence questions, below the",
+    "PLAN's 80% gate (lakehouse_graph/cypher_guard.py MEASURED_TEXT_TO_CYPHER)."
+  ],
+  "mcpServers": {
+    "lakehouse-cypher": {
+      "type": "stdio",
+      "command": "scripts/graph_mcp.sh",
+      "args": ["--enable-cypher"],
+      "env": {"GRAPH_LOG_LEVEL": "WARNING"},
+      "timeout": 30000
+    }
+  }
+}
