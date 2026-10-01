@@ -1,58 +1,43 @@
-# Churn gold sufficiency (Retention Radar)
+# Renewal gold: is it enough for Retention Radar?
 
-Audit checklist for the **data foundation** that feeds
-[retention-radar](https://github.com/santoshshinde2012/retention-radar).
-Gold features are the SoR; **algorithms live in Retention Radar**.
+Checklist for the data foundation that feeds
+[retention-radar](https://github.com/santoshshinde2012/retention-radar). The lakehouse
+builds features and labels; model choice and the renewal policy live in retention-radar.
 
-Verified: **2026-09-25** · seed **42** · path `make churn-gold-local` (pandas Spark-parity) + `make churn-check` (export contract).
-
-## Verdict
-
-**Ready: YES** — default **N=5000** is sufficient for teaching E2E (train / calibrate / infer / Streamlit).
+Checked 2026-09-30 · seed 42 · `make churn-gold-local` + `make churn-check --strict` +
+`make churn-parity` (Spark SQL in local mode vs pandas, 8,001 renewals × 27 columns, exact).
 
 | Criterion | Result |
 |-----------|--------|
-| Schema | Train CSV = 22 features + `user_id` / `user_name` + `churned` (25 cols). Serve JSON = 24 fields (no label). Matches radar `FEATURE_COLUMNS` + `configs/schemas/user_record.schema.json`. |
-| Volume | **N=5000**, train-capable; stratified churn **17.0%** (target band 15–25%). |
-| Nulls | **0%** nulls on all export columns after gold fill. |
-| Hero user | **Santosh Shinde** `u-0001` present; inference JSON has no `churned`. |
-| Leakage | Export drops `city`, `feature_as_of`, `built_at`. Label only on train CSV. |
-| Layers | Bronze → silver → gold (Spark) **or** `churn-gold-local` pandas path; both documented. |
-| Object store | Compose uses **SILO** (`pgsty/silo`), not MinIO — see [object-store.md](object-store.md). |
-| Consumer | Sync → radar `data/external/` → `CHURN_DATA_SOURCE=lakehouse`. |
+| Contract | Train CSV = 22 features + `user_id` / `user_name` + `churned` (25 columns, retention-radar order). Inference JSON = the 24 fields, no label. |
+| Point in time | Features read only events dated on or before each renewal's T-7. Bronze has usage and cap hits after T-7; gold ignores them. |
+| Label | Derived from billing events after the renewal (paid invoice, scheduled cancel, failed invoice + retries), not carried in from a source column. |
+| Routing | 8,001 snapshots → 7,387 model rows · 326 dunning · 287 cancel flow · 1 scored today. Dunning and cancel-flow rows never reach the train export (`churn-check` fails if they do). |
+| Volume | 7,387 renewals, 548 voluntary lapses (7.4%). |
+| Nulls | 0 in the export. Zero-denominator ratios are defined as 0 (1.0 for `accept_rate_change`). |
+| Spark vs pandas | Same result on every contract column plus `outcome` and `route`. |
 
-## Slice notes (why not forced scale-up)
+Lapses by plan:
 
-| plan_tier | n | churn rate | churn positives |
-|-----------|--:|----------:|----------------:|
-| free | 1999 | 18.6% | 371 |
-| starter | 1479 | 17.7% | 262 |
-| pro | 1137 | 15.0% | 170 |
-| enterprise | 385 | 12.2% | 47 |
+| plan_tier | renewals | voluntary lapse rate | lapses |
+|-----------|---------:|--------------------:|-------:|
+| pro | 5,815 | 8.0% | 464 |
+| pro_plus | 1,258 | 5.8% | 73 |
+| ultra | 314 | 3.5% | 11 |
 
-- Overall and free/starter/pro slices are thick enough for teaching stratified metrics.
-- **Enterprise** is the thinnest (47 positives). Fine for demos that mention the tier; thin if you want enterprise-only model tuning.
-- Optional: `N_USERS=10000 CHURN_SEED=42 make churn-gold-local` (~2× enterprise mass; `churn-gold-local` re-runs `churn-sample` with the same env) — keep seed 42 for reproducibility. Default stays **5000**.
-
-## Quality / honesty
-
-- **Churn label:** bronze `users.churned` carried into gold (defined at generate time; not derived from post-as-of outcomes in the export).
-- **Train ≠ serve:** lakehouse Santosh is **event-aggregated as-of `CHURN_AS_OF` (default 2024-03-02)** — scores differ from radar’s synthetic seed-42 hero profile by design.
-- **Proxies:** `models_used_count` and `seat_utilization` are documented proxies in the gold job (see Spark `03_publish_gold_features.py` / local builder).
-- **Published ladder:** Retention Radar’s committed `models/` metrics stay on the **synthetic** seed-42 path. Lakehouse E2E may retrain locally; do not overwrite published models for articles.
+Ultra is thin: 11 lapses. That is enough to score Ultra subscribers and to show why the
+one person-written playbook is Ultra-only. It is not enough to tune anything Ultra-specific.
 
 ## Reproduce
 
 ```bash
 # lakehouse
-N_USERS=5000 CHURN_SEED=42 make churn-gold-local
-# → data/export/churn_user_features.csv
-# → data/export/santosh_inference_record.json
-make churn-check   # columns · nulls · tiers · leakage · Santosh · schema ranges
+make churn-sample && make churn-gold-local && make churn-parity
 
-# retention-radar (beside this repo)
-./scripts/sync_lakehouse_exports.sh ../local-data-lakehouse/data/export
-CHURN_DATA_SOURCE=lakehouse pytest -q
+# retention-radar, cloned beside this repo
+./scripts/run_lakehouse_e2e.sh ../local-data-lakehouse
 ```
 
-Radar verify (box, 2026-09-25): retention-radar `pytest -q` green (82 passed at `bc4fa90`, `make e2e-local` all 10 steps green incl. the lakehouse step) with `CHURN_DATA_SOURCE=lakehouse` after sync; `./scripts/run_lakehouse_e2e.sh` green on Python 3.12 (calibrated test AUC ≈ 0.694, Santosh u-0001 0.399 → 0.170 → low / nurture); committed `models/` left unchanged. CI (`.github/workflows/ci.yml`) re-runs the no-Docker path, the contract check, and a Retention Radar ingest + batch-score on every push to `main` and every PR.
+`run_lakehouse_e2e.sh` trains in `artifacts/lakehouse_run/` and writes
+`results/lakehouse-e2e-summary.json`; retention-radar's committed `models/` stay on its
+synthetic seed-42 run.

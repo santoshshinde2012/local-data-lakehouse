@@ -15,4 +15,6 @@ make airflow-demo
 
 Airflow UI: http://localhost:8080 (`admin` / `admin`)
 
-Exports after churn DAG: `data/export/churn_user_features.csv`, `data/export/santosh_inference_record.json`
+Exports after the churn DAG: `data/export/churn_user_features.csv`, `data/export/churn_renewals_audit.csv`, `data/export/hero_inference_record.json`.
+
+The DAG runs were verified before the 2026-09-30 renewal-feature rewrite. The task graph is unchanged; the jobs behind it are new, and their SQL is checked by `make churn-parity`.

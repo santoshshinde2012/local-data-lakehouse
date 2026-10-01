@@ -1,17 +1,20 @@
-# Churn foundation E2E excerpt (verified)
+# Renewal features excerpt (no-Docker path, verified 2026-09-30)
 
 ```text
-Jobs: 01_ingest_bronze → 02_transform_silver → 03_publish_gold_features → 04_export_features
+$ make churn-sample
+Wrote bronze to data/sample/churn
+  subscriptions=8001 usage_rows=176217 limit_events=10602 invoices=50748 tickets=2134
 
-bronze: users=10 usage=410 tickets=17 payments=27
-gold.churn_user_features (as-of 2024-03-02):
+$ make churn-gold-local
+Wrote data/export/churn_renewals_audit.csv (8001 renewals; routes {'model': 7387, 'dunning': 326, 'cancel_flow': 287, 'score_today': 1})
+Wrote data/export/churn_user_features.csv (7387 rows, voluntary-lapse rate 0.074)
+Wrote data/export/hero_inference_record.json (sub_maya, as of 2026-09-30)
+Churn export contract OK (7387 renewals, 25 cols)
 
-u-01 Santosh Shinde  pro         sessions 12/57  engagement_trend 0.842  churned 0
-u-02 Priya Sharma    starter     18/80   0.900  0
-u-03 Jordan Miles    free         2/17   0.471  1
-… (10 users total)
-
-Exports:
-  data/export/churn_user_features.csv
-  data/export/santosh_inference_record.json  (no churned — serve-style)
+$ make churn-parity
+Gold parity OK: 8001 renewals × 27 columns match (Spark SQL vs pandas)
 ```
+
+The Spark jobs (`src/jobs/churn/01` … `04`) run the same SQL on Iceberg inside the
+Compose stack (`make churn-e2e`). The parity check runs that SQL in local Spark; the
+Docker run itself was not repeated for this excerpt.

@@ -16,7 +16,7 @@ This repository is the **hands-on companion** to the article *Stop Reading About
 **Two runnable paths**
 
 1. **Retail** — bronze → silver → gold metrics + Iceberg time travel  
-2. **Churn features** — AI-platform usage / tickets / payments → `gold.churn_user_features` → CSV + JSON export  
+2. **Renewal features** — billing and usage events of a monthly AI coding assistant → `gold.churn_renewal_features` (each renewal's features as of T-7) → CSV + JSON export  
 
 
 > **TEACHING-ONLY — NOT PRODUCTION.** Default Silo (`minioadmin` / `minioadmin`) and Airflow (`admin` / `admin`) passwords are **sample credentials for local learning**. The optional Airflow overlay mounts the host **Docker socket** (`/var/run/docker.sock`) and runs as root so DAGs can `docker exec` into `ldl-spark`. Do **not** expose this stack on a network, reuse these passwords, or copy the socket mount into a real environment.
@@ -110,8 +110,9 @@ make demo
 That is the complete path. When it finishes you should see:
 
 - Retail gold metrics matching the contract below  
-- `data/export/churn_user_features.csv`  
-- `data/export/santosh_inference_record.json`  
+- `data/export/churn_user_features.csv` (renewals routed to the model)  
+- `data/export/churn_renewals_audit.csv` (every renewal with outcome and route)  
+- `data/export/hero_inference_record.json` (today's T-7 record, no label)  
 - Silo console at http://localhost:9001 (`minioadmin` / `minioadmin`), bucket `lake`
 
 ### Step-by-step (what each command does)
@@ -123,7 +124,7 @@ That is the complete path. When it finishes you should see:
 | 3 | `make up` | `docker compose up -d --build` — Silo, Postgres, Spark |
 | 4 | `make wait` | Polls health until the catalog and object store answer |
 | 5a | `make e2e` | Retail jobs `src/jobs/retail/01` … `05` |
-| 5b | `make churn-e2e` | Churn jobs `src/jobs/churn/01` … `04` |
+| 5b | `make churn-e2e` | Renewal-feature jobs `src/jobs/churn/01` … `04` |
 | 5 | `make demo` | Runs **5a then 5b** (preferred for videos / walkthroughs) |
 
 ### Optional paths
@@ -132,7 +133,7 @@ That is the complete path. When it finishes you should see:
 # Retail only
 make e2e
 
-# Churn features only (after the stack is up; catalog must exist)
+# Renewal features only (after the stack is up; catalog must exist)
 make churn-e2e
 
 # Wipe volumes and re-run retail from a clean warehouse
@@ -171,43 +172,58 @@ Also verify:
 - Customer **Santosh Shinde** (`c-01`) on order `o-1001`  
 - Iceberg time travel on `lakehouse.silver.orders` succeeds (count **19**)
 
-### Churn (`make churn-e2e` or second half of `make demo`)
+### Renewal features (`make churn-e2e` or second half of `make demo`)
+
+The source systems of a self-serve AI coding assistant (Pro $20 · Pro+ $60 · Ultra $200 a month), as raw events:
+
+| Bronze table | From | Grain |
+|---|---|---|
+| `churn_subscription_snapshots_raw` | billing snapshot | subscription × snapshot date (`current_period_end`) |
+| `churn_invoices_raw` | billing | invoice attempt (paid / failed, dunning retries) |
+| `churn_subscription_events_raw` | billing | `cancel_scheduled`, `canceled` |
+| `churn_usage_raw` | product analytics | subscription × active day (IDE, CLI, agent, suggestions) |
+| `churn_limit_events_raw` | rate limiter | one row per blocked request (5-hour / weekly cap) |
+| `churn_overage_settings_raw`, `churn_overage_charges_raw` | billing | overage switched on/off; overage billed |
+| `churn_incidents_raw` | status page | incident windows |
+| `churn_support_tickets_raw` | helpdesk | ticket opened |
+| `churn_pricing_changes_raw` | product | date the plan caps were cut |
+
+Gold (`sql/churn/gold_renewal_features.sql`) builds one row per renewal from the snapshot taken seven days before it:
+
+- **Point in time.** Every feature reads events dated on or before T-7. Bronze keeps usage and cap hits after T-7 on purpose; the gold SQL must ignore them.
+- **Label from billing.** A paid invoice at the renewal date means renewed. A cancel that takes effect at the renewal date is a voluntary lapse. A failed invoice followed by a cancellation after retries is involuntary.
+- **Routes.** Renewals lost to failed cards go to **dunning**. Voluntary lapses whose cancel was already scheduled by T-7 go to the **cancel flow**. Both are kept out of the train export. A renewal whose T-7 is today is **score_today**: it is exported for inference, with no label.
 
 | Artifact | Location |
 |---|---|
-| Gold table | `lakehouse.gold.churn_user_features` |
-| Train CSV | `data/export/churn_user_features.csv` (N users; 5000 after `make churn-sample`) |
-| Inference JSON | `data/export/santosh_inference_record.json` |
+| Gold table | `lakehouse.gold.churn_renewal_features` |
+| Train CSV | `data/export/churn_user_features.csv` (24-field contract + `churned`) |
+| Audit CSV | `data/export/churn_renewals_audit.csv` |
+| Inference JSON | `data/export/hero_inference_record.json` (`sub_maya`, scored as of the latest snapshot) |
 
-User **Santosh Shinde** (`user_name` exact match; id `u-0001` after scaled generate, or `u-01` in the tiny fixture) appears in gold and in the inference export.
+Seed 42, `make churn-sample` (8,000 subscriptions): 7,387 renewals routed to the model (7.4% voluntary lapse), 326 to dunning, 287 to the cancel flow, and one scored today.
 
-### Scaling churn for Retention Radar
-
-Tiny fixture (10 users) lives at `data/sample/churn/fixtures/tiny/` for quick demos.
-
-Research-scale bronze CSVs (default **N_USERS=5000**, seed **42**):
+### Without Docker, and checking Spark against pandas
 
 ```bash
-make churn-sample          # writes data/sample/churn/*.csv
-make churn-e2e             # Spark gold + export (needs Docker stack)
-# OR without Docker:
 pip install -r requirements.txt
-make churn-gold-local      # pandas Spark-parity export → data/export/ (+ contract check)
+make churn-sample          # bronze events → data/sample/churn/*.csv
+make churn-gold-local      # pandas gold → data/export/ (+ contract check)
 make churn-check           # re-validate data/export/ against the retention-radar contract
+make churn-parity          # run the gold SQL in local Spark and compare with pandas row by row
 ```
 
-`churn-check` fails on structural breaks (columns, nulls, plan tiers, label leakage, missing Santosh) and warns on retention-radar schema range breaches (`--strict` to fail). The 10-user tiny fixture warns once by design: `u-10` is a heavy IDE user (577 plugin sessions / 30d vs the 500 soft cap).
+`churn-check` fails on structural breaks: columns, nulls, plan tiers, 0/1 flags, `active_days_7d > active_days_28d`, dunning or cancel-flow rows in the train export, and label or metadata leaking into the inference JSON. It warns on schema range breaches (`--strict` fails on them). `churn-parity` needs Java 17 and `pip install pyspark==3.5.*`. CI runs it on the tiny fixture and the full sample.
 
-Sufficiency audit (schema · volume · slices · SILO · consumer): [docs/churn-gold-sufficiency.md](docs/churn-gold-sufficiency.md).
+A 120-subscription fixture lives in `data/sample/churn/fixtures/tiny/` for quick demos. Sufficiency notes: [docs/churn-gold-sufficiency.md](docs/churn-gold-sufficiency.md).
 
-Then feed exports into [retention-radar](https://github.com/santoshshinde2012/retention-radar) (`data/external/` ingest path — public code home). Models **consume gold features**; algorithm choice (ladder / CatBoost / Optuna XGB) lives in retention-radar — not in this lakehouse.
+The exports feed [retention-radar](https://github.com/santoshshinde2012/retention-radar) (`./scripts/sync_lakehouse_exports.sh` → `data/external/`). Model choice, calibration and the renewal policy live there, not in this lakehouse.
 
 | Knob | Env / Make | Default |
 |------|------------|---------|
-| Users | `N_USERS=5000` | 5000 |
-| Seed | `CHURN_SEED=42` | 42 |
-| As-of | `CHURN_AS_OF=2024-03-02` | 2024-03-02 (no-Docker `churn-sample` / `churn-gold-local`; the Spark job uses its 2024-03-02 default) |
-| Usage window | `CHURN_USAGE_DAYS=40` | 40 days ending at as-of |
+| Subscriptions | `N_USERS` | 8000 |
+| Seed | `CHURN_SEED` | 42 |
+| Inference subscriber | `CHURN_HERO_ID` | `sub_maya` |
 
 ---
 
@@ -352,7 +368,7 @@ Airflow needs additional RAM beyond the core stack (plan ~4+ GB free for webserv
 
 ## Related repos
 
-**Reader start (churn ML path):** after gold export, open [retention-radar](https://github.com/santoshshinde2012/retention-radar) and follow that README’s **Start here**.
+**Reader start (renewal ML path):** after gold export, open [retention-radar](https://github.com/santoshshinde2012/retention-radar) and follow that README’s **Start here**.
 
 | Repo | Role |
 |------|------|

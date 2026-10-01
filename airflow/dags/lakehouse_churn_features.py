@@ -1,7 +1,7 @@
 """
-AI-platform churn feature DAG on the same lakehouse foundation:
+Renewal features for a monthly AI coding assistant, on the same lakehouse:
 
-    ingest >> silver >> gold_features >> export
+    ingest (billing + usage events) >> silver >> gold T-7 renewal features >> export
 """
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ from lakehouse_operators import spark_submit_task
 
 with DAG(
     dag_id="lakehouse_churn_features",
-    description="Churn bronze → silver → gold.churn_user_features → CSV/JSON export",
+    description="Billing + usage events → silver → gold.churn_renewal_features (as of T-7) → export",
     start_date=datetime(2024, 3, 1),
     schedule=None,
     catchup=False,
