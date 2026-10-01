@@ -1,0 +1,2822 @@
+{
+ "golden_version": 1,
+ "inputs_sha256": {
+  "scripts/build_churn_gold_local.py": "3926800d48f9cd1f1ea9013246a005691481662feda3f8a70c28973f27960213",
+  "scripts/check_churn_export.py": "54f2596e2fb165a694ef8f8566736eecf6d3b0dd7e356afc47a24b9d2ed661f1",
+  "scripts/check_gold_parity.py": "27d377c89b628ab6792eafcd705e2497f6a13403f46aed4d781db3a859047014",
+  "scripts/generate_churn_sample.py": "267c8d0e080476c4dc52445c0b319ccd698205b26b7ea4c10d90bcceb0db7aa8",
+  "sql/churn/gold_renewal_features.sql": "248f02afa520de123e57f4cbc94063a9ef65e71ff1062994c8c77b0ad7b02266",
+  "sql/retail/bronze_ddl.sql": "73fad99b9c1be909c583bf25545ceac3de75c1893c356264a85f3680c6c27174",
+  "sql/retail/gold_daily_metrics.sql": "621f8adf1ddd262083e10e4625f08d0f3c5dd9aa2761218e505e8f648b681b3d",
+  "sql/retail/silver_orders.sql": "4e314297a257e4f62ddb9894e1ed47565ee6fb4f1e834ed42fb8568ffe8227c9",
+  "src/jobs/churn/01_ingest_bronze.py": "22084fd72843d4e539b2194f35218ee479c21224fd07ec7c0e898d0ebb7e9441",
+  "src/jobs/churn/02_transform_silver.py": "fd8ec406630c374e8958a4e5bb6f016d87d5c9f88ef0ddd7d896a9f579d8ca7f",
+  "src/jobs/churn/03_publish_gold_features.py": "9104a4d313e495737c76b180e250ba8b7c4b2a51ff5eb393241179380409c2f4",
+  "src/jobs/churn/04_export_features.py": "709b1a7047d1fa3dedd9579cd02680a05ad06a46fc2ffab4eee50c23ebeff028",
+  "src/jobs/retail/02_ingest_bronze.py": "b85bd983412798096387c590ba49b5bb7e82f51ceb05dad9ee5ea637ad0d3315",
+  "src/jobs/retail/03_transform_silver.py": "5e891fb462b2cc9135bb8440a47c9aa05e6983c3619adff75ed7d2c4b36cf5ca",
+  "src/jobs/retail/04_publish_gold.py": "b68d79cd490b2304afa8f1a1dae36b3799e61575892d29df4df1f3f44c3b1f9e",
+  "src/lakehouse_graph/spec.py": "3c0597cfac77a7188facc46e888b74f14e93e2253d975b309c4e9e0a059598cd"
+ },
+ "measured_on": {
+  "commit": "d317368",
+  "dirty": true,
+  "lineage_build_id": "7dbbedddd7ea",
+  "versions": {
+   "ladybug": "0.21.1",
+   "pyarrow": "25.0.1",
+   "python": "3.12.9",
+   "sqlglot": "30.20.0"
+  }
+ },
+ "profile": "core",
+ "reported_not_gated": {
+  "counts": {
+   "edges": {
+    "CALLS": 2,
+    "CHECKS": 121,
+    "CLONES": 2,
+    "COMPUTED_IN": 58,
+    "CONFIGURES": 16,
+    "CONSUMED_SNAPSHOT": 0,
+    "CONSUMES": 2,
+    "CONSUMES_VIA": 0,
+    "COUNTS_ROWS_OF": 4,
+    "DEFINED_ON": 8,
+    "DEFINES": 15,
+    "DEPENDS_ON": 40,
+    "DERIVED_FROM": 346,
+    "DESCRIBES": 6,
+    "EXCLUDED_FROM": 13,
+    "EXECUTES_SQL": 5,
+    "GUARDS": 28,
+    "HAS_ASSERTION": 47,
+    "HAS_COLUMN": 322,
+    "HAS_FILE_SNAPSHOT": 0,
+    "HAS_SNAPSHOT": 0,
+    "HAS_TASK": 16,
+    "IMPLEMENTS": 7,
+    "IMPORTS": 5,
+    "MATERIALIZED_AS": 26,
+    "MIRRORED_BY": 0,
+    "MIRRORS": 25,
+    "PARENT": 0,
+    "PARITY_TWIN_OF": 4,
+    "POINTS_TO": 0,
+    "PRODUCED_BY": 1,
+    "PRODUCED_BY_RUN": 0,
+    "PUBLISHES": 0,
+    "RAN_AS": 0,
+    "READS": 178,
+    "RELATIVE_TO": 9,
+    "ROW_GRAIN_FROM": 1,
+    "RUNS": 59,
+    "SAME_RULE_AS": 0,
+    "SOURCED_FROM": 165,
+    "SUBJECT_TO": 30,
+    "SUPERSEDES": 0,
+    "TRIGGERS": 2,
+    "UPSTREAM_OF": 13,
+    "USED_BY": 5,
+    "USES": 7,
+    "USES_WINDOW": 57,
+    "WRITES": 72
+   },
+   "nodes": {
+    "Assertion": 47,
+    "CiStep": 4,
+    "Contract": 9,
+    "Cte": 15,
+    "Dag": 3,
+    "DagTask": 16,
+    "DataColumn": 322,
+    "Dataset": 69,
+    "DownstreamRepo": 1,
+    "EnvVar": 12,
+    "Export": 3,
+    "FileSnapshot": 0,
+    "GraphElement": 21,
+    "Job": 30,
+    "MakeTarget": 23,
+    "Metric": 8,
+    "Parameter": 6,
+    "PointInTimeRule": 2,
+    "Ref": 0,
+    "Run": 0,
+    "ShellScript": 10,
+    "Snapshot": 0,
+    "SqlFile": 7,
+    "Window": 9
+   },
+   "total_edges": 1717,
+   "total_nodes": 617
+  },
+  "note": "whole-graph totals grow with every Make target, CI step and script; they are reported by the contract, never compared"
+ },
+ "spec": "metadata-graph/0.1",
+ "values": {
+  "bridge": {
+   "by_element": [
+    {
+     "datasets": 3,
+     "element": "ge:edge:BILLED",
+     "kind": "edge",
+     "source_columns": 10,
+     "tables": 1
+    },
+    {
+     "datasets": 1,
+     "element": "ge:edge:CHANGED_OVERAGE",
+     "kind": "edge",
+     "source_columns": 3,
+     "tables": 1
+    },
+    {
+     "datasets": 1,
+     "element": "ge:edge:CHARGED_OVERAGE",
+     "kind": "edge",
+     "source_columns": 3,
+     "tables": 1
+    },
+    {
+     "datasets": 2,
+     "element": "ge:edge:CUT_CAP",
+     "kind": "edge",
+     "source_columns": 3,
+     "tables": 1
+    },
+    {
+     "datasets": 2,
+     "element": "ge:edge:EXPOSED_TO",
+     "kind": "edge",
+     "source_columns": 5,
+     "tables": 1
+    },
+    {
+     "datasets": 3,
+     "element": "ge:edge:FIRST_RENEWAL_AFTER",
+     "kind": "edge",
+     "source_columns": 6,
+     "tables": 1
+    },
+    {
+     "datasets": 1,
+     "element": "ge:edge:HAS_RENEWAL",
+     "kind": "edge",
+     "source_columns": 3,
+     "tables": 1
+    },
+    {
+     "datasets": 1,
+     "element": "ge:edge:HIT_LIMIT",
+     "kind": "edge",
+     "source_columns": 3,
+     "tables": 1
+    },
+    {
+     "datasets": 1,
+     "element": "ge:edge:ON_PLAN",
+     "kind": "edge",
+     "source_columns": 4,
+     "tables": 1
+    },
+    {
+     "datasets": 1,
+     "element": "ge:edge:OPENED",
+     "kind": "edge",
+     "source_columns": 3,
+     "tables": 1
+    },
+    {
+     "datasets": 1,
+     "element": "ge:edge:SIMILAR_TO",
+     "kind": "edge",
+     "source_columns": 24,
+     "tables": 1
+    },
+    {
+     "datasets": 3,
+     "element": "ge:node:BillingEvent",
+     "kind": "node",
+     "source_columns": 10,
+     "tables": 1
+    },
+    {
+     "datasets": 1,
+     "element": "ge:node:Incident",
+     "kind": "node",
+     "source_columns": 3,
+     "tables": 1
+    },
+    {
+     "datasets": 1,
+     "element": "ge:node:LimitHit",
+     "kind": "node",
+     "source_columns": 4,
+     "tables": 1
+    },
+    {
+     "datasets": 1,
+     "element": "ge:node:OverageChange",
+     "kind": "node",
+     "source_columns": 3,
+     "tables": 1
+    },
+    {
+     "datasets": 1,
+     "element": "ge:node:OverageCharge",
+     "kind": "node",
+     "source_columns": 3,
+     "tables": 1
+    },
+    {
+     "datasets": 1,
+     "element": "ge:node:Plan",
+     "kind": "node",
+     "source_columns": 1,
+     "tables": 1
+    },
+    {
+     "datasets": 1,
+     "element": "ge:node:PricingChange",
+     "kind": "node",
+     "source_columns": 3,
+     "tables": 1
+    },
+    {
+     "datasets": 3,
+     "element": "ge:node:Renewal",
+     "kind": "node",
+     "source_columns": 32,
+     "tables": 1
+    },
+    {
+     "datasets": 1,
+     "element": "ge:node:Subscription",
+     "kind": "node",
+     "source_columns": 5,
+     "tables": 1
+    },
+    {
+     "datasets": 1,
+     "element": "ge:node:Ticket",
+     "kind": "node",
+     "source_columns": 3,
+     "tables": 1
+    }
+   ],
+   "edges": 11,
+   "elements": 21,
+   "nodes": 10
+  },
+  "counts_rows_of": [
+   {
+    "column": "gold.churn_renewal_features.limit_hits_14d",
+    "dataset": "silver.churn_limit_events",
+    "window": "(as_of-14, as_of]"
+   },
+   {
+    "column": "gold.churn_renewal_features.renewals_completed",
+    "dataset": "silver.churn_invoices",
+    "window": "(-inf, as_of+7)"
+   },
+   {
+    "column": "gold.churn_renewal_features.support_tickets_90d",
+    "dataset": "silver.churn_support_tickets",
+    "window": "(as_of-90, as_of]"
+   },
+   {
+    "column": "gold.daily_order_metrics.orders",
+    "dataset": "silver.orders",
+    "window": "unbounded"
+   }
+  ],
+  "gold_columns": {
+   "added_by_job": [
+    "built_at"
+   ],
+   "resolved": 30,
+   "rows": [
+    {
+     "counts_rows_of": 0,
+     "derived_from": 1,
+     "name": "user_id",
+     "ordinal": 1,
+     "pit_status": "as_of_row",
+     "role": "key"
+    },
+    {
+     "counts_rows_of": 0,
+     "derived_from": 1,
+     "name": "user_name",
+     "ordinal": 2,
+     "pit_status": "as_of_row",
+     "role": "display_name"
+    },
+    {
+     "counts_rows_of": 0,
+     "derived_from": 1,
+     "name": "plan_tier",
+     "ordinal": 3,
+     "pit_status": "compliant",
+     "role": "feature"
+    },
+    {
+     "counts_rows_of": 1,
+     "derived_from": 4,
+     "name": "renewals_completed",
+     "ordinal": 4,
+     "pit_status": "declared_exception",
+     "role": "feature"
+    },
+    {
+     "counts_rows_of": 0,
+     "derived_from": 3,
+     "name": "active_days_7d",
+     "ordinal": 5,
+     "pit_status": "compliant",
+     "role": "feature"
+    },
+    {
+     "counts_rows_of": 0,
+     "derived_from": 3,
+     "name": "active_days_28d",
+     "ordinal": 6,
+     "pit_status": "compliant",
+     "role": "feature"
+    },
+    {
+     "counts_rows_of": 0,
+     "derived_from": 5,
+     "name": "engagement_trend",
+     "ordinal": 7,
+     "pit_status": "compliant",
+     "role": "feature"
+    },
+    {
+     "counts_rows_of": 0,
+     "derived_from": 3,
+     "name": "last_active_days_ago",
+     "ordinal": 8,
+     "pit_status": "compliant",
+     "role": "feature"
+    },
+    {
+     "counts_rows_of": 0,
+     "derived_from": 4,
+     "name": "agent_requests_28d",
+     "ordinal": 9,
+     "pit_status": "compliant",
+     "role": "feature"
+    },
+    {
+     "counts_rows_of": 0,
+     "derived_from": 6,
+     "name": "allowance_used_pct",
+     "ordinal": 10,
+     "pit_status": "compliant",
+     "role": "feature"
+    },
+    {
+     "counts_rows_of": 1,
+     "derived_from": 3,
+     "name": "limit_hits_14d",
+     "ordinal": 11,
+     "pit_status": "compliant",
+     "role": "feature"
+    },
+    {
+     "counts_rows_of": 0,
+     "derived_from": 5,
+     "name": "cheap_model_share_28d",
+     "ordinal": 12,
+     "pit_status": "compliant",
+     "role": "feature"
+    },
+    {
+     "counts_rows_of": 0,
+     "derived_from": 4,
+     "name": "overage_usd_28d",
+     "ordinal": 13,
+     "pit_status": "compliant",
+     "role": "feature"
+    },
+    {
+     "counts_rows_of": 0,
+     "derived_from": 4,
+     "name": "overage_toggled_off",
+     "ordinal": 14,
+     "pit_status": "compliant",
+     "role": "feature"
+    },
+    {
+     "counts_rows_of": 0,
+     "derived_from": 5,
+     "name": "suggestion_accept_rate_28d",
+     "ordinal": 15,
+     "pit_status": "compliant",
+     "role": "feature"
+    },
+    {
+     "counts_rows_of": 0,
+     "derived_from": 9,
+     "name": "accept_rate_change",
+     "ordinal": 16,
+     "pit_status": "compliant",
+     "role": "feature"
+    },
+    {
+     "counts_rows_of": 0,
+     "derived_from": 5,
+     "name": "agent_task_success_rate",
+     "ordinal": 17,
+     "pit_status": "compliant",
+     "role": "feature"
+    },
+    {
+     "counts_rows_of": 0,
+     "derived_from": 5,
+     "name": "failed_requests_rate",
+     "ordinal": 18,
+     "pit_status": "compliant",
+     "role": "feature"
+    },
+    {
+     "counts_rows_of": 0,
+     "derived_from": 5,
+     "name": "incident_exposed_28d",
+     "ordinal": 19,
+     "pit_status": "compliant",
+     "role": "feature"
+    },
+    {
+     "counts_rows_of": 1,
+     "derived_from": 3,
+     "name": "support_tickets_90d",
+     "ordinal": 20,
+     "pit_status": "compliant",
+     "role": "feature"
+    },
+    {
+     "counts_rows_of": 0,
+     "derived_from": 4,
+     "name": "ide_sessions_28d",
+     "ordinal": 21,
+     "pit_status": "compliant",
+     "role": "feature"
+    },
+    {
+     "counts_rows_of": 0,
+     "derived_from": 4,
+     "name": "cli_sessions_28d",
+     "ordinal": 22,
+     "pit_status": "compliant",
+     "role": "feature"
+    },
+    {
+     "counts_rows_of": 0,
+     "derived_from": 3,
+     "name": "weekend_usage_ratio",
+     "ordinal": 23,
+     "pit_status": "compliant",
+     "role": "feature"
+    },
+    {
+     "counts_rows_of": 0,
+     "derived_from": 3,
+     "name": "first_renewal_after_pricing_change",
+     "ordinal": 24,
+     "pit_status": "declared_exception",
+     "role": "feature"
+    },
+    {
+     "counts_rows_of": 0,
+     "derived_from": 13,
+     "name": "churned",
+     "ordinal": 25,
+     "pit_status": "label_side",
+     "role": "label"
+    },
+    {
+     "counts_rows_of": 0,
+     "derived_from": 13,
+     "name": "outcome",
+     "ordinal": 26,
+     "pit_status": "label_side",
+     "role": "outcome"
+    },
+    {
+     "counts_rows_of": 0,
+     "derived_from": 15,
+     "name": "route",
+     "ordinal": 27,
+     "pit_status": "label_side",
+     "role": "routing"
+    },
+    {
+     "counts_rows_of": 0,
+     "derived_from": 1,
+     "name": "feature_as_of",
+     "ordinal": 28,
+     "pit_status": "as_of_row",
+     "role": "time_anchor"
+    },
+    {
+     "counts_rows_of": 0,
+     "derived_from": 1,
+     "name": "renewal_date",
+     "ordinal": 29,
+     "pit_status": "as_of_row",
+     "role": "time_anchor"
+    },
+    {
+     "counts_rows_of": 0,
+     "derived_from": 1,
+     "name": "city",
+     "ordinal": 30,
+     "pit_status": "as_of_row",
+     "role": "attribute"
+    },
+    {
+     "counts_rows_of": 0,
+     "derived_from": 0,
+     "name": "built_at",
+     "ordinal": 31,
+     "pit_status": "not_applicable",
+     "role": "lake_metadata"
+    }
+   ],
+   "sql_columns": 30,
+   "unresolved": []
+  },
+  "invariant_9": {
+   "bronze_column": "bronze.churn_limit_events_raw.hit_at",
+   "bronze_paths_to_gold": [
+    [
+     "bronze.churn_limit_events_raw.hit_at",
+     "silver.churn_limit_events.hit_date",
+     "gold.churn_renewal_features.limit_hits_14d"
+    ]
+   ],
+   "silver_column": "silver.churn_limit_events.hit_at",
+   "silver_gold_descendants": []
+  },
+  "leaky": {
+   "dangling": [
+    "cancel_at_period_end"
+   ],
+   "declared": [
+    "built_at",
+    "cancel_at_period_end",
+    "city",
+    "feature_as_of",
+    "outcome",
+    "renewal_date",
+    "route"
+   ]
+  },
+  "parameters": [
+   {
+    "consistent": true,
+    "generator_value": 550.0,
+    "name": "allowance.pro",
+    "pandas_value": 550.0,
+    "sql_value": 550.0,
+    "unused": null
+   },
+   {
+    "consistent": true,
+    "generator_value": 1650.0,
+    "name": "allowance.pro_plus",
+    "pandas_value": 1650.0,
+    "sql_value": 1650.0,
+    "unused": null
+   },
+   {
+    "consistent": true,
+    "generator_value": 11000.0,
+    "name": "allowance.ultra",
+    "pandas_value": 11000.0,
+    "sql_value": 11000.0,
+    "unused": null
+   },
+   {
+    "consistent": true,
+    "generator_value": 7.0,
+    "name": "as_of_offset_days",
+    "pandas_value": 7.0,
+    "sql_value": 7.0,
+    "unused": null
+   },
+   {
+    "consistent": true,
+    "generator_value": 0.83,
+    "name": "cap_cut",
+    "pandas_value": 0.83,
+    "sql_value": 0.83,
+    "unused": null
+   },
+   {
+    "consistent": null,
+    "generator_value": null,
+    "name": "dunning_days",
+    "pandas_value": 14.0,
+    "sql_value": null,
+    "unused": true
+   }
+  ],
+  "pit": [
+   {
+    "declared_leaky": false,
+    "feature": "plan_tier",
+    "late_sources": [],
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads_after_as_of": false,
+    "unbounded_reads": [],
+    "windows": []
+   },
+   {
+    "declared_leaky": false,
+    "feature": "renewals_completed",
+    "late_sources": [
+     {
+      "dataset": "silver.churn_invoices",
+      "event_column": null,
+      "window": "(-inf, as_of+7)"
+     },
+     {
+      "dataset": "silver.churn_invoices",
+      "event_column": "invoice_date",
+      "window": "(-inf, as_of+7)"
+     }
+    ],
+    "max_upper_vs_as_of_days": 7,
+    "pit_status": "declared_exception",
+    "reads_after_as_of": true,
+    "unbounded_reads": [],
+    "windows": [
+     "(-inf, as_of+7)"
+    ]
+   },
+   {
+    "declared_leaky": false,
+    "feature": "active_days_7d",
+    "late_sources": [],
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads_after_as_of": false,
+    "unbounded_reads": [],
+    "windows": [
+     "(as_of-7, as_of]"
+    ]
+   },
+   {
+    "declared_leaky": false,
+    "feature": "active_days_28d",
+    "late_sources": [],
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads_after_as_of": false,
+    "unbounded_reads": [],
+    "windows": [
+     "(as_of-28, as_of]"
+    ]
+   },
+   {
+    "declared_leaky": false,
+    "feature": "engagement_trend",
+    "late_sources": [],
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads_after_as_of": false,
+    "unbounded_reads": [],
+    "windows": [
+     "(as_of-28, as_of]",
+     "(as_of-7, as_of]"
+    ]
+   },
+   {
+    "declared_leaky": false,
+    "feature": "last_active_days_ago",
+    "late_sources": [],
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads_after_as_of": false,
+    "unbounded_reads": [],
+    "windows": [
+     "(-inf, as_of]"
+    ]
+   },
+   {
+    "declared_leaky": false,
+    "feature": "agent_requests_28d",
+    "late_sources": [],
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads_after_as_of": false,
+    "unbounded_reads": [],
+    "windows": [
+     "(as_of-28, as_of]"
+    ]
+   },
+   {
+    "declared_leaky": false,
+    "feature": "allowance_used_pct",
+    "late_sources": [],
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads_after_as_of": false,
+    "unbounded_reads": [],
+    "windows": [
+     "(-inf, as_of]",
+     "(as_of-28, as_of]"
+    ]
+   },
+   {
+    "declared_leaky": false,
+    "feature": "limit_hits_14d",
+    "late_sources": [],
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads_after_as_of": false,
+    "unbounded_reads": [],
+    "windows": [
+     "(as_of-14, as_of]"
+    ]
+   },
+   {
+    "declared_leaky": false,
+    "feature": "cheap_model_share_28d",
+    "late_sources": [],
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads_after_as_of": false,
+    "unbounded_reads": [],
+    "windows": [
+     "(as_of-28, as_of]"
+    ]
+   },
+   {
+    "declared_leaky": false,
+    "feature": "overage_usd_28d",
+    "late_sources": [],
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads_after_as_of": false,
+    "unbounded_reads": [],
+    "windows": [
+     "(as_of-28, as_of]"
+    ]
+   },
+   {
+    "declared_leaky": false,
+    "feature": "overage_toggled_off",
+    "late_sources": [],
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads_after_as_of": false,
+    "unbounded_reads": [],
+    "windows": [
+     "(-inf, as_of]"
+    ]
+   },
+   {
+    "declared_leaky": false,
+    "feature": "suggestion_accept_rate_28d",
+    "late_sources": [],
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads_after_as_of": false,
+    "unbounded_reads": [],
+    "windows": [
+     "(as_of-28, as_of]"
+    ]
+   },
+   {
+    "declared_leaky": false,
+    "feature": "accept_rate_change",
+    "late_sources": [],
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads_after_as_of": false,
+    "unbounded_reads": [],
+    "windows": [
+     "(as_of-28, as_of]",
+     "(as_of-56, as_of-28]"
+    ]
+   },
+   {
+    "declared_leaky": false,
+    "feature": "agent_task_success_rate",
+    "late_sources": [],
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads_after_as_of": false,
+    "unbounded_reads": [],
+    "windows": [
+     "(as_of-28, as_of]"
+    ]
+   },
+   {
+    "declared_leaky": false,
+    "feature": "failed_requests_rate",
+    "late_sources": [],
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads_after_as_of": false,
+    "unbounded_reads": [],
+    "windows": [
+     "(as_of-28, as_of]"
+    ]
+   },
+   {
+    "declared_leaky": false,
+    "feature": "incident_exposed_28d",
+    "late_sources": [],
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads_after_as_of": false,
+    "unbounded_reads": [
+     {
+      "columns": [
+       "ends_on",
+       "starts_on"
+      ],
+      "dataset": "silver.churn_incidents",
+      "matched_window": "(as_of-28, as_of]",
+      "reference_data": "declared incident windows: reference data with no knowledge-time column"
+     }
+    ],
+    "windows": [
+     "(as_of-28, as_of]"
+    ]
+   },
+   {
+    "declared_leaky": false,
+    "feature": "support_tickets_90d",
+    "late_sources": [],
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads_after_as_of": false,
+    "unbounded_reads": [],
+    "windows": [
+     "(as_of-90, as_of]"
+    ]
+   },
+   {
+    "declared_leaky": false,
+    "feature": "ide_sessions_28d",
+    "late_sources": [],
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads_after_as_of": false,
+    "unbounded_reads": [],
+    "windows": [
+     "(as_of-28, as_of]"
+    ]
+   },
+   {
+    "declared_leaky": false,
+    "feature": "cli_sessions_28d",
+    "late_sources": [],
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads_after_as_of": false,
+    "unbounded_reads": [],
+    "windows": [
+     "(as_of-28, as_of]"
+    ]
+   },
+   {
+    "declared_leaky": false,
+    "feature": "weekend_usage_ratio",
+    "late_sources": [],
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads_after_as_of": false,
+    "unbounded_reads": [],
+    "windows": [
+     "(as_of-28, as_of]"
+    ]
+   },
+   {
+    "declared_leaky": false,
+    "feature": "first_renewal_after_pricing_change",
+    "late_sources": [
+     {
+      "dataset": "silver.churn_pricing_changes",
+      "event_column": "effective_date",
+      "window": "[as_of-23, as_of+7)"
+     }
+    ],
+    "max_upper_vs_as_of_days": 7,
+    "pit_status": "declared_exception",
+    "reads_after_as_of": true,
+    "unbounded_reads": [],
+    "windows": [
+     "[as_of-23, as_of+7)"
+    ]
+   }
+  ],
+  "pit_derivation": [
+   {
+    "feature": "plan_tier",
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads": 1,
+    "reads_after_as_of": false,
+    "windows": []
+   },
+   {
+    "feature": "renewals_completed",
+    "max_upper_vs_as_of_days": 7,
+    "pit_status": "declared_exception",
+    "reads": 5,
+    "reads_after_as_of": true,
+    "windows": [
+     "(-inf, as_of+7)"
+    ]
+   },
+   {
+    "feature": "active_days_7d",
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads": 3,
+    "reads_after_as_of": false,
+    "windows": [
+     "(as_of-7, as_of]"
+    ]
+   },
+   {
+    "feature": "active_days_28d",
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads": 3,
+    "reads_after_as_of": false,
+    "windows": [
+     "(as_of-28, as_of]"
+    ]
+   },
+   {
+    "feature": "engagement_trend",
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads": 5,
+    "reads_after_as_of": false,
+    "windows": [
+     "(as_of-28, as_of]",
+     "(as_of-7, as_of]"
+    ]
+   },
+   {
+    "feature": "last_active_days_ago",
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads": 3,
+    "reads_after_as_of": false,
+    "windows": [
+     "(-inf, as_of]"
+    ]
+   },
+   {
+    "feature": "agent_requests_28d",
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads": 4,
+    "reads_after_as_of": false,
+    "windows": [
+     "(as_of-28, as_of]"
+    ]
+   },
+   {
+    "feature": "allowance_used_pct",
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads": 6,
+    "reads_after_as_of": false,
+    "windows": [
+     "(-inf, as_of]",
+     "(as_of-28, as_of]"
+    ]
+   },
+   {
+    "feature": "limit_hits_14d",
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads": 4,
+    "reads_after_as_of": false,
+    "windows": [
+     "(as_of-14, as_of]"
+    ]
+   },
+   {
+    "feature": "cheap_model_share_28d",
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads": 5,
+    "reads_after_as_of": false,
+    "windows": [
+     "(as_of-28, as_of]"
+    ]
+   },
+   {
+    "feature": "overage_usd_28d",
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads": 4,
+    "reads_after_as_of": false,
+    "windows": [
+     "(as_of-28, as_of]"
+    ]
+   },
+   {
+    "feature": "overage_toggled_off",
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads": 4,
+    "reads_after_as_of": false,
+    "windows": [
+     "(-inf, as_of]"
+    ]
+   },
+   {
+    "feature": "suggestion_accept_rate_28d",
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads": 5,
+    "reads_after_as_of": false,
+    "windows": [
+     "(as_of-28, as_of]"
+    ]
+   },
+   {
+    "feature": "accept_rate_change",
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads": 9,
+    "reads_after_as_of": false,
+    "windows": [
+     "(as_of-28, as_of]",
+     "(as_of-56, as_of-28]"
+    ]
+   },
+   {
+    "feature": "agent_task_success_rate",
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads": 5,
+    "reads_after_as_of": false,
+    "windows": [
+     "(as_of-28, as_of]"
+    ]
+   },
+   {
+    "feature": "failed_requests_rate",
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads": 5,
+    "reads_after_as_of": false,
+    "windows": [
+     "(as_of-28, as_of]"
+    ]
+   },
+   {
+    "feature": "incident_exposed_28d",
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads": 5,
+    "reads_after_as_of": false,
+    "windows": [
+     "(as_of-28, as_of]",
+     "unbounded"
+    ]
+   },
+   {
+    "feature": "support_tickets_90d",
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads": 4,
+    "reads_after_as_of": false,
+    "windows": [
+     "(as_of-90, as_of]"
+    ]
+   },
+   {
+    "feature": "ide_sessions_28d",
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads": 4,
+    "reads_after_as_of": false,
+    "windows": [
+     "(as_of-28, as_of]"
+    ]
+   },
+   {
+    "feature": "cli_sessions_28d",
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads": 4,
+    "reads_after_as_of": false,
+    "windows": [
+     "(as_of-28, as_of]"
+    ]
+   },
+   {
+    "feature": "weekend_usage_ratio",
+    "max_upper_vs_as_of_days": 0,
+    "pit_status": "compliant",
+    "reads": 3,
+    "reads_after_as_of": false,
+    "windows": [
+     "(as_of-28, as_of]"
+    ]
+   },
+   {
+    "feature": "first_renewal_after_pricing_change",
+    "max_upper_vs_as_of_days": 7,
+    "pit_status": "declared_exception",
+    "reads": 3,
+    "reads_after_as_of": true,
+    "windows": [
+     "[as_of-23, as_of+7)"
+    ]
+   }
+  ],
+  "questions": {
+   "Q13_feature_pit": {
+    "args": {
+     "feature": "limit_hits_14d"
+    },
+    "caveats": [
+     "Derived from the gold SQL (windows relative to as_of): it says what a feature can read, not how many rows it did read after as_of."
+    ],
+    "data": {
+     "feature": "limit_hits_14d",
+     "features": [
+      {
+       "declared_leaky": false,
+       "feature": "limit_hits_14d",
+       "late_sources": [],
+       "max_upper_vs_as_of_days": 0,
+       "pit_status": "compliant",
+       "reads_after_as_of": false,
+       "unbounded_reads": [],
+       "windows": [
+        "(as_of-14, as_of]"
+       ]
+      }
+     ],
+     "rule": {
+      "as_of_offset_days": -7,
+      "id": "pit:features_le_as_of",
+      "source": "sql/churn/gold_renewal_features.sql:16",
+      "statement": "as_of = current_period_end - 7 days (the T-7 snapshot); every feature window's upper bound must be <= as_of"
+     },
+     "summary": {
+      "compliant": 20,
+      "declared_exception": 2,
+      "exceptions": [
+       "first_renewal_after_pricing_change",
+       "renewals_completed"
+      ],
+      "features": 22
+     }
+    },
+    "tool": "lineage_pit"
+   },
+   "Q14_pit_exceptions": {
+    "args": {},
+    "caveats": [
+     "Derived from the gold SQL (windows relative to as_of): it says what a feature can read, not how many rows it did read after as_of.",
+     "first_renewal_after_pricing_change: declared exception; its window ends 7 day(s) after as_of (silver.churn_pricing_changes.effective_date in [as_of-23, as_of+7)).",
+     "renewals_completed: declared exception; its window ends 7 day(s) after as_of (silver.churn_invoices rows in (-inf, as_of+7); silver.churn_invoices.invoice_date in (-inf, as_of+7))."
+    ],
+    "data": {
+     "feature": null,
+     "features": [
+      {
+       "declared_leaky": false,
+       "feature": "first_renewal_after_pricing_change",
+       "late_sources": [
+        {
+         "dataset": "silver.churn_pricing_changes",
+         "event_column": "effective_date",
+         "window": "[as_of-23, as_of+7)"
+        }
+       ],
+       "max_upper_vs_as_of_days": 7,
+       "pit_status": "declared_exception",
+       "reads_after_as_of": true,
+       "unbounded_reads": [],
+       "windows": [
+        "[as_of-23, as_of+7)"
+       ]
+      },
+      {
+       "declared_leaky": false,
+       "feature": "renewals_completed",
+       "late_sources": [
+        {
+         "dataset": "silver.churn_invoices",
+         "event_column": null,
+         "window": "(-inf, as_of+7)"
+        },
+        {
+         "dataset": "silver.churn_invoices",
+         "event_column": "invoice_date",
+         "window": "(-inf, as_of+7)"
+        }
+       ],
+       "max_upper_vs_as_of_days": 7,
+       "pit_status": "declared_exception",
+       "reads_after_as_of": true,
+       "unbounded_reads": [],
+       "windows": [
+        "(-inf, as_of+7)"
+       ]
+      }
+     ],
+     "rule": {
+      "as_of_offset_days": -7,
+      "id": "pit:features_le_as_of",
+      "source": "sql/churn/gold_renewal_features.sql:16",
+      "statement": "as_of = current_period_end - 7 days (the T-7 snapshot); every feature window's upper bound must be <= as_of"
+     },
+     "summary": {
+      "compliant": 20,
+      "declared_exception": 2,
+      "exceptions": [
+       "first_renewal_after_pricing_change",
+       "renewals_completed"
+      ],
+      "features": 22
+     }
+    },
+    "tool": "lineage_pit"
+   },
+   "Q15_downstream_bronze_hit_at": {
+    "args": {
+     "direction": "downstream",
+     "target": "bronze.churn_limit_events_raw.hit_at"
+    },
+    "caveats": [
+     "Code-derived lineage (Tier 0): it says what the code reads and writes, not which rows a run touched.",
+     "Dead end (no gold or export column reads it): silver.churn_limit_events.hit_at.",
+     "The retention-radar contract is not in this build (core profile, or no RADAR_DIR): the consumer side shows only what this repo's code and CI state."
+    ],
+    "data": {
+     "direction": "downstream",
+     "edges": [
+      {
+       "cte": null,
+       "depth": 1,
+       "from": "bronze.churn_limit_events_raw.hit_at",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "silver.churn_limit_events.hit_at",
+       "transform": "IDENTITY",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 1,
+       "from": "bronze.churn_limit_events_raw.hit_at",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "silver.churn_limit_events.hit_date",
+       "transform": "F.to_date('hit_at')",
+       "window": null
+      },
+      {
+       "cte": "hits",
+       "depth": 2,
+       "from": "silver.churn_limit_events.hit_date",
+       "rel": "DERIVED_FROM",
+       "roles": "WINDOW_BOUND",
+       "to": "gold.churn_renewal_features.limit_hits_14d",
+       "transform": "COUNT(*) AS `limit_hits_14d`",
+       "window": "(as_of-14, as_of]"
+      },
+      {
+       "cte": null,
+       "depth": 2,
+       "from": "silver.churn_limit_events.hit_at",
+       "rel": "SOURCED_FROM",
+       "roles": null,
+       "to": "ge:edge:HIT_LIMIT",
+       "transform": null,
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 2,
+       "from": "silver.churn_limit_events.hit_at",
+       "rel": "SOURCED_FROM",
+       "roles": null,
+       "to": "ge:node:LimitHit",
+       "transform": null,
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 2,
+       "from": "silver.churn_limit_events.hit_date",
+       "rel": "SOURCED_FROM",
+       "roles": null,
+       "to": "ge:edge:HIT_LIMIT",
+       "transform": null,
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 2,
+       "from": "silver.churn_limit_events.hit_date",
+       "rel": "SOURCED_FROM",
+       "roles": null,
+       "to": "ge:node:LimitHit",
+       "transform": null,
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 3,
+       "from": "gold.churn_renewal_features.limit_hits_14d",
+       "rel": "CHECKS",
+       "roles": null,
+       "to": "assert:gold_parity#values",
+       "transform": "parity_values [error]",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 3,
+       "from": "gold.churn_renewal_features.limit_hits_14d",
+       "rel": "CHECKS",
+       "roles": null,
+       "to": "assert:graph_contract#pit_parity:limit_hits_14d",
+       "transform": "pit_parity [error]",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 3,
+       "from": "gold.churn_renewal_features.limit_hits_14d",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "export.churn_renewals_audit.limit_hits_14d",
+       "transform": "IDENTITY (dates and timestamps as ISO text)",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 3,
+       "from": "gold.churn_renewal_features.limit_hits_14d",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "export.churn_user_features.limit_hits_14d",
+       "transform": "IDENTITY (dates and timestamps as ISO text)",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 3,
+       "from": "gold.churn_renewal_features.limit_hits_14d",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "export.hero_inference_record.limit_hits_14d",
+       "transform": "IDENTITY (dates and timestamps as ISO text)",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 3,
+       "from": "gold.churn_renewal_features.limit_hits_14d",
+       "rel": "SOURCED_FROM",
+       "roles": null,
+       "to": "ge:edge:SIMILAR_TO",
+       "transform": null,
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 3,
+       "from": "gold.churn_renewal_features.limit_hits_14d",
+       "rel": "SOURCED_FROM",
+       "roles": null,
+       "to": "ge:node:Renewal",
+       "transform": null,
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 4,
+       "from": "export.churn_user_features.limit_hits_14d",
+       "rel": "CHECKS",
+       "roles": null,
+       "to": "assert:churn_export#not_null",
+       "transform": "not_null [error]",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 4,
+       "from": "export.churn_user_features.limit_hits_14d",
+       "rel": "CHECKS",
+       "roles": null,
+       "to": "assert:churn_export#range:limit_hits_14d",
+       "transform": "range [warn (error with --strict)]",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 4,
+       "from": "export.churn_user_features.limit_hits_14d",
+       "rel": "CONSUMES",
+       "roles": null,
+       "to": "repo:github.com/santoshshinde2012/retention-radar",
+       "transform": "via export.churn_user_features",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 4,
+       "from": "export.hero_inference_record.limit_hits_14d",
+       "rel": "CONSUMES",
+       "roles": null,
+       "to": "repo:github.com/santoshshinde2012/retention-radar",
+       "transform": "via export.hero_inference_record",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 4,
+       "from": "assert:gold_parity#values",
+       "rel": "HAS_ASSERTION",
+       "roles": null,
+       "to": "contract:gold_parity",
+       "transform": null,
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 4,
+       "from": "assert:graph_contract#pit_parity:limit_hits_14d",
+       "rel": "HAS_ASSERTION",
+       "roles": null,
+       "to": "contract:graph_contract",
+       "transform": null,
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 5,
+       "from": "assert:churn_export#not_null",
+       "rel": "HAS_ASSERTION",
+       "roles": null,
+       "to": "contract:churn_export",
+       "transform": null,
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 5,
+       "from": "assert:churn_export#range:limit_hits_14d",
+       "rel": "HAS_ASSERTION",
+       "roles": null,
+       "to": "contract:churn_export",
+       "transform": null,
+       "window": null
+      }
+     ],
+     "max_depth": 6,
+     "reached": {
+      "assertions": [
+       "assert:churn_export#not_null",
+       "assert:churn_export#range:limit_hits_14d",
+       "assert:gold_parity#values",
+       "assert:graph_contract#pit_parity:limit_hits_14d"
+      ],
+      "columns": {
+       "export": [
+        "export.churn_renewals_audit.limit_hits_14d",
+        "export.churn_user_features.limit_hits_14d",
+        "export.hero_inference_record.limit_hits_14d"
+       ],
+       "gold": [
+        "gold.churn_renewal_features.limit_hits_14d"
+       ],
+       "silver": [
+        "silver.churn_limit_events.hit_at",
+        "silver.churn_limit_events.hit_date"
+       ]
+      },
+      "consumers": [
+       "repo:github.com/santoshshinde2012/retention-radar"
+      ],
+      "contracts": [
+       "contract:churn_export",
+       "contract:gold_parity",
+       "contract:graph_contract"
+      ],
+      "datasets": [],
+      "graph_elements": [
+       "ge:edge:HIT_LIMIT",
+       "ge:edge:SIMILAR_TO",
+       "ge:node:LimitHit",
+       "ge:node:Renewal"
+      ],
+      "metrics": [],
+      "parameters": []
+     },
+     "summary": {
+      "branches": [
+       {
+        "dead_end": true,
+        "exports": [],
+        "gold": [],
+        "graph_elements": [
+         "ge:edge:HIT_LIMIT",
+         "ge:node:LimitHit"
+        ],
+        "transform": "IDENTITY",
+        "via": "silver.churn_limit_events.hit_at"
+       },
+       {
+        "dead_end": false,
+        "exports": [
+         "export.churn_renewals_audit.limit_hits_14d",
+         "export.churn_user_features.limit_hits_14d",
+         "export.hero_inference_record.limit_hits_14d"
+        ],
+        "gold": [
+         "gold.churn_renewal_features.limit_hits_14d"
+        ],
+        "graph_elements": [
+         "ge:edge:HIT_LIMIT",
+         "ge:node:LimitHit"
+        ],
+        "transform": "F.to_date('hit_at')",
+        "via": "silver.churn_limit_events.hit_date"
+       }
+      ],
+      "columns": 6,
+      "edges": 22,
+      "max_depth_reached": 5,
+      "reached_counts": {
+       "assertions": 4,
+       "consumers": 1,
+       "contracts": 3,
+       "export_columns": 3,
+       "gold_columns": 1,
+       "graph_elements": 4,
+       "silver_columns": 2
+      },
+      "stopped_at_max_depth": false
+     },
+     "target": "bronze.churn_limit_events_raw.hit_at"
+    },
+    "tool": "lineage_trace"
+   },
+   "Q16_unguarded_gold": {
+    "args": {},
+    "caveats": [
+     "Unguarded means no executed check looks at the column's values; it does not mean the values are wrong."
+    ],
+    "data": {
+     "column": null,
+     "dataset": "gold.churn_renewal_features",
+     "rule": "a value check is an executed assertion on the column or on an export column derived from it; absence checks (no_leak) and README expected values do not count",
+     "summary": {
+      "columns": 31,
+      "unguarded": 4,
+      "value_checked": 27
+     },
+     "unguarded": [
+      "gold.churn_renewal_features.feature_as_of",
+      "gold.churn_renewal_features.renewal_date",
+      "gold.churn_renewal_features.city",
+      "gold.churn_renewal_features.built_at"
+     ]
+    },
+    "tool": "lineage_guards"
+   },
+   "Q17_unused_silver": {
+    "args": {
+     "domain": "churn",
+     "layer": "silver"
+    },
+    "caveats": [
+     "Unused means no gold column reads it, as a value or in a predicate (code-derived).",
+     "The business graph reads 8 of them (also_read_by_graph)."
+    ],
+    "data": {
+     "also_read_by_graph": {
+      "silver.churn_incidents.incident_id": [
+       "ge:edge:EXPOSED_TO",
+       "ge:node:Incident"
+      ],
+      "silver.churn_invoices.amount_usd": [
+       "ge:edge:BILLED",
+       "ge:node:BillingEvent"
+      ],
+      "silver.churn_invoices.attempt": [
+       "ge:edge:BILLED",
+       "ge:node:BillingEvent"
+      ],
+      "silver.churn_limit_events.hit_at": [
+       "ge:edge:HIT_LIMIT",
+       "ge:node:LimitHit"
+      ],
+      "silver.churn_limit_events.limit_type": [
+       "ge:node:LimitHit"
+      ],
+      "silver.churn_pricing_changes.change_id": [
+       "ge:edge:CUT_CAP",
+       "ge:edge:FIRST_RENEWAL_AFTER",
+       "ge:node:PricingChange"
+      ],
+      "silver.churn_pricing_changes.description": [
+       "ge:node:PricingChange"
+      ],
+      "silver.churn_support_tickets.ticket_id": [
+       "ge:edge:OPENED",
+       "ge:node:Ticket"
+      ]
+     },
+     "columns": [
+      "silver.churn_incidents.incident_id",
+      "silver.churn_invoices.amount_usd",
+      "silver.churn_invoices.attempt",
+      "silver.churn_limit_events.hit_at",
+      "silver.churn_limit_events.limit_type",
+      "silver.churn_pricing_changes.change_id",
+      "silver.churn_pricing_changes.description",
+      "silver.churn_subscription_snapshots.status",
+      "silver.churn_support_tickets.ticket_id"
+     ],
+     "domain": "churn",
+     "layer": "silver",
+     "read_by": "gold",
+     "summary": {
+      "columns": 47,
+      "unused": 9
+     }
+    },
+    "tool": "lineage_unused"
+   },
+   "downstream_silver_hit_at": {
+    "args": {
+     "direction": "downstream",
+     "target": "silver.churn_limit_events.hit_at"
+    },
+    "caveats": [
+     "Code-derived lineage (Tier 0): it says what the code reads and writes, not which rows a run touched.",
+     "No gold or export column is derived from this column: only the consumers listed read it."
+    ],
+    "data": {
+     "direction": "downstream",
+     "edges": [
+      {
+       "cte": null,
+       "depth": 1,
+       "from": "silver.churn_limit_events.hit_at",
+       "rel": "SOURCED_FROM",
+       "roles": null,
+       "to": "ge:edge:HIT_LIMIT",
+       "transform": null,
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 1,
+       "from": "silver.churn_limit_events.hit_at",
+       "rel": "SOURCED_FROM",
+       "roles": null,
+       "to": "ge:node:LimitHit",
+       "transform": null,
+       "window": null
+      }
+     ],
+     "max_depth": 6,
+     "reached": {
+      "assertions": [],
+      "columns": {},
+      "consumers": [],
+      "contracts": [],
+      "datasets": [],
+      "graph_elements": [
+       "ge:edge:HIT_LIMIT",
+       "ge:node:LimitHit"
+      ],
+      "metrics": [],
+      "parameters": []
+     },
+     "summary": {
+      "branches": [],
+      "columns": 0,
+      "edges": 2,
+      "max_depth_reached": 1,
+      "reached_counts": {
+       "graph_elements": 2
+      },
+      "stopped_at_max_depth": false
+     },
+     "target": "silver.churn_limit_events.hit_at"
+    },
+    "tool": "lineage_trace"
+   },
+   "impact_silver_agent_requests": {
+    "args": {
+     "direction": "downstream",
+     "target": "silver.churn_usage_daily.agent_requests"
+    },
+    "caveats": [
+     "Code-derived lineage (Tier 0): it says what the code reads and writes, not which rows a run touched.",
+     "The retention-radar contract is not in this build (core profile, or no RADAR_DIR): the consumer side shows only what this repo's code and CI state."
+    ],
+    "data": {
+     "direction": "downstream",
+     "edges": [
+      {
+       "cte": "u28",
+       "depth": 1,
+       "from": "silver.churn_usage_daily.agent_requests",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "gold.churn_renewal_features.agent_requests_28d",
+       "transform": "SUM(`u`.`agent_requests`) AS `agent_requests`",
+       "window": "(as_of-28, as_of]"
+      },
+      {
+       "cte": "u28",
+       "depth": 1,
+       "from": "silver.churn_usage_daily.agent_requests",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "gold.churn_renewal_features.allowance_used_pct",
+       "transform": "SUM(`u`.`agent_requests`) AS `agent_requests`",
+       "window": "(as_of-28, as_of]"
+      },
+      {
+       "cte": "u28",
+       "depth": 1,
+       "from": "silver.churn_usage_daily.agent_requests",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "gold.churn_renewal_features.cheap_model_share_28d",
+       "transform": "SUM(`u`.`agent_requests`) AS `agent_requests`",
+       "window": "(as_of-28, as_of]"
+      },
+      {
+       "cte": null,
+       "depth": 2,
+       "from": "gold.churn_renewal_features.agent_requests_28d",
+       "rel": "CHECKS",
+       "roles": null,
+       "to": "assert:gold_parity#values",
+       "transform": "parity_values [error]",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 2,
+       "from": "gold.churn_renewal_features.allowance_used_pct",
+       "rel": "CHECKS",
+       "roles": null,
+       "to": "assert:gold_parity#values",
+       "transform": "parity_values [error]",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 2,
+       "from": "gold.churn_renewal_features.cheap_model_share_28d",
+       "rel": "CHECKS",
+       "roles": null,
+       "to": "assert:gold_parity#values",
+       "transform": "parity_values [error]",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 2,
+       "from": "gold.churn_renewal_features.agent_requests_28d",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "export.churn_renewals_audit.agent_requests_28d",
+       "transform": "IDENTITY (dates and timestamps as ISO text)",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 2,
+       "from": "gold.churn_renewal_features.agent_requests_28d",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "export.churn_user_features.agent_requests_28d",
+       "transform": "IDENTITY (dates and timestamps as ISO text)",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 2,
+       "from": "gold.churn_renewal_features.agent_requests_28d",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "export.hero_inference_record.agent_requests_28d",
+       "transform": "IDENTITY (dates and timestamps as ISO text)",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 2,
+       "from": "gold.churn_renewal_features.allowance_used_pct",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "export.churn_renewals_audit.allowance_used_pct",
+       "transform": "IDENTITY (dates and timestamps as ISO text)",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 2,
+       "from": "gold.churn_renewal_features.allowance_used_pct",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "export.churn_user_features.allowance_used_pct",
+       "transform": "IDENTITY (dates and timestamps as ISO text)",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 2,
+       "from": "gold.churn_renewal_features.allowance_used_pct",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "export.hero_inference_record.allowance_used_pct",
+       "transform": "IDENTITY (dates and timestamps as ISO text)",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 2,
+       "from": "gold.churn_renewal_features.cheap_model_share_28d",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "export.churn_renewals_audit.cheap_model_share_28d",
+       "transform": "IDENTITY (dates and timestamps as ISO text)",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 2,
+       "from": "gold.churn_renewal_features.cheap_model_share_28d",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "export.churn_user_features.cheap_model_share_28d",
+       "transform": "IDENTITY (dates and timestamps as ISO text)",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 2,
+       "from": "gold.churn_renewal_features.cheap_model_share_28d",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "export.hero_inference_record.cheap_model_share_28d",
+       "transform": "IDENTITY (dates and timestamps as ISO text)",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 2,
+       "from": "gold.churn_renewal_features.agent_requests_28d",
+       "rel": "SOURCED_FROM",
+       "roles": null,
+       "to": "ge:node:Renewal",
+       "transform": null,
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 2,
+       "from": "gold.churn_renewal_features.allowance_used_pct",
+       "rel": "SOURCED_FROM",
+       "roles": null,
+       "to": "ge:edge:SIMILAR_TO",
+       "transform": null,
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 2,
+       "from": "gold.churn_renewal_features.allowance_used_pct",
+       "rel": "SOURCED_FROM",
+       "roles": null,
+       "to": "ge:node:Renewal",
+       "transform": null,
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 2,
+       "from": "gold.churn_renewal_features.cheap_model_share_28d",
+       "rel": "SOURCED_FROM",
+       "roles": null,
+       "to": "ge:edge:SIMILAR_TO",
+       "transform": null,
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 2,
+       "from": "gold.churn_renewal_features.cheap_model_share_28d",
+       "rel": "SOURCED_FROM",
+       "roles": null,
+       "to": "ge:node:Renewal",
+       "transform": null,
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 3,
+       "from": "export.churn_user_features.agent_requests_28d",
+       "rel": "CHECKS",
+       "roles": null,
+       "to": "assert:churn_export#not_null",
+       "transform": "not_null [error]",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 3,
+       "from": "export.churn_user_features.agent_requests_28d",
+       "rel": "CHECKS",
+       "roles": null,
+       "to": "assert:churn_export#range:agent_requests_28d",
+       "transform": "range [warn (error with --strict)]",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 3,
+       "from": "export.churn_user_features.allowance_used_pct",
+       "rel": "CHECKS",
+       "roles": null,
+       "to": "assert:churn_export#not_null",
+       "transform": "not_null [error]",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 3,
+       "from": "export.churn_user_features.allowance_used_pct",
+       "rel": "CHECKS",
+       "roles": null,
+       "to": "assert:churn_export#range:allowance_used_pct",
+       "transform": "range [warn (error with --strict)]",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 3,
+       "from": "export.churn_user_features.cheap_model_share_28d",
+       "rel": "CHECKS",
+       "roles": null,
+       "to": "assert:churn_export#not_null",
+       "transform": "not_null [error]",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 3,
+       "from": "export.churn_user_features.cheap_model_share_28d",
+       "rel": "CHECKS",
+       "roles": null,
+       "to": "assert:churn_export#range:cheap_model_share_28d",
+       "transform": "range [warn (error with --strict)]",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 3,
+       "from": "export.churn_user_features.agent_requests_28d",
+       "rel": "CONSUMES",
+       "roles": null,
+       "to": "repo:github.com/santoshshinde2012/retention-radar",
+       "transform": "via export.churn_user_features",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 3,
+       "from": "export.churn_user_features.allowance_used_pct",
+       "rel": "CONSUMES",
+       "roles": null,
+       "to": "repo:github.com/santoshshinde2012/retention-radar",
+       "transform": "via export.churn_user_features",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 3,
+       "from": "export.churn_user_features.cheap_model_share_28d",
+       "rel": "CONSUMES",
+       "roles": null,
+       "to": "repo:github.com/santoshshinde2012/retention-radar",
+       "transform": "via export.churn_user_features",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 3,
+       "from": "export.hero_inference_record.agent_requests_28d",
+       "rel": "CONSUMES",
+       "roles": null,
+       "to": "repo:github.com/santoshshinde2012/retention-radar",
+       "transform": "via export.hero_inference_record",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 3,
+       "from": "export.hero_inference_record.allowance_used_pct",
+       "rel": "CONSUMES",
+       "roles": null,
+       "to": "repo:github.com/santoshshinde2012/retention-radar",
+       "transform": "via export.hero_inference_record",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 3,
+       "from": "export.hero_inference_record.cheap_model_share_28d",
+       "rel": "CONSUMES",
+       "roles": null,
+       "to": "repo:github.com/santoshshinde2012/retention-radar",
+       "transform": "via export.hero_inference_record",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 3,
+       "from": "assert:gold_parity#values",
+       "rel": "HAS_ASSERTION",
+       "roles": null,
+       "to": "contract:gold_parity",
+       "transform": null,
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 4,
+       "from": "assert:churn_export#not_null",
+       "rel": "HAS_ASSERTION",
+       "roles": null,
+       "to": "contract:churn_export",
+       "transform": null,
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 4,
+       "from": "assert:churn_export#range:agent_requests_28d",
+       "rel": "HAS_ASSERTION",
+       "roles": null,
+       "to": "contract:churn_export",
+       "transform": null,
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 4,
+       "from": "assert:churn_export#range:allowance_used_pct",
+       "rel": "HAS_ASSERTION",
+       "roles": null,
+       "to": "contract:churn_export",
+       "transform": null,
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 4,
+       "from": "assert:churn_export#range:cheap_model_share_28d",
+       "rel": "HAS_ASSERTION",
+       "roles": null,
+       "to": "contract:churn_export",
+       "transform": null,
+       "window": null
+      }
+     ],
+     "max_depth": 6,
+     "reached": {
+      "assertions": [
+       "assert:churn_export#not_null",
+       "assert:churn_export#range:agent_requests_28d",
+       "assert:churn_export#range:allowance_used_pct",
+       "assert:churn_export#range:cheap_model_share_28d",
+       "assert:gold_parity#values"
+      ],
+      "columns": {
+       "export": [
+        "export.churn_renewals_audit.agent_requests_28d",
+        "export.churn_renewals_audit.allowance_used_pct",
+        "export.churn_renewals_audit.cheap_model_share_28d",
+        "export.churn_user_features.agent_requests_28d",
+        "export.churn_user_features.allowance_used_pct",
+        "export.churn_user_features.cheap_model_share_28d",
+        "export.hero_inference_record.agent_requests_28d",
+        "export.hero_inference_record.allowance_used_pct",
+        "export.hero_inference_record.cheap_model_share_28d"
+       ],
+       "gold": [
+        "gold.churn_renewal_features.agent_requests_28d",
+        "gold.churn_renewal_features.allowance_used_pct",
+        "gold.churn_renewal_features.cheap_model_share_28d"
+       ]
+      },
+      "consumers": [
+       "repo:github.com/santoshshinde2012/retention-radar"
+      ],
+      "contracts": [
+       "contract:churn_export",
+       "contract:gold_parity"
+      ],
+      "datasets": [],
+      "graph_elements": [
+       "ge:edge:SIMILAR_TO",
+       "ge:node:Renewal"
+      ],
+      "metrics": [],
+      "parameters": []
+     },
+     "summary": {
+      "branches": [
+       {
+        "dead_end": false,
+        "exports": [
+         "export.churn_renewals_audit.agent_requests_28d",
+         "export.churn_user_features.agent_requests_28d",
+         "export.hero_inference_record.agent_requests_28d"
+        ],
+        "gold": [],
+        "graph_elements": [
+         "ge:node:Renewal"
+        ],
+        "transform": "SUM(`u`.`agent_requests`) AS `agent_requests`",
+        "via": "gold.churn_renewal_features.agent_requests_28d"
+       },
+       {
+        "dead_end": false,
+        "exports": [
+         "export.churn_renewals_audit.allowance_used_pct",
+         "export.churn_user_features.allowance_used_pct",
+         "export.hero_inference_record.allowance_used_pct"
+        ],
+        "gold": [],
+        "graph_elements": [
+         "ge:edge:SIMILAR_TO",
+         "ge:node:Renewal"
+        ],
+        "transform": "SUM(`u`.`agent_requests`) AS `agent_requests`",
+        "via": "gold.churn_renewal_features.allowance_used_pct"
+       },
+       {
+        "dead_end": false,
+        "exports": [
+         "export.churn_renewals_audit.cheap_model_share_28d",
+         "export.churn_user_features.cheap_model_share_28d",
+         "export.hero_inference_record.cheap_model_share_28d"
+        ],
+        "gold": [],
+        "graph_elements": [
+         "ge:edge:SIMILAR_TO",
+         "ge:node:Renewal"
+        ],
+        "transform": "SUM(`u`.`agent_requests`) AS `agent_requests`",
+        "via": "gold.churn_renewal_features.cheap_model_share_28d"
+       }
+      ],
+      "columns": 12,
+      "edges": 37,
+      "max_depth_reached": 4,
+      "reached_counts": {
+       "assertions": 5,
+       "consumers": 1,
+       "contracts": 2,
+       "export_columns": 9,
+       "gold_columns": 3,
+       "graph_elements": 2
+      },
+      "stopped_at_max_depth": false
+     },
+     "target": "silver.churn_usage_daily.agent_requests"
+    },
+    "tool": "lineage_trace"
+   },
+   "severity_limit_hits_guards": {
+    "args": {
+     "column": "gold.churn_renewal_features.limit_hits_14d"
+    },
+    "caveats": [
+     "Range breaches are warnings in check_churn_export.py and fail only with --strict.",
+     "No retention-radar rule is linked to these range checks in this build (core profile, or no RADAR_DIR): the severity comparison needs the full profile with a local radar checkout."
+    ],
+    "data": {
+     "assertions": [
+      {
+       "assertion": "assert:churn_export#not_null",
+       "checked_column": "export.churn_user_features.limit_hits_14d",
+       "contract": "churn_export",
+       "kind": "not_null",
+       "max": null,
+       "min": null,
+       "same_rule_as": [],
+       "severity": "error",
+       "source": "scripts/check_churn_export.py:68",
+       "source_line": 68
+      },
+      {
+       "assertion": "assert:churn_export#range:limit_hits_14d",
+       "checked_column": "export.churn_user_features.limit_hits_14d",
+       "contract": "churn_export",
+       "kind": "range",
+       "max": 60.0,
+       "min": 0.0,
+       "same_rule_as": [],
+       "severity": "warn (error with --strict)",
+       "source": "scripts/check_churn_export.py:88",
+       "source_line": 88
+      },
+      {
+       "assertion": "assert:gold_parity#values",
+       "checked_column": "gold.churn_renewal_features.limit_hits_14d",
+       "contract": "gold_parity",
+       "kind": "parity_values",
+       "max": null,
+       "min": null,
+       "same_rule_as": [],
+       "severity": "error",
+       "source": "scripts/check_gold_parity.py:84",
+       "source_line": 84
+      },
+      {
+       "assertion": "assert:graph_contract#pit_parity:limit_hits_14d",
+       "checked_column": "gold.churn_renewal_features.limit_hits_14d",
+       "contract": "graph_contract",
+       "kind": "pit_parity",
+       "max": null,
+       "min": null,
+       "same_rule_as": [],
+       "severity": "error",
+       "source": "scripts/check_graph_contract.py",
+       "source_line": null
+      }
+     ],
+     "column": "gold.churn_renewal_features.limit_hits_14d",
+     "summary": {
+      "assertions": 4,
+      "contracts": [
+       "churn_export",
+       "gold_parity",
+       "graph_contract"
+      ],
+      "severity_differs": [],
+      "value_checks": 4
+     }
+    },
+    "tool": "lineage_guards"
+   },
+   "unused_bronze_churn": {
+    "args": {
+     "domain": "churn",
+     "layer": "bronze"
+    },
+    "caveats": [
+     "Unused means no silver column reads it, as a value or in a predicate (code-derived).",
+     "Bronze lineage columns (_source_file, _ingested_at) are dropped before silver on purpose."
+    ],
+    "data": {
+     "also_read_by_graph": {},
+     "columns": [
+      "bronze.churn_incidents_raw._ingested_at",
+      "bronze.churn_incidents_raw._source_file",
+      "bronze.churn_invoices_raw._ingested_at",
+      "bronze.churn_invoices_raw._source_file",
+      "bronze.churn_limit_events_raw._ingested_at",
+      "bronze.churn_limit_events_raw._source_file",
+      "bronze.churn_overage_charges_raw._ingested_at",
+      "bronze.churn_overage_charges_raw._source_file",
+      "bronze.churn_overage_settings_raw._ingested_at",
+      "bronze.churn_overage_settings_raw._source_file",
+      "bronze.churn_pricing_changes_raw._ingested_at",
+      "bronze.churn_pricing_changes_raw._source_file",
+      "bronze.churn_subscription_events_raw._ingested_at",
+      "bronze.churn_subscription_events_raw._source_file",
+      "bronze.churn_subscription_snapshots_raw._ingested_at",
+      "bronze.churn_subscription_snapshots_raw._source_file",
+      "bronze.churn_support_tickets_raw._ingested_at",
+      "bronze.churn_support_tickets_raw._source_file",
+      "bronze.churn_usage_raw._ingested_at",
+      "bronze.churn_usage_raw._source_file"
+     ],
+     "domain": "churn",
+     "layer": "bronze",
+     "read_by": "silver",
+     "summary": {
+      "columns": 66,
+      "unused": 20
+     }
+    },
+    "tool": "lineage_unused"
+   },
+   "unused_silver_retail": {
+    "args": {
+     "domain": "retail",
+     "layer": "silver"
+    },
+    "caveats": [
+     "Unused means no gold column reads it, as a value or in a predicate (code-derived)."
+    ],
+    "data": {
+     "also_read_by_graph": {},
+     "columns": [
+      "silver.customers.customer_id",
+      "silver.customers.name",
+      "silver.customers.email",
+      "silver.customers.city",
+      "silver.customers.signup_date",
+      "silver.customers._source_file",
+      "silver.customers._ingested_at",
+      "silver.orders.order_id",
+      "silver.orders.customer_id",
+      "silver.orders._source_file",
+      "silver.orders._ingested_at"
+     ],
+     "domain": "retail",
+     "layer": "silver",
+     "read_by": "gold",
+     "summary": {
+      "columns": 14,
+      "unused": 11
+     }
+    },
+    "tool": "lineage_unused"
+   },
+   "upstream_allowance_used_pct": {
+    "args": {
+     "direction": "upstream",
+     "target": "gold.churn_renewal_features.allowance_used_pct"
+    },
+    "caveats": [
+     "Code-derived lineage (Tier 0): it says what the code reads and writes, not which rows a run touched."
+    ],
+    "data": {
+     "direction": "upstream",
+     "edges": [
+      {
+       "cte": "pricing",
+       "depth": 1,
+       "from": "gold.churn_renewal_features.allowance_used_pct",
+       "rel": "DERIVED_FROM",
+       "roles": "WINDOW_BOUND",
+       "to": "silver.churn_pricing_changes.effective_date",
+       "transform": "SUM(CASE WHEN `p`.`effective_date` <= `r`.`as_of` THEN 1 ELSE 0 END) AS `cuts_so_far`",
+       "window": "(-inf, as_of]"
+      },
+      {
+       "cte": "renewals",
+       "depth": 1,
+       "from": "gold.churn_renewal_features.allowance_used_pct",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "silver.churn_subscription_snapshots.plan_tier",
+       "transform": "`churn_subscription_snapshots`.`plan_tier` AS `plan_tier`",
+       "window": null
+      },
+      {
+       "cte": "renewals",
+       "depth": 1,
+       "from": "gold.churn_renewal_features.allowance_used_pct",
+       "rel": "DERIVED_FROM",
+       "roles": "ANCHOR",
+       "to": "silver.churn_subscription_snapshots.snapshot_date",
+       "transform": "`churn_subscription_snapshots`.`snapshot_date` AS `as_of`",
+       "window": null
+      },
+      {
+       "cte": "u28",
+       "depth": 1,
+       "from": "gold.churn_renewal_features.allowance_used_pct",
+       "rel": "DERIVED_FROM",
+       "roles": "WINDOW_BOUND",
+       "to": "silver.churn_usage_daily.activity_date",
+       "transform": "SUM(`u`.`agent_requests`) AS `agent_requests`",
+       "window": "(as_of-28, as_of]"
+      },
+      {
+       "cte": "u28",
+       "depth": 1,
+       "from": "gold.churn_renewal_features.allowance_used_pct",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "silver.churn_usage_daily.agent_requests",
+       "transform": "SUM(`u`.`agent_requests`) AS `agent_requests`",
+       "window": "(as_of-28, as_of]"
+      },
+      {
+       "cte": "u28",
+       "depth": 1,
+       "from": "gold.churn_renewal_features.allowance_used_pct",
+       "rel": "DERIVED_FROM",
+       "roles": "JOIN_KEY",
+       "to": "silver.churn_usage_daily.subscription_id",
+       "transform": "SUM(`u`.`agent_requests`) AS `agent_requests`",
+       "window": "(as_of-28, as_of]"
+      },
+      {
+       "cte": null,
+       "depth": 1,
+       "from": "gold.churn_renewal_features.allowance_used_pct",
+       "rel": "USED_BY",
+       "roles": null,
+       "to": "param:allowance.pro",
+       "transform": "value 550; consistent=True",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 1,
+       "from": "gold.churn_renewal_features.allowance_used_pct",
+       "rel": "USED_BY",
+       "roles": null,
+       "to": "param:allowance.pro_plus",
+       "transform": "value 1650; consistent=True",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 1,
+       "from": "gold.churn_renewal_features.allowance_used_pct",
+       "rel": "USED_BY",
+       "roles": null,
+       "to": "param:allowance.ultra",
+       "transform": "value 11000; consistent=True",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 1,
+       "from": "gold.churn_renewal_features.allowance_used_pct",
+       "rel": "USED_BY",
+       "roles": null,
+       "to": "param:cap_cut",
+       "transform": "value 0.83; consistent=True",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 2,
+       "from": "silver.churn_pricing_changes.effective_date",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "bronze.churn_pricing_changes_raw.effective_date",
+       "transform": "IDENTITY",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 2,
+       "from": "silver.churn_subscription_snapshots.plan_tier",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "bronze.churn_subscription_snapshots_raw.plan_tier",
+       "transform": "F.lower(F.trim('plan_tier'))",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 2,
+       "from": "silver.churn_subscription_snapshots.snapshot_date",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "bronze.churn_subscription_snapshots_raw.snapshot_date",
+       "transform": "IDENTITY",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 2,
+       "from": "silver.churn_usage_daily.activity_date",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "bronze.churn_usage_raw.activity_date",
+       "transform": "IDENTITY",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 2,
+       "from": "silver.churn_usage_daily.agent_requests",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "bronze.churn_usage_raw.agent_requests",
+       "transform": "IDENTITY",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 2,
+       "from": "silver.churn_usage_daily.subscription_id",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "bronze.churn_usage_raw.subscription_id",
+       "transform": "IDENTITY",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 3,
+       "from": "bronze.churn_pricing_changes_raw.effective_date",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "source.pricing_changes.effective_date",
+       "transform": "CAST(DATE)",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 3,
+       "from": "bronze.churn_subscription_snapshots_raw.plan_tier",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "source.subscription_snapshots.plan_tier",
+       "transform": "CAST(STRING)",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 3,
+       "from": "bronze.churn_subscription_snapshots_raw.snapshot_date",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "source.subscription_snapshots.snapshot_date",
+       "transform": "CAST(DATE)",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 3,
+       "from": "bronze.churn_usage_raw.activity_date",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "source.daily_usage.activity_date",
+       "transform": "CAST(DATE)",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 3,
+       "from": "bronze.churn_usage_raw.agent_requests",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "source.daily_usage.agent_requests",
+       "transform": "CAST(INT)",
+       "window": null
+      },
+      {
+       "cte": null,
+       "depth": 3,
+       "from": "bronze.churn_usage_raw.subscription_id",
+       "rel": "DERIVED_FROM",
+       "roles": "VALUE",
+       "to": "source.daily_usage.subscription_id",
+       "transform": "CAST(STRING)",
+       "window": null
+      }
+     ],
+     "max_depth": 6,
+     "reached": {
+      "assertions": [],
+      "columns": {
+       "bronze": [
+        "bronze.churn_pricing_changes_raw.effective_date",
+        "bronze.churn_subscription_snapshots_raw.plan_tier",
+        "bronze.churn_subscription_snapshots_raw.snapshot_date",
+        "bronze.churn_usage_raw.activity_date",
+        "bronze.churn_usage_raw.agent_requests",
+        "bronze.churn_usage_raw.subscription_id"
+       ],
+       "silver": [
+        "silver.churn_pricing_changes.effective_date",
+        "silver.churn_subscription_snapshots.plan_tier",
+        "silver.churn_subscription_snapshots.snapshot_date",
+        "silver.churn_usage_daily.activity_date",
+        "silver.churn_usage_daily.agent_requests",
+        "silver.churn_usage_daily.subscription_id"
+       ],
+       "source": [
+        "source.daily_usage.activity_date",
+        "source.daily_usage.agent_requests",
+        "source.daily_usage.subscription_id",
+        "source.pricing_changes.effective_date",
+        "source.subscription_snapshots.plan_tier",
+        "source.subscription_snapshots.snapshot_date"
+       ]
+      },
+      "consumers": [],
+      "contracts": [],
+      "datasets": [],
+      "graph_elements": [],
+      "metrics": [],
+      "parameters": [
+       "param:allowance.pro",
+       "param:allowance.pro_plus",
+       "param:allowance.ultra",
+       "param:cap_cut"
+      ]
+     },
+     "summary": {
+      "columns": 18,
+      "edges": 22,
+      "max_depth_reached": 3,
+      "reached_counts": {
+       "bronze_columns": 6,
+       "parameters": 4,
+       "silver_columns": 6,
+       "source_columns": 6
+      },
+      "sources": [
+       "source.daily_usage.activity_date",
+       "source.daily_usage.agent_requests",
+       "source.daily_usage.subscription_id",
+       "source.pricing_changes.effective_date",
+       "source.subscription_snapshots.plan_tier",
+       "source.subscription_snapshots.snapshot_date"
+      ],
+      "stopped_at_max_depth": false
+     },
+     "target": "gold.churn_renewal_features.allowance_used_pct"
+    },
+    "tool": "lineage_trace"
+   }
+  },
+  "range_guarantees": {
+   "by_kind": {
+    "data_dependent": [
+     "agent_requests_28d",
+     "agent_task_success_rate",
+     "cheap_model_share_28d",
+     "cli_sessions_28d",
+     "failed_requests_rate",
+     "ide_sessions_28d",
+     "limit_hits_14d",
+     "overage_usd_28d",
+     "renewals_completed",
+     "suggestion_accept_rate_28d",
+     "support_tickets_90d",
+     "weekend_usage_ratio"
+    ],
+    "sql_clamp": [
+     "accept_rate_change",
+     "allowance_used_pct",
+     "engagement_trend",
+     "last_active_days_ago"
+    ],
+    "window_length": [
+     "active_days_28d",
+     "active_days_7d"
+    ]
+   },
+   "guaranteed": 6,
+   "ranges": 18,
+   "rows": [
+    {
+     "contract_max": 3.0,
+     "contract_min": 0.0,
+     "name": "accept_rate_change",
+     "range_guarantee": "sql_clamp"
+    },
+    {
+     "contract_max": 28.0,
+     "contract_min": 0.0,
+     "name": "active_days_28d",
+     "range_guarantee": "window_length(28d)"
+    },
+    {
+     "contract_max": 7.0,
+     "contract_min": 0.0,
+     "name": "active_days_7d",
+     "range_guarantee": "window_length(7d)"
+    },
+    {
+     "contract_max": 50000.0,
+     "contract_min": 0.0,
+     "name": "agent_requests_28d",
+     "range_guarantee": "data_dependent"
+    },
+    {
+     "contract_max": 1.0,
+     "contract_min": 0.0,
+     "name": "agent_task_success_rate",
+     "range_guarantee": "data_dependent"
+    },
+    {
+     "contract_max": 3.0,
+     "contract_min": 0.0,
+     "name": "allowance_used_pct",
+     "range_guarantee": "sql_clamp"
+    },
+    {
+     "contract_max": 1.0,
+     "contract_min": 0.0,
+     "name": "cheap_model_share_28d",
+     "range_guarantee": "data_dependent"
+    },
+    {
+     "contract_max": 500.0,
+     "contract_min": 0.0,
+     "name": "cli_sessions_28d",
+     "range_guarantee": "data_dependent"
+    },
+    {
+     "contract_max": 4.0,
+     "contract_min": 0.0,
+     "name": "engagement_trend",
+     "range_guarantee": "sql_clamp"
+    },
+    {
+     "contract_max": 1.0,
+     "contract_min": 0.0,
+     "name": "failed_requests_rate",
+     "range_guarantee": "data_dependent"
+    },
+    {
+     "contract_max": 500.0,
+     "contract_min": 0.0,
+     "name": "ide_sessions_28d",
+     "range_guarantee": "data_dependent"
+    },
+    {
+     "contract_max": 90.0,
+     "contract_min": 0.0,
+     "name": "last_active_days_ago",
+     "range_guarantee": "sql_clamp"
+    },
+    {
+     "contract_max": 60.0,
+     "contract_min": 0.0,
+     "name": "limit_hits_14d",
+     "range_guarantee": "data_dependent"
+    },
+    {
+     "contract_max": 5000.0,
+     "contract_min": 0.0,
+     "name": "overage_usd_28d",
+     "range_guarantee": "data_dependent"
+    },
+    {
+     "contract_max": 60.0,
+     "contract_min": 0.0,
+     "name": "renewals_completed",
+     "range_guarantee": "data_dependent"
+    },
+    {
+     "contract_max": 1.0,
+     "contract_min": 0.0,
+     "name": "suggestion_accept_rate_28d",
+     "range_guarantee": "data_dependent"
+    },
+    {
+     "contract_max": 50.0,
+     "contract_min": 0.0,
+     "name": "support_tickets_90d",
+     "range_guarantee": "data_dependent"
+    },
+    {
+     "contract_max": 1.0,
+     "contract_min": 0.0,
+     "name": "weekend_usage_ratio",
+     "range_guarantee": "data_dependent"
+    }
+   ]
+  },
+  "subgraph": {
+   "distinct_silver_columns_read": 38,
+   "gold_counts_rows_of_edges": 3,
+   "gold_derived_from_edges": 137,
+   "window_usage": {
+    "(-inf, as_of+7)": 2,
+    "(-inf, as_of]": 4,
+    "(as_of-14, as_of]": 2,
+    "(as_of-28, as_of]": 29,
+    "(as_of-56, as_of-28]": 3,
+    "(as_of-7, as_of]": 2,
+    "(as_of-90, as_of]": 2,
+    "[as_of-23, as_of+7)": 1,
+    "all history (no time filter)": 12
+   }
+  }
+ }
+}
