@@ -1,0 +1,32 @@
+# Graph on gold, lakehouse-native twin (PHASE 2c): local Spark + PyIceberg on top of the core
+# graph dependencies. Python 3.12 only, via uv. Used by .venv-graph-spark for
+# scripts/check_graph_parity.py (make graph-parity), the Spark/Iceberg tests in tests/graph
+# and a local run of src/jobs/graph/01_publish_gold_graph.py. Never needed by the core
+# build / serve path (requirements-graph.txt) and never installed into the Docker images.
+#
+# Lock (hashes for every platform; compiled AGAINST the core lock so every shared pin agrees):
+#   uv pip compile --universal --generate-hashes --python-version 3.12 \
+#     -c requirements-graph.txt requirements-graph-spark.in -o requirements-graph-spark.txt
+# Install (hash-checked; pyspark is an sdist, so pin its build backend too):
+#   uv venv --python 3.12 .venv-graph-spark
+#   uv pip sync --python .venv-graph-spark/bin/python --require-hashes requirements-graph-spark.txt
+#   pip install --require-hashes --build-constraint requirements-graph-spark.txt \
+#     -r requirements-graph-spark.txt                  # CI (pip >= 25.3 for --build-constraint)
+# Also needs a JDK 17 (GRAPH_JAVA_HOME / JAVA_HOME) and two jars that are NOT downloaded at run
+# time: iceberg-spark-runtime-3.5_2.12-1.6.1.jar and sqlite-jdbc-3.46.1.3.jar (found in ~/.ivy2,
+# ~/.m2 or $GRAPH_SPARK_JARS_DIR).
+-r requirements-graph.in
+
+# Local Spark, the same line as the ldl-spark image (apache/spark:3.5.3-java17). License: Apache-2.0.
+# sdist only on PyPI: uv builds the wheel once and caches it.
+pyspark==3.5.3
+
+# pyspark 3.5 imports distutils in toPandas() / createDataFrame(pandas); Python 3.12 has none and
+# setuptools ships the shim. Also pyspark's build backend. License: MIT.
+setuptools>=70
+
+# Iceberg reader pinned by tag + snapshot id (src/lakehouse_graph/iceberg_source.py).
+# sql-sqlite = the local JdbcCatalog(SQLite) harness, sql-postgres = the Docker stack's catalog
+# (adds psycopg2-binary: LGPL-3.0 with exceptions, flagged; pg8000 (BSD-3) is the permissive
+# alternative driver). License: Apache-2.0.
+pyiceberg[pyarrow,sql-postgres,sql-sqlite]==0.12.0

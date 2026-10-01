@@ -1,0 +1,5 @@
+# Build context for docker/graph/Dockerfile is the repo root: send only what the image COPYs.
+# (BuildKit reads <Dockerfile>.dockerignore next to the Dockerfile in preference to a root .dockerignore.)
+*
+!requirements-graph.txt
+!requirements-graph-spark-client.txt
