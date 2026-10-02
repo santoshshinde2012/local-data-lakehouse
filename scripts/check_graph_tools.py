@@ -346,16 +346,24 @@ def section_goldens(rep: Report, call: Calls, t: dict, build: Path, man: dict) -
     want = {flag: (sum(v.get(key, {}).get("n", 0) for v in fa.values()),
                    sum(v.get(key, {}).get("lapses", 0) for v in fa.values()))
             for flag, key in ((True, "with"), (False, "without"))}
-    got = {c["first_renewal_after_pricing_change"]: (c["n"], c["lapses"]) for c in env["data"]["cells"]}
-    rep.ok(got == want, f"lapse rate by first-renewal-after flag equals the oracle: {got}")
+    got = {c["first_renewal_after_pricing_change"]: (c["n"], c["lapses"]) for c in env["data"]["cells"]
+           if not c["suppressed"]}
+    # A shown cell equals the oracle; a null one is small or protected by the shared publication (on tiny both
+    # flag cells are null together: either one plus the plan answer would give back a small cell).
+    rep.ok(all(want[f] == v for f, v in got.items()) and
+           all(f in got or n < metrics.MIN_CELL or _complementary(env) for f, (n, _) in want.items()),
+           f"lapse rate by first-renewal-after flag equals the oracle where shown: {got} (oracle {want})")
     m = ren[(ren["route"] == "model") & (ren["plan_tier"] == "pro") & (ren["first_renewal_after_pricing_change"] == 1)
             & ren["limit_hits_14d"].between(3, 5)]
     env = call("metric_lapse_rate", {"plan_tier": "pro", "first_renewal_after_pricing_change": True,
                                      "limit_hits_14d_min": 3, "limit_hits_14d_max": 5})
     tot = env["data"]["total"]
-    rep.ok((tot["n"], tot["lapses"]) == ((len(m), int(m["churned"].sum())) if len(m) >= metrics.MIN_CELL
-                                         or len(m) == 0 else (None, None)),
-           f"pro, 3-5 cap hits, first after a cut: {tot['n']}/{tot['lapses']} equals pandas (1-4 null, 0 printed)")
+    exact = (tot["n"], tot["lapses"]) == (len(m), int(m["churned"].sum()))
+    # n >= 5 is printed exactly; under 5 is null, and so is a 0 that the shared publication pins (a filter
+    # prints what the grouped answer prints for that value); a printed small n other than 0 is a leak.
+    rep.ok(exact if len(m) >= metrics.MIN_CELL else (tot["n"] is None or (len(m) == 0 and exact)),
+           f"pro, 3-5 cap hits, first after a cut: {tot['n']}/{tot['lapses']} vs pandas {len(m)} "
+           "(n >= 5 exact; under 5 null, or a printed 0)")
     env = call("metric_route_counts", {})
     want_r = oracle.routes(t)["routes"]
     got_r: dict = {}
