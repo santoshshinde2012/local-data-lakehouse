@@ -4,6 +4,11 @@ Captured on 2026-10-02 (IST) on a MacBook Pro (Apple M1 Pro, 16 GB, macOS 26.6.2
 
 Radar branch `feat/local-first-stack-2026` (radar PR #21: https://github.com/santoshshinde2012/retention-radar/pull/21), reading the Spark export of `make churn-e2e` above (`churn_user_features.csv` 7,387 rows, `hero_inference_record.json`).
 
+> Since this run, radar PR #21 was squash-merged: radar `main` `7e3bec8` has the same tree as `65cab25` below, and
+> `pipelines/radar_consume.sh` and CI now use radar `main` by default (`RADAR_REF` only for a paired radar change).
+> Re-checked with `./pipelines/radar_consume.sh data/export` (ref `main`, commit `7e3bec8`): 7,387 rows scored,
+> same action counts.
+
 ## Sync, ingest, batch score
 
 Exit 0, 66.6 s.

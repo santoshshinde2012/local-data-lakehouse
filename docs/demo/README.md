@@ -8,7 +8,7 @@
 | Stack | Postgres 18.6 · Lakekeeper v0.13.6 (Iceberg REST) · RustFS 1.0.0 (SILO `RELEASE.2026-09-16T00-00-00Z` overlay) · lakehouse-init (curl 8.22.0) · Spark 4.1.3 + Iceberg 1.12.0 · Trino 483 (optional) · Airflow 3.3.2 + socket-proxy 1.13.1 (overlay) |
 | Host engines | DuckDB 1.5.6 · PyIceberg 0.12.0 · Polars 1.44.2 (`.venv`, no JVM) |
 | Graph layer | Python 3.12.9 · LadybugDB 0.21.2 · pandas 3.0.6 · networkx 3.7; Spark harness pyspark 4.1.3 |
-| Consumer | retention-radar `feat/local-first-stack-2026` @ `65cab25` ([radar PR #21](https://github.com/santoshshinde2012/retention-radar/pull/21)), Python 3.12, XGBoost 3.4.1 |
+| Consumer | retention-radar `feat/local-first-stack-2026` @ `65cab25` ([radar PR #21](https://github.com/santoshshinde2012/retention-radar/pull/21), since merged: same tree as radar `main` `7e3bec8`, now the default), Python 3.12, XGBoost 3.4.1 |
 
 ![Architecture: Lakekeeper REST catalog on Postgres 18, RustFS or SILO, Spark 4.1.3 + Iceberg 1.12, optional Trino, host engines, Airflow 3 overlay, graph layer, retention-radar](architecture-e2e.png)
 

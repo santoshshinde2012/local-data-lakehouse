@@ -31,7 +31,7 @@ volumes that a service of the loaded model mounts.
 | Airflow | 2.10.4 (EOL 2026-04-22), root, Docker socket, committed Fernet key, admin/admin, EXPOSE_CONFIG | **3.3.2**: api-server + scheduler + dag-processor, non-root, socket **proxy** limited to `docker exec` into ldl-spark/ldl-graph, generated secrets, config hidden, UI on 127.0.0.1 | Supported version; much smaller blast radius. Still a teaching overlay. |
 | Tests | ad-hoc scripts | **T0** unit (no containers), **T1** testcontainers contract, **T2** light smoke, **T3** full cross-engine parity; `make test-t0…t3` | Each tier answers one question; CI runs T0-T2 per PR, T3 on main or label `full-stack`. |
 | CI | checkout@v4, setup-python@v5, setup-java@v4 (Node 20, removed 2026-09-23) | checkout@v7, setup-python@v7, setup-java@v6; uv 0.12.22 | Node 24 actions. |
-| Radar step | cloned retention-radar `main` (v1 consumer) and failed on main | pinned v2 consumer commit unless a same-named branch exists (`pipelines/radar_consume.sh`) | See "Retention Radar step" below. |
+| Radar step | cloned retention-radar `main` (v1 consumer) and failed on main | retention-radar `main`, which reads the v2 export since radar #21 (`pipelines/radar_consume.sh`; `RADAR_REF` to override) | See "Retention Radar step" below. |
 | Graph | PyIceberg SqlCatalog on the JDBC tables (+ optional Postgres read-only role) | PyIceberg **REST** catalog (`type rest`), vended credentials, fsspec FileIO in the container | The graph container no longer touches Postgres; `config/graph/postgres_graph_ro.sql` removed. |
 | Time travel demo | `05_query_timetravel.py` read only the latest snapshot | bronze day-1 snapshot (10 rows) vs current (22) via `VERSION AS OF`; the light demo shows the same with DuckDB `AT (VERSION => …)`, PyIceberg and Polars | Shows what Iceberg time travel is for. |
 | Demo video | 49 MB `docs/demo/lakehouse-demo-original.mov` in the tree | removed from the tree (still in history) | Keep clones small; host the file as a release asset. |
@@ -85,9 +85,10 @@ The step failed on `main` after PR #11 because retention-radar's `main` still re
 (`santosh_inference_record.json`), while this repo exports **v2** (`hero_inference_record.json`). The
 radar-side v2 consumer (its PR #18, branch `feat/coding-assistant-renewal-v2`) was closed without being
 merged, so the "same-named branch, else main" rule fell back to a v1 consumer on every push to main.
-`pipelines/radar_consume.sh` now uses `RADAR_REF` if set, else a same-named radar branch, else the
-pinned v2 consumer commit `953af3a`. When radar merges a v2 consumer to main, set `RADAR_V2_SHA` to that
-commit (or to `main`).
+Radar PR #21 put the v2 reader on radar `main` (squash merge `7e3bec8`, 2026-10-02). CI and
+`pipelines/radar_consume.sh` now clone radar `main`; there is no same-named-branch lookup and no pinned
+v2 fallback any more. `RADAR_REF=<branch or commit>` points the script at a paired radar change.
+Re-checked against radar `main` `7e3bec8` on macOS: 7,387 rows scored, same action counts.
 
 ## Verified on macOS arm64 (2026-10-02)
 
@@ -105,7 +106,7 @@ Re-run after the Iceberg 1.12.0 / graph dependency bump, except where marked.
 | `make churn-gold-local` + `make graph-local PROFILE=default` (strict) | OK in 17 s: 40,204 nodes / 130,366 edges, golden s42, export cross-check exact. Against the Spark-written export it fails on the 2 known rounding cells ([lakehouse-twin.md](docs/graph/lakehouse-twin.md#why-gold-drifts-by-1e-4-in-two-cells)), so run `churn-gold-local` first |
 | `check_graph_parity.py parity --profile tiny --strict` (pyspark 4.1.3) | OK in 23 s; Spark harness tests 10 passed |
 | `make airflow-up` + `make airflow-demo` (Airflow 3) | healthy in 37 s; 3 DAGs parse, 0 import errors; retail and churn `success` (demo 212 s); `lakehouse_graph` triggered after them: `success` in 122 s |
-| `pipelines/radar_consume.sh` (macOS, radar `feat/local-first-stack-2026` = radar PR #21) | fresh clone + venv in 66 s, sync + ingest + batch score 7,387 rows; radar `pytest` 96 passed in 34 s |
+| `pipelines/radar_consume.sh` (macOS, radar `feat/local-first-stack-2026` = radar PR #21; re-checked on radar `main` `7e3bec8` after the merge) | fresh clone + venv in 66 s, sync + ingest + batch score 7,387 rows; radar `pytest` 96 passed in 34 s |
 | `make graph-test` | 1,391 passed, 0 failed, 32 skipped in 12 min (the 18 failures that were also on `origin/main` are fixed; see [docs/graph/README.md](docs/graph/README.md#status)) |
 
 ## Changelog
@@ -125,7 +126,7 @@ Re-run after the Iceberg 1.12.0 / graph dependency bump, except where marked.
   2.53.0, openai 3.23.0; the local Spark harness on pyspark 4.1.3 + Iceberg 1.12.0 (was 3.5.3 / 1.6.1),
   psycopg2 removed from every lock.
 - **Tests and CI:** T0–T3 tiers; CI on Node 24 actions (checkout@v7, setup-python@v7, setup-java@v6), uv 0.12.22, pyspark 4.1.3 parity on Java 21;
-  the Retention Radar step uses radar's v2 consumer.
+  the Retention Radar step uses radar `main` (v2 reader since radar #21; `RADAR_REF` for a paired change).
 - **Fixes:** nondeterministic silver dedupe; Iceberg 1.11+ time-travel option; lineage extractor
   resolution of the bronze ingest and the radar step; CI Airflow compose validation; shellcheck SC2015
   in `scripts/graph_mcp.sh`.

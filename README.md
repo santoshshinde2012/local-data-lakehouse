@@ -336,9 +336,10 @@ make churn-parity          # run the gold SQL in local Spark 4.1.3 and compare w
 A 120-subscription fixture lives in `data/sample/churn/fixtures/tiny/` for quick demos. Sufficiency notes: [docs/churn-gold-sufficiency.md](docs/churn-gold-sufficiency.md).
 
 The exports feed [retention-radar](https://github.com/santoshshinde2012/retention-radar):
-`./pipelines/radar_consume.sh` checks out radar's v2 consumer (`RADAR_REF`, else a radar branch named
-like this one, else the pinned commit of radar's `feat/coding-assistant-renewal-v2`), syncs the export
-into its `data/external/` and batch-scores it (7,387 rows in a Linux container). Model choice,
+`./pipelines/radar_consume.sh` checks out radar `main` (its v2 reader, merged in radar
+[#21](https://github.com/santoshshinde2012/retention-radar/pull/21); `RADAR_REF=<branch or commit>` for a
+paired radar change), syncs the export into its `data/external/` and batch-scores it (7,387 rows, on
+macOS and in CI). Model choice,
 calibration and the renewal policy live there, not in this lakehouse.
 
 | Knob | Env / Make | Default |
