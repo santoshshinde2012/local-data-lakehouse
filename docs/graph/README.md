@@ -173,7 +173,7 @@ filtered by process.
 .venv-graph/bin/python scripts/graph_charts.py --profile s42 --docs-dir docs/graph --check   # exit 1 if anything is stale
 ```
 
-There is no `make graph-evidence` target yet ([operations.md](operations.md#make-targets)). `graph_charts.py`
+`make graph-evidence` runs the first command ([operations.md](operations.md#make-targets)). `graph_charts.py`
 reads the tool bench from `results/tools-bench-s42.json` (written by `graph_evidence.py`) unless
 `--tools-json` names another file. Everything between a `graph-evidence:begin` and a `graph-evidence:end`
 HTML comment in these pages is generated; edit the text around it. Charts are SVG, drawn twice (light and

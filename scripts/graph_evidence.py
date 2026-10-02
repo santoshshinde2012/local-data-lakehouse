@@ -450,8 +450,7 @@ def main(argv: list[str] | None = None) -> int:
             target = next((p for p in ("default", "s42", "tiny") if (b := latest_build(graph_root, p)) is not None
                            and (b / "lineage.lbdb").exists()), None)
             if target is None:
-                absent(res, "No build with a lineage graph: run scripts/build_lineage_local.py --graph-profile default "
-                            "(a make lineage-local target is planned).")
+                absent(res, "No build with a lineage graph: run make lineage-local (PROFILE=default).")
             else:
                 res.profile = target
                 run(res, [py, "scripts/check_lineage_contract.py", "--graph-profile", target, "--graph-root", gr,
@@ -521,8 +520,8 @@ def main(argv: list[str] | None = None) -> int:
             res = Result("cohorts", f"Feature cohorts ({a.chart_profile})", "cohorts", a.chart_profile)
             b = latest_build(graph_root, a.chart_profile)
             if b is None or not (b / "cohorts.parquet").is_file():
-                absent(res, f"No cohorts.parquet for profile {a.chart_profile}: run scripts/build_graph_cohorts.py "
-                            f"--profile {a.chart_profile} (a make graph-cohorts target is planned).")
+                absent(res, f"No cohorts.parquet for profile {a.chart_profile}: run make graph-cohorts "
+                            f"PROFILE={a.chart_profile}.")
             else:
                 parts, rcs, secs = [], [], 0.0
                 for extra in (["list", "--algorithm", "leiden"], ["list", "--algorithm", "louvain"],

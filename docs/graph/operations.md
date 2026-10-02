@@ -28,7 +28,7 @@ GRAPH_ROOT=/path/to/scratch`. Then start Claude Code in the repo root and approv
 
 ## Make targets
 
-The Makefile has the Phase 1 graph targets plus `graph-test` and `graph-e2e`. For the rest, run the
+The Makefile has the Phase 1 graph targets plus `graph-test`, `graph-e2e`, `lineage-local`, `graph-cohorts` and `graph-evidence`. For the rest, run the
 command in the last column directly (from the repo root, with `GRAPH_PY=.venv-graph/bin/python`).
 
 | Target | In the Makefile | What it runs |
@@ -43,9 +43,9 @@ command in the last column directly (from the repo root, with `GRAPH_PY=.venv-gr
 | `graph-golden [CONFIRM=1] [ONLY=tiny\|s42]` | yes | `scripts/build_graph_local.py golden` |
 | `graph-test` | yes | `.venv-graph/bin/python -m pytest -q tests/graph` (about 11 to 13 min on an M1 Pro) |
 | `graph-e2e` | yes | `make up-full`, then `docker-compose.graph.yml` up `--build --wait`, then `pipelines/run_graph_e2e.sh` ([lakehouse-twin.md](lakehouse-twin.md#docker-overlay)) |
-| `graph-evidence` | no | `$GRAPH_PY scripts/graph_evidence.py [--graph-root DIR]` |
-| `lineage-local` | no | `$GRAPH_PY scripts/build_lineage_local.py --graph-profile default && $GRAPH_PY scripts/check_lineage_contract.py --graph-profile default --strict` |
-| `graph-cohorts` | no | `$GRAPH_PY scripts/build_graph_cohorts.py --profile default` |
+| `graph-evidence` | yes | `$GRAPH_PY scripts/graph_evidence.py --graph-root $GRAPH_ROOT` |
+| `lineage-local [PROFILE=]` | yes | `$GRAPH_PY scripts/build_lineage_local.py --graph-profile $PROFILE && $GRAPH_PY scripts/check_lineage_contract.py --graph-profile $PROFILE --strict` |
+| `graph-cohorts [PROFILE=]` | yes | `$GRAPH_PY scripts/build_graph_cohorts.py build --profile $PROFILE` |
 | `graph-viz RENEWAL=<id>` | no | `$GRAPH_PY scripts/graph_viz.py --renewal sub_maya:2026-10-07` (writes `$GRAPH_ROOT/viz/<build>/...html`) |
 | `graph-tools-check` | no | `$GRAPH_PY scripts/check_graph_tools.py --profile s42 [--bench 20]` |
 | `graph-serve` | no | `scripts/graph_mcp.sh --toolset graph` (debug; stdio) |

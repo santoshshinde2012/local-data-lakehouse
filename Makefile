@@ -15,7 +15,8 @@ PYTEST = $(PY) -m pytest
 .PHONY: help env venv up up-light up-full wait down purge ps logs reset demo-light e2e churn-e2e churn-sample churn-gold-local \
 	churn-check churn-parity demo test test-t0 test-t1 test-t2 test-t3 stats \
 	airflow-up airflow-down airflow-wait airflow-trigger-retail airflow-trigger-churn airflow-demo
-.PHONY: graph-test graph-venv graph-sample graph-build graph-check graph-local graph-promote graph-clean graph-golden graph-e2e
+.PHONY: graph-test graph-venv graph-sample graph-build graph-check graph-local graph-promote graph-clean graph-golden graph-e2e \
+        lineage-local graph-cohorts graph-evidence
 
 help:
 	@echo "local-data-lakehouse (Iceberg 1.12 REST catalog: Lakekeeper + RustFS; see README)"
@@ -287,3 +288,18 @@ graph-golden:
 	$(GRAPH_PY_CHECK)
 	$(GRAPH_PY) scripts/build_graph_local.py golden $(if $(filter 1,$(CONFIRM)),--write,) \
 	  $(if $(ONLY),--only "$(ONLY)",) $(if $(GOLDEN_SCRATCH),--scratch "$(GOLDEN_SCRATCH)",)
+
+# The lineage graph and the cohort build the MCP toolsets name in their "unavailable" errors, and the
+# generated evidence record (docs/graph/results). GRAPH_PROFILE / PROFILE default to default.
+lineage-local:
+	$(GRAPH_PY_CHECK)
+	$(GRAPH_PY) scripts/build_lineage_local.py --graph-profile "$(PROFILE)" --graph-root "$(GRAPH_ROOT)"
+	$(GRAPH_PY) scripts/check_lineage_contract.py --graph-profile "$(PROFILE)" --graph-root "$(GRAPH_ROOT)" --strict
+
+graph-cohorts:
+	$(GRAPH_PY_CHECK)
+	$(GRAPH_PY) scripts/build_graph_cohorts.py build --profile "$(PROFILE)" --graph-root "$(GRAPH_ROOT)"
+
+graph-evidence:
+	$(GRAPH_PY_CHECK)
+	$(GRAPH_PY) scripts/graph_evidence.py --graph-root "$(GRAPH_ROOT)"
