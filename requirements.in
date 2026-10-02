@@ -1,0 +1,35 @@
+# Host-side Python (Python 3.12, via uv): the no-JVM engines of the `light` profile, the no-Docker
+# churn path and the T0-T3 test tiers. Spark jobs run inside ldl-spark and never use this file.
+#
+# Lock (hashes for every platform; constrained by the graph lock so pandas / numpy / pyarrow /
+# pytest are the exact versions the graph venv and the parity checks use):
+#   uv pip compile --universal --generate-hashes --python-version 3.12 \
+#     -c requirements-graph.txt requirements.in -o requirements.txt
+# Install (hash-checked):
+#   make venv        # uv venv --python 3.12 .venv + uv pip sync --require-hashes requirements.txt
+#   pip install --require-hashes -r requirements.txt     # CI
+#
+# Every dependency is open source (OSI).
+
+# pandas gold twin (scripts/build_churn_gold_local.py) + sample generator. BSD-3-Clause.
+pandas>=3.0,<4
+numpy>=2.5,<3
+
+# Iceberg REST client (Lakekeeper), vended credentials; s3fs = FsspecFileIO. Apache-2.0.
+pyiceberg[pyarrow,s3fs]==0.12.0
+pyarrow==25.0.1
+
+# SQL engine on the host: ATTACH ... (TYPE ICEBERG) to the REST catalog; INSERT/UPDATE/DELETE/MERGE.
+# MIT. NOTE: DuckDB 1.5.x reaches end of life on 2026-11-01 (2.0 is due 2026-10-21): re-test the
+# iceberg extension before bumping (MIGRATION.md).
+duckdb==1.5.6
+
+# DataFrames over Iceberg. MIT. Gotcha: the native Iceberg reader ignores vended credentials and
+# probes 169.254.169.254; read with reader_override="pyiceberg" (lakehouse_client.py does).
+polars==1.44.2
+
+# T1 contract tier: Postgres + Lakekeeper + RustFS in throwaway containers. Apache-2.0.
+testcontainers==4.15.0
+
+# Test runner (T0-T3). MIT.
+pytest>=8
