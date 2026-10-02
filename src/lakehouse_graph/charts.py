@@ -1381,6 +1381,23 @@ ER_CARDINALITY = {
 }
 
 
+# One palette for every Mermaid diagram in the repo (docs/diagrams.md; tests/unit/test_mermaid_diagrams.py
+# checks every block against it): the base theme with white clusters, and one classDef per layer.
+MERMAID_INIT = ('%%{init: {"theme": "base", "flowchart": {"wrappingWidth": 360}, "themeVariables": {"primaryColor": "'
+    '#CCFBF1", "primaryTextColor": "#0F172A", "primaryBorderColor": "#0F766E", "lineColor": "#64748B", "t'
+    'extColor": "#0F172A", "edgeLabelBackground": "#FFFFFF", "clusterBkg": "#FFFFFF", "clusterBorder": "#'
+    '64748B", "titleColor": "#0F172A", "attributeBackgroundColorOdd": "#FFFFFF", "attributeBackgroundColo'
+    'rEven": "#F0FDFA", "relationColor": "#64748B", "relationLabelBackground": "#FFFFFF", "relationLabelC'
+    'olor": "#0F172A"}}}%%')
+MERMAID_CLASSDEFS = """  classDef storage fill:#DBEAFE,stroke:#1D4ED8,color:#0F172A,stroke-width:1.5px
+  classDef catalog fill:#FEF3C7,stroke:#B45309,color:#0F172A,stroke-width:1.5px
+  classDef compute fill:#ECFCCB,stroke:#4D7C0F,color:#0F172A,stroke-width:1.5px
+  classDef orchestration fill:#FCE7F3,stroke:#BE185D,color:#0F172A,stroke-width:1.5px
+  classDef graphlayer fill:#CCFBF1,stroke:#0F766E,color:#0F172A,stroke-width:1.5px
+  classDef consumer fill:#FFEDD5,stroke:#C2410C,color:#0F172A,stroke-width:1.5px
+  classDef data fill:#F1F5F9,stroke:#475569,color:#0F172A,stroke-width:1.5px"""
+
+
 def mermaid_label(s: str) -> str:
     """Text safe inside a quoted Mermaid label."""
     return (str(s).replace("`", "").replace('"', "#quot;").replace("<", "#lt;").replace(">", "#gt;")
@@ -1396,7 +1413,7 @@ def mermaid_schema(counts: dict) -> str:
     from . import spec
 
     nodes, edges = counts["nodes"], counts["edges"]
-    out = ["flowchart LR"]
+    out = [MERMAID_INIT, "flowchart LR"]
     for label in spec.NODE_SCHEMA:
         out.append(f'  {label}["{label}<br/>{fmt_int(nodes.get(label, 0))}"]')
     loops = []
@@ -1408,6 +1425,8 @@ def mermaid_schema(counts: dict) -> str:
     for rel, e in loops:
         out.append(f'  {e.src}_{rel}{{{{"{rel} {fmt_int(edges.get(rel, 0))}<br/>{e.src} to another {e.dst}"}}}}')
         out.append(f"  {e.src} -.- {e.src}_{rel}")
+    members = [*spec.NODE_SCHEMA, *(f"{e.src}_{rel}" for rel, e in loops)]
+    out += ["", MERMAID_CLASSDEFS, f"  class {','.join(members)} graphlayer"]
     return "\n".join(out) + "\n"
 
 
@@ -1415,7 +1434,7 @@ def mermaid_er() -> str:
     """Entity-relationship view of spec.NODE_SCHEMA / EDGE_SCHEMA (columns and types; features collapsed)."""
     from . import spec
 
-    out = ["erDiagram"]
+    out = [MERMAID_INIT, "erDiagram"]   # entities take the graph-layer colours from the init (primaryColor)
     feats = set(spec.NUMERIC_FEATURES)
     for label, n in spec.NODE_SCHEMA.items():
         out.append(f"  {label} {{")
@@ -1443,7 +1462,7 @@ def mermaid_lineage(trace: dict) -> str:
     edges = sorted(trace["edges"], key=lambda e: (e["depth"], e["from"], e["to"], e["rel"]))
     names = sorted({e["from"] for e in edges} | {e["to"] for e in edges} | {trace["target"]})
     ids = {n: f"n{i}" for i, n in enumerate(names)}
-    out = ["flowchart LR"]
+    out = [MERMAID_INIT, "flowchart LR"]
     by_layer: dict[str, list[str]] = {}
     for n in names:
         layer = n.split(".", 1)[0] if n.split(".", 1)[0] in _LAYERS else "other"
@@ -1470,6 +1489,7 @@ def mermaid_lineage(trace: dict) -> str:
         label = " ".join(bits) or "copy"
         src, dst = (e["to"], e["from"]) if trace.get("direction", "upstream") == "upstream" else (e["from"], e["to"])
         out.append(f'  {ids[src]} -->|"{mermaid_label(label)}"| {ids[dst]}')
+    out += ["", MERMAID_CLASSDEFS, f"  class {','.join(ids[n] for n in names)} data"]
     return "\n".join(out) + "\n"
 
 

@@ -34,55 +34,57 @@ From the renewal gold to an agent answer. The detailed build, serve and lakehous
 profiles and the directory layout are in [architecture.md](architecture.md).
 
 ```mermaid
-flowchart TB
+%%{init: {"theme": "base", "flowchart": {"wrappingWidth": 360}, "themeVariables": {"primaryColor": "#CCFBF1", "primaryTextColor": "#0F172A", "primaryBorderColor": "#0F766E", "lineColor": "#64748B", "textColor": "#0F172A", "edgeLabelBackground": "#FFFFFF", "clusterBkg": "#FFFFFF", "clusterBorder": "#64748B", "titleColor": "#0F172A", "attributeBackgroundColorOdd": "#FFFFFF", "attributeBackgroundColorEven": "#F0FDFA", "relationColor": "#64748B", "relationLabelBackground": "#FFFFFF", "relationLabelColor": "#0F172A"}}}%%
+flowchart LR
   subgraph LAKE["1 · lakehouse gold product"]
-    direction LR
-    BR["bronze events<br/><b>make churn-sample</b>"] --> GD["gold.churn_renewal_features<br/>Spark + Iceberg <b>make churn-e2e</b><br/>or pandas twin <b>make churn-gold-local</b>"]
+    direction TB
+    BR["bronze events<br/>make churn-sample"] --> GD["gold.churn_renewal_features<br/>Spark + Iceberg: make churn-e2e<br/>or pandas twin: make churn-gold-local"]
   end
 
   subgraph BUILD["2 · graph build · no LLM · seconds"]
-    direction LR
-    GB["graph builder<br/>dated event edges + SIMILAR_TO"] --> PQ[("Parquet nodes + edges<br/>manifest.json")] --> LB[("graph.lbdb<br/>LadybugDB")] --> CK{"strict point-in-time<br/>contract<br/><b>make graph-local</b>"}
+    direction TB
+    GB["graph builder<br/>dated event edges + SIMILAR_TO"] --> PQ[("Parquet nodes + edges<br/>manifest.json")] --> LB[("graph.lbdb<br/>LadybugDB")] --> CK{"strict point-in-time<br/>contract<br/>make graph-local"}
     LX["lineage graph<br/>sqlglot + ast over repo code"]
     CO["feature cohorts<br/>NetworkX"]
   end
 
   subgraph SERVE["3 · serve · read-only · macOS sandbox"]
-    MCP["MCP servers <b>scripts/graph_mcp.sh</b><br/>graph · metrics · lineage · cohorts<br/>14 typed tools · provenance on every answer"]
+    MCP["MCP servers: scripts/graph_mcp.sh<br/>graph · metrics · lineage · cohorts<br/>14 typed tools · provenance on every answer"]
   end
 
   subgraph AGENTS["4 · agents"]
-    direction LR
-    CC["Claude Code<br/>.mcp.json + skill<br/><b>scripts/graph_ask.sh</b>"]
-    OSS["open-source agent, experimental<br/>Pydantic AI + Ollama qwen3:4b<br/><b>scripts/graph_chat.py</b>"]
+    direction TB
+    CC["Claude Code<br/>.mcp.json + skill<br/>scripts/graph_ask.sh"]
+    OSS["open-source agent, experimental<br/>Pydantic AI + Ollama qwen3:4b<br/>scripts/graph_chat.py"]
   end
 
-  TWIN["Docker overlay + Airflow DAG<br/>Spark writes gold.graph_* and tags every input<br/><b>make graph-e2e</b>"]
+  TWIN["Docker overlay + Airflow DAG<br/>Spark writes gold.graph_* and tags every input<br/>make graph-e2e"]
 
   GD --> GB
   GD -.-> TWIN
-  TWIN -.->|PyIceberg REST read pinned by tag + snapshot| GB
-  CK -->|pass, then promote| MCP
+  TWIN -.->|"PyIceberg REST read pinned by tag + snapshot"| GB
+  CK -->|"pass, then promote"| MCP
   LX --> MCP
   CO --> MCP
   MCP --> CC
   MCP --> OSS
 
-  style BR fill:#d6eaf8,stroke:#333
-  style GD fill:#fdebd0,stroke:#333
-  style GB fill:#d6eaf8,stroke:#333
-  style PQ fill:#fdebd0,stroke:#333
-  style LB fill:#fdebd0,stroke:#333
-  style CK fill:#e8f6e8,stroke:#333
-  style LX fill:#d6eaf8,stroke:#333
-  style CO fill:#d6eaf8,stroke:#333
-  style MCP fill:#1a1a1a,color:#7CFC98,stroke:#1a1a1a
-  style CC fill:#f5f5f5,stroke:#333
-  style OSS fill:#f5f5f5,stroke:#666,stroke-dasharray: 5 5
-  style TWIN fill:#f5f5f5,stroke:#666,stroke-dasharray: 5 5
+  classDef storage fill:#DBEAFE,stroke:#1D4ED8,color:#0F172A,stroke-width:1.5px
+  classDef catalog fill:#FEF3C7,stroke:#B45309,color:#0F172A,stroke-width:1.5px
+  classDef compute fill:#ECFCCB,stroke:#4D7C0F,color:#0F172A,stroke-width:1.5px
+  classDef orchestration fill:#FCE7F3,stroke:#BE185D,color:#0F172A,stroke-width:1.5px
+  classDef graphlayer fill:#CCFBF1,stroke:#0F766E,color:#0F172A,stroke-width:1.5px
+  classDef consumer fill:#FFEDD5,stroke:#C2410C,color:#0F172A,stroke-width:1.5px
+  classDef data fill:#F1F5F9,stroke:#475569,color:#0F172A,stroke-width:1.5px
+  class BR,GD data
+  class GB,PQ,LB,CK,LX,CO graphlayer
+  class MCP,CC,OSS consumer
+  class TWIN orchestration
+  style TWIN stroke-dasharray:5 5
+  style OSS stroke-dasharray:5 5
 ```
 
-Dashed boxes are optional (Docker) or experimental (the local-model agent). There is no chat UI.
+Dashed borders mark optional (Docker) or experimental (the local-model agent) parts; colours follow the [diagram palette](../diagrams.md). There is no chat UI.
 
 ## Quickstart (no Docker)
 

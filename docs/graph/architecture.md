@@ -11,19 +11,20 @@ build `28f3af496493` (see [results/index.md](results/index.md)).
 ## The picture
 
 ```mermaid
+%%{init: {"theme": "base", "flowchart": {"wrappingWidth": 360}, "themeVariables": {"primaryColor": "#CCFBF1", "primaryTextColor": "#0F172A", "primaryBorderColor": "#0F766E", "lineColor": "#64748B", "textColor": "#0F172A", "edgeLabelBackground": "#FFFFFF", "clusterBkg": "#FFFFFF", "clusterBorder": "#64748B", "titleColor": "#0F172A", "attributeBackgroundColorOdd": "#FFFFFF", "attributeBackgroundColorEven": "#F0FDFA", "relationColor": "#64748B", "relationLabelBackground": "#FFFFFF", "relationLabelColor": "#0F172A"}}}%%
 flowchart LR
   subgraph BUILD["BUILD mode: no Docker, no LLM (seconds)"]
     SRC["bronze CSVs<br/>per build profile, read only"] --> TWIN["pandas silver + gold twin<br/>scripts/build_churn_gold_local.py"]
     TWIN --> BLD["graph builder<br/>lakehouse_graph.build"]
     BLD --> PQ[("Parquet nodes + edges<br/>scaler + manifest.json")]
-    PQ --> LB[("graph.lbdb<br/>LadybugDB 0.21.1")]
+    PQ --> LB[("graph.lbdb<br/>LadybugDB 0.21.2")]
     CODE["repo code: sql, jobs,<br/>DAGs, Makefile, CI"] --> LX["Tier-0 lineage extractor<br/>sqlglot + ast + scope walk"]
     LX --> LIN[("lineage Parquet<br/>+ lineage.lbdb")]
     PQ --> COH[("cohorts.parquet<br/>outside the contract")]
     PQ --> CK{"check_graph_contract<br/>--strict"}
     LB --> CK
     LIN --> LCK{"check_lineage_contract<br/>--strict"}
-    CK -->|pass| PRO["promote: temp symlink + os.replace<br/>GRAPH_ROOT/current"]
+    CK -->|"pass"| PRO["promote: temp symlink + os.replace<br/>GRAPH_ROOT/current"]
   end
   subgraph SERVE["SERVE mode: containers stopped"]
     PRO --> L["scripts/graph_mcp.sh<br/>sandbox-exec on macOS"]
@@ -35,10 +36,24 @@ flowchart LR
     G & M & LI & CO -.-> OSS["Pydantic AI + Ollama qwen3:4b<br/>experimental"]
   end
   subgraph LAKE["LAKEHOUSE mode: Docker overlay"]
-    ICE[("Iceberg silver + gold")] --> SPK["Spark job 01_publish_gold_graph<br/>gold.graph_* + CREATE TAG"]
+    ICE[("Iceberg silver + gold<br/>on RustFS")] --> SPK["Spark job 01_publish_gold_graph<br/>gold.graph_* + CREATE TAG"]
     SPK --> PYI["PyIceberg REST catalog (Lakekeeper)<br/>pinned by tag + snapshot id"]
     PYI --> BLD
   end
+
+  classDef storage fill:#DBEAFE,stroke:#1D4ED8,color:#0F172A,stroke-width:1.5px
+  classDef catalog fill:#FEF3C7,stroke:#B45309,color:#0F172A,stroke-width:1.5px
+  classDef compute fill:#ECFCCB,stroke:#4D7C0F,color:#0F172A,stroke-width:1.5px
+  classDef orchestration fill:#FCE7F3,stroke:#BE185D,color:#0F172A,stroke-width:1.5px
+  classDef graphlayer fill:#CCFBF1,stroke:#0F766E,color:#0F172A,stroke-width:1.5px
+  classDef consumer fill:#FFEDD5,stroke:#C2410C,color:#0F172A,stroke-width:1.5px
+  classDef data fill:#F1F5F9,stroke:#475569,color:#0F172A,stroke-width:1.5px
+  class SRC,CODE data
+  class TWIN,SPK,PYI compute
+  class BLD,PQ,LB,LX,LIN,COH,CK,LCK,PRO graphlayer
+  class L,G,M,LI,CO,CC,OSS consumer
+  class ICE storage
+  style LAKE stroke-dasharray:5 5
 ```
 
 Solid arrows exist and are tested. The dashed arrow is the fully open-source agent path: built
