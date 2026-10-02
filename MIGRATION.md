@@ -105,7 +105,7 @@ Re-run after the Iceberg 1.12.0 / graph dependency bump, except where marked.
 | `check_graph_parity.py parity --profile tiny --strict` (pyspark 4.1.3) | OK in 23 s; Spark harness tests 10 passed |
 | `make airflow-up` + `make airflow-demo` (before the bump) | healthy in 65 s; both DAGs `success` |
 | `pipelines/radar_consume.sh` (Linux container, before the bump) | radar v2 consumer scored 7,387 rows |
-| `make graph-test` | 1,373 passed, 18 failed, 32 skipped in 11 min: the 18 fail identically on `origin/main` (privacy-suppression tests and `test_evidence`), see [docs/graph/README.md](docs/graph/README.md#status) |
+| `make graph-test` | 1,391 passed, 0 failed, 32 skipped in 12 min (the 18 failures that were also on `origin/main` are fixed; see [docs/graph/README.md](docs/graph/README.md#status)) |
 
 ## Changelog
 

@@ -98,6 +98,23 @@ own verdict: `strict_pass`, `pass`, `fail`, `stale` or `absent`. An Iceberg-sour
 - Cells with fewer than 5 renewals are suppressed (null), and so is any published cell that would give
   one back by subtraction (complementary suppression over the margins the answer publishes). Limit: this
   does not stop differencing across overlapping `limit_hits_14d` ranges in separate calls.
+- Suppression rules as the code applies them (`src/lakehouse_graph/metrics.py`, `protect()`; decided
+  2026-10-02 when the 18 failing disclosure tests were fixed, none by loosening the rule):
+  - The threshold is 5 (`MIN_CELL`) everywhere: a count of 1-4 is null. A 0 is printed unless it sits in
+    a null line.
+  - The current renewals (route `score_today` / `pending`) are public by design (`graph_find` names any
+    renewal with its route). They are printed even when small. So is a plan row or pricing side made only
+    of them.
+  - A null must never be computable from the printed numbers. The exact check now also proves pins that
+    follow from the published equations alone (linear span), which bounds propagation missed. A pinned
+    non-sensitive null is printed. A pinned head whose line still holds a null 0 is sensitive, because
+    printing it would raise that 0's lower bound, so it gets a complement instead. So does a numerator
+    pinned beside a null model count. A numerator goes back with its model count only when the exact check
+    allows it.
+  - When the search budget cannot decide a null, it stays null (the safe side). Example: on tiny, the
+    first-renewal-after split of `metric_lapse_rate` (75 / 33) and the `cap-cut-2026-08` known_by_as_of
+    sides (32 / 5) share one publication with the exposure tables and stay null.
+  - "No model-routed renewal matches these filters" is said only of a printed 0, never of a null total.
 
 Measured answer sizes at seed 42 (default cap): `graph_describe` 3,959 characters (detailed 9,103),
 `graph_find` 3,196, evidence (detailed) 4,226, similar 5,427, exposure 4,105, lapse rate 3,703, a large

@@ -140,17 +140,27 @@ What exists and passes, what exists and fails, and what is not built (updated 20
 | Guarded raw Cypher (`scripts/graph_mcp.sh --enable-cypher`, `cypher_guard.py`) | **built, opt-in**: served alone and only under the macOS sandbox | [agent.md](agent.md) |
 | OpenLineage loader (Tier 2) | **not built** | [lineage.md](lineage.md#tiers) |
 | CI `graph` job | **added** (graph tests + tiny build and strict contract) | `.github/workflows/ci.yml` |
-| Linux validation | **run in CI** (`graph` job on ubuntu-latest, PR #13): the same 18 known failures as macOS plus one shellcheck finding, now fixed | `.github/workflows/ci.yml` |
+| Linux validation | **run in CI** (`graph` job on ubuntu-latest, PR #13): the 18 known failures and one shellcheck finding are fixed | `.github/workflows/ci.yml` |
 
-`make graph-test` on 2026-10-02 (macOS arm64, after the dependency bump: ladybug 0.21.2, sqlglot 30.21.0):
-1,371 passed, 20 failed, 32 skipped in 11 min. `test_build.py::test_manifest_provenance` pinned ladybug
-0.21.1 and is fixed; `test_a_rebuild_keeps_a_fresh_lineage_build_and_its_contract_verdict` passed when
-re-run (149 passed in `test_build.py`). The other 18 fail identically on unmodified `origin/main` and are not
-caused by the stack upgrade: the disclosure / small-cell suppression tests (`test_tools_disclosure.py` ×11,
-`test_metrics.py` ×2, `test_tools.py` ×2, `test_tools_s42.py` ×2) and `test_evidence.py` ×1. The CI
-`graph` job on Linux (ubuntu-latest, PR #13, ladybug 0.21.1) had the same 18 plus a shellcheck finding
-in `scripts/graph_mcp.sh` (SC2015, also on `main`), now fixed. The Spark harness tests need
-`.venv-graph-spark` and are skipped by `make graph-test`; run with that venv they pass (pyspark 4.1.3). Open findings worth fixing first: those suppression failures; one
+`make graph-test` on 2026-10-02 (macOS arm64, ladybug 0.21.2, sqlglot 30.21.0): 1,391 passed, 0 failed,
+32 skipped in 12 min; `make graph-sample PROFILE=tiny && make graph-local PROFILE=tiny` passes the strict
+contract. The 18 disclosure / evidence failures that were also on `origin/main` are fixed, none by
+loosening suppression (the rules are in [agent.md](agent.md#output-hygiene-and-small-cells)):
+
+- the exact check missed pins that follow from the published equations alone (a null equal to a printed
+  total minus printed zeros), so it left computable nulls; it now proves them by linear span, and a
+  pinned margin over a null 0 or a pinned tied numerator gets a complement;
+- the adversary in `scripts/check_graph_tools.py` counted the current (public by design) cells, and plan
+  rows made only of them, as small-cell disclosures;
+- tests had drifted from the API (`Protected.withheld` is a set of groups, a cap-hit filter selects one
+  band) and from the shared publication (two tiny pins are now null together);
+- `scripts/graph_evidence.py` recorded a measurement script's "SKIP: no build" (exit 3) as FAIL; it
+  is "not run" now;
+- the "no renewal matches" caveat of `metric_lapse_rate` could give a null 0 back; it is said only of
+  a printed 0.
+
+The Spark harness tests need `.venv-graph-spark` and are skipped by `make graph-test`; run with that
+venv they pass (pyspark 4.1.3). Open findings worth fixing first: one
 population-template encoding the leak lint does not catch (the served templates are safe,
 [data-model.md](data-model.md#point-in-time-rules)); the sandbox check's unified-log step is not
 filtered by process.
