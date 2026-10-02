@@ -98,7 +98,7 @@ make graph-local && make graph-promote   # the default profile (data/sample/chur
 ```
 
 Then start Claude Code in the repo root and approve the project servers in `.mcp.json`, or run
-`scripts/graph_ask.sh "What could the model see about Maya at T-7?"`. Every target and command:
+`scripts/graph_ask.sh "What could the model see about Santosh at T-7?"`. Every target and command:
 [operations.md](operations.md).
 
 ## Pages

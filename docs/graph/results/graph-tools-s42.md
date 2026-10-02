@@ -41,13 +41,13 @@ check_graph_tools: build a2598a28e164 (profile s42, seed 42, N 8000), contract s
   note  golden s42.json (bronze sha256 match)
   ok    hero evidence equals the committed golden s42.json
   ok    hero top-10 equals the committed golden s42.json
-  ok    PLAN: Maya's 8 ordered evidence rows
+  ok    PLAN: Santosh's 8 ordered evidence rows
   ok    PLAN: top-10 with 2 lapses, Wilson [0.057, 0.510]
   ok    PLAN: sub_07200 top-3 shares cheap_model_share / engagement_trend / weekend_usage_ratio
   ok    PLAN: inc-002 606 / 185 / 46 and 329 detailed
   ok    PLAN: inc-002 pro 606 / 545 / 57 / 33 / 28; Q20 751 exposed model renewals, 72 voluntary lapses
   ok    inc-002 ultra: dunning 2 suppressed with its complement (model), cancel_flow 0 shown
-  ok    PLAN: cap-cut-2026-09 total 1, breakdown withheld (all 6 plan x known_by_as_of rows null, no plan or route key singled out), Maya a member only when named
+  ok    PLAN: cap-cut-2026-09 total 1, breakdown withheld (all 6 plan x known_by_as_of rows null, no plan or route key singled out), Santosh a member only when named
   ok    PLAN: 464/5,815, 73/1,258, 11/314
   ok    PLAN: 29/72 = 40.3% [29.7, 51.8]
   ok    PLAN: first after a cut 9.9% [8.8, 11.2] vs 6.3% [5.7, 7.0]
@@ -60,7 +60,7 @@ check_graph_tools: build a2598a28e164 (profile s42, seed 42, N 8000), contract s
   ok    a planted string loses control / bidi / zero-width / tag characters and is cut to 200 (truncated set)
   ok    forced caps (3 rows, 4,000 chars), window all_before_as_of: the first 3 of 8 rows shown, summary.rows = 8 (counted before the cap), the caveat gives the true total
   ok    forced caps (3 rows, 4,000 chars), window feature_windows: the first 3 of 7 rows shown, summary.rows = 7 (counted before the cap), the caveat gives the true total
-  ok    named_renewal_member under a 3-row cap equals the uncapped answer for every incident and pricing change (sub_maya:2026-10-07)
+  ok    named_renewal_member under a 3-row cap equals the uncapped answer for every incident and pricing change (sub_santosh:2026-10-07)
   ok    forced 4,000-char cap on a long lineage trace: 3784 chars, truncated
   ok    at the minimum cap (4,000 chars) all 16 largest everyday answers fit (max 3,967) and keep their answer and summary
   ok    no string over 200 characters in 48 answers

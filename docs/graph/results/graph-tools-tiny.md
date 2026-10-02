@@ -53,7 +53,7 @@ check_graph_tools: build 6c8fea296d84 (profile tiny, seed 42, N 120), contract s
   ok    a planted string loses control / bidi / zero-width / tag characters and is cut to 200 (truncated set)
   ok    forced caps (3 rows, 4,000 chars), window all_before_as_of: the first 3 of 8 rows shown, summary.rows = 8 (counted before the cap), the caveat gives the true total
   ok    forced caps (3 rows, 4,000 chars), window feature_windows: the first 3 of 7 rows shown, summary.rows = 7 (counted before the cap), the caveat gives the true total
-  ok    named_renewal_member under a 3-row cap equals the uncapped answer for every incident and pricing change (sub_maya:2026-10-07)
+  ok    named_renewal_member under a 3-row cap equals the uncapped answer for every incident and pricing change (sub_santosh:2026-10-07)
   ok    forced 4,000-char cap on a long lineage trace: 3753 chars, truncated
   ok    at the minimum cap (4,000 chars) all 14 largest everyday answers fit (max 3,970) and keep their answer and summary
   ok    no string over 200 characters in 42 answers

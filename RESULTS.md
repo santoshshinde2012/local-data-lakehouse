@@ -80,7 +80,7 @@ Every step exited 0.
 |---|---|
 | Sample (seed 42) | 8,001 subscriptions, 176,217 usage rows, 10,602 limit events, 50,748 invoices, 2,134 tickets |
 | Gold routes | `model` 7,387 (6,839 renewed, 548 voluntary lapse), `dunning` 326, `cancel_flow` 287, `score_today` 1 |
-| Exports | `churn_user_features.csv` 7,387 renewals (voluntary-lapse rate 0.074); `churn_renewals_audit.csv` 8,001; `hero_inference_record.json` (sub_maya) |
+| Exports | `churn_user_features.csv` 7,387 renewals (voluntary-lapse rate 0.074); `churn_renewals_audit.csv` 8,001; `hero_inference_record.json` (sub_santosh) |
 
 **Parity** ([churn-parity.excerpt.md](docs/demo/churn-parity.excerpt.md)): Spark SQL gold and the pandas twin match on 8,001 renewals × 27 columns. The 2 `accept_rate_change` cells that Spark `bround` and numpy round differently agree within 1e-4.
 

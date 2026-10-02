@@ -199,7 +199,7 @@ def churn() -> dict:
     for route, _outcome, n, _rate in rows:
         routes[route] = routes.get(route, 0) + n
     _check(sum(routes.values()) == table.num_rows, f"{table.num_rows} renewals published and read back")
-    _check(routes.get("score_today") == 1, "exactly one renewal is scored today (sub_maya)")
+    _check(routes.get("score_today") == 1, "exactly one renewal is scored today (sub_santosh)")
     secs = time.perf_counter() - t0
     print(f"Churn twin (light) OK in {secs:.1f} s.")
     return {"renewals": table.num_rows, "routes": routes, "seconds": round(secs, 1)}

@@ -1,6 +1,6 @@
 """The Cytoscape.js evidence / lineage views: structure, determinism, point in time, escaping.
 
-Pure tests use Maya's golden rows (PLAN 6.6, seed 42) in the evidence tool's row shape; the
+Pure tests use Santosh's golden rows (PLAN 6.6, seed 42) in the evidence tool's row shape; the
 build-backed ones read the session tiny / inject builds (read only) and a scratch build whose
 bronze carries an HTML-hostile user_name. No browser is needed (the browser proofs are in the
 ui-viz research; the page script is the one proven there).
@@ -110,9 +110,9 @@ def outside_data(page: str) -> str:
     return page.replace(LIB, "").replace(data, "")
 
 
-# --------------------------------------------------------------------------- Maya fixture (PLAN 6.6, seed 42)
-MAYA_FOCUS = {"renewal_id": "sub_maya:2026-10-07", "subscription_id": "sub_maya", "as_of": "2026-09-30",
-              "renewal_date": "2026-10-07", "plan_tier": "pro", "route": "score_today", "user_name": "Maya",
+# --------------------------------------------------------------------------- Santosh fixture (PLAN 6.6, seed 42)
+SANTOSH_FOCUS = {"renewal_id": "sub_santosh:2026-10-07", "subscription_id": "sub_santosh", "as_of": "2026-09-30",
+              "renewal_date": "2026-10-07", "plan_tier": "pro", "route": "score_today", "user_name": "Santosh",
               "visibility": "today", "build_id": "abcdef012345"}
 
 
@@ -121,17 +121,17 @@ def _ev(day, rel, target, detail=None, feature=None, window=True, known=True, ex
             "in_feature_window": window, "known_by_as_of": known, "declared_exception": exception}
 
 
-MAYA_EVIDENCE = [
+SANTOSH_EVIDENCE = [
     _ev("2026-08-15", "CUT_CAP", "cap-cut-2026-08", "via plan pro", "allowance_used_pct"),
     _ev("2026-08-25", "EXPOSED_TO", "inc-002", None, "incident_exposed_28d", window=False),
     _ev("2026-09-09", "EXPOSED_TO", "inc-003", None, "incident_exposed_28d"),
     _ev("2026-09-20", "CUT_CAP", "cap-cut-2026-09", "via plan pro", "allowance_used_pct"),
     _ev("2026-09-20", "FIRST_RENEWAL_AFTER", "cap-cut-2026-09", None, "first_renewal_after_pricing_change"),
-    _ev("2026-09-24", "HIT_LIMIT", "lh:sub_maya:001", "weekly", "limit_hits_14d"),
-    _ev("2026-09-25", "HIT_LIMIT", "lh:sub_maya:002", "weekly", "limit_hits_14d"),
-    _ev("2026-09-27", "HIT_LIMIT", "lh:sub_maya:003", "weekly", "limit_hits_14d"),
+    _ev("2026-09-24", "HIT_LIMIT", "lh:sub_santosh:001", "weekly", "limit_hits_14d"),
+    _ev("2026-09-25", "HIT_LIMIT", "lh:sub_santosh:002", "weekly", "limit_hits_14d"),
+    _ev("2026-09-27", "HIT_LIMIT", "lh:sub_santosh:003", "weekly", "limit_hits_14d"),
 ]
-MAYA_NEIGHBOURS = [
+SANTOSH_NEIGHBOURS = [
     {"rank": 1, "renewal_id": "sub_07200:2026-08-17", "d2_q": 5099099315, "outcome": "voluntary_lapse"},
     {"rank": 2, "renewal_id": "sub_06614:2026-08-21", "d2_q": 5593304415, "outcome": "renewed"},
     {"rank": 3, "renewal_id": "sub_01541:2026-08-16", "d2_q": 5616850275, "outcome": "renewed"},
@@ -143,7 +143,7 @@ MAYA_NEIGHBOURS = [
     {"rank": 9, "renewal_id": "sub_01888:2026-08-23", "d2_q": 7506448249, "outcome": "renewed"},
     {"rank": 10, "renewal_id": "sub_00228:2026-08-03", "d2_q": 7713654324, "outcome": "renewed"},
 ]
-MAYA_HUBS = [{"id": "inc-002", "note": "837 renewals exposed"}, {"id": "cap-cut-2026-09", "note": "cap x0.83"}]
+SANTOSH_HUBS = [{"id": "inc-002", "note": "837 renewals exposed"}, {"id": "cap-cut-2026-09", "note": "cap x0.83"}]
 LINEAGE_EDGES = [
     {"from": "silver.churn_limit_events.hit_date", "to": GOLD_REF, "rel": "DERIVED_FROM", "roles": "WINDOW_BOUND"},
     {"from": "bronze.churn_limit_events_raw.hit_at", "to": "silver.churn_limit_events.hit_date", "rel": "DERIVED_FROM",
@@ -154,8 +154,8 @@ LINEAGE_EDGES = [
 ]
 
 
-def maya() -> viz.Graph:
-    return viz.build_evidence_graph(MAYA_FOCUS, MAYA_EVIDENCE, MAYA_NEIGHBOURS, MAYA_HUBS)
+def santosh() -> viz.Graph:
+    return viz.build_evidence_graph(SANTOSH_FOCUS, SANTOSH_EVIDENCE, SANTOSH_NEIGHBOURS, SANTOSH_HUBS)
 
 
 # --------------------------------------------------------------------------- vendored library
@@ -183,33 +183,33 @@ def test_render_html_inlines_only_the_pinned_library():
     """The page names 3.34.3 (licence notice, generator meta, injected-style hash): other bytes are refused."""
     for other in ("alert(1)", LIB + "\n", LIB.replace("3.34.3", "3.34.4")):
         with pytest.raises(ValueError, match=r"not the pinned Cytoscape\.js 3\.34\.3"):
-            viz.render_html(maya(), cytoscape_js=other)
+            viz.render_html(santosh(), cytoscape_js=other)
 
 
 def test_licence_notice_is_in_every_page():
     for mode in ("inline", "cdn"):
-        page = viz.render_html(maya(), cytoscape_js=LIB if mode == "inline" else None, js_mode=mode)
+        page = viz.render_html(santosh(), cytoscape_js=LIB if mode == "inline" else None, js_mode=mode)
         assert viz.LICENCE_NOTICE in page
         assert "Drawn with Cytoscape.js 3.34.3 (MIT, \u00a9 The Cytoscape Consortium)" in page
         gen = next(m for m in parse(page).meta if m.get("name") == "generator")
         assert "cytoscape 3.34.3 (MIT)" in gen["content"]
-    assert "Permission is hereby granted" in viz.render_html(maya(), cytoscape_js=LIB)   # inline: full notice
+    assert "Permission is hereby granted" in viz.render_html(santosh(), cytoscape_js=LIB)   # inline: full notice
 
 
 # --------------------------------------------------------------------------- determinism and structure
 def test_deterministic_bytes_and_input_order_independence():
-    a = viz.render_html(maya(), cytoscape_js=LIB)
-    b = viz.render_html(viz.build_evidence_graph(MAYA_FOCUS, list(reversed(MAYA_EVIDENCE)),
-                                                 list(reversed(MAYA_NEIGHBOURS)), list(reversed(MAYA_HUBS))),
+    a = viz.render_html(santosh(), cytoscape_js=LIB)
+    b = viz.render_html(viz.build_evidence_graph(SANTOSH_FOCUS, list(reversed(SANTOSH_EVIDENCE)),
+                                                 list(reversed(SANTOSH_NEIGHBOURS)), list(reversed(SANTOSH_HUBS))),
                         cytoscape_js=LIB)
-    assert a == b and a.encode() == viz.render_html(maya(), cytoscape_js=LIB).encode()
+    assert a == b and a.encode() == viz.render_html(santosh(), cytoscape_js=LIB).encode()
     rest = a.replace(LIB, "")
     assert not re.search(r"\d{2}:\d{2}:\d{2}", rest)                    # no clock time
     assert not re.search(r"/(Users|home|tmp|private)/", rest)          # no absolute path
 
 
 def test_structure_counts_and_golden_positions():
-    g = maya()
+    g = santosh()
     kinds: dict[str, int] = {}
     for n in g.nodes:
         kinds[n["kind"]] = kinds.get(n["kind"], 0) + 1
@@ -223,16 +223,16 @@ def test_structure_counts_and_golden_positions():
     for n in g.nodes:                          # point-in-time picture: every event is left of (or on) as_of
         if n["kind"] in viz.EVENT_LANES or n["kind"] in ("Incident", "PricingChange"):
             assert n["x"] <= as_of_x, n["id"]
-    assert pos["sub_maya:2026-10-07"][0] > as_of_x
+    assert pos["sub_santosh:2026-10-07"][0] > as_of_x
     assert all(isinstance(v, int) for xy in pos.values() for v in xy)
     assert len(g.rows) == 20                   # HAS_RENEWAL + ON_PLAN + 8 evidence + 10 neighbours
     assert "abcdef012345" in g.summary and "2 lapsed" in g.summary and "not a risk estimate" in g.summary
     assert ": 8 evidence rows on or before as_of 2026-09-30, and its 10 most similar renewals (" in g.summary
-    assert "declared exception" not in g.summary            # Maya's FIRST_RENEWAL_AFTER (09-20) is before as_of
+    assert "declared exception" not in g.summary            # Santosh's FIRST_RENEWAL_AFTER (09-20) is before as_of
 
 
 def test_payload_is_valid_cytoscape_json_and_matches_graph():
-    page = viz.render_html(maya(), cytoscape_js=LIB)
+    page = viz.render_html(santosh(), cytoscape_js=LIB)
     attrs, body = next(s for s in parse(page).scripts if s[0].get("id") == "graph-data")
     assert attrs["type"] == "application/json"
     payload = json.loads(body)
@@ -246,7 +246,7 @@ def test_payload_is_valid_cytoscape_json_and_matches_graph():
 
 
 def test_csp_hashes_cover_exactly_the_inline_code():
-    doc = parse(viz.render_html(maya(), cytoscape_js=LIB))
+    doc = parse(viz.render_html(santosh(), cytoscape_js=LIB))
     csp = csp_of(doc)
     assert csp["default-src"] == ["'none'"]
     executable = [body for attrs, body in doc.scripts if attrs.get("type") != "application/json"]
@@ -260,23 +260,23 @@ def test_csp_hashes_cover_exactly_the_inline_code():
 
 
 def test_cdn_mode_is_pinned_with_sri_and_relative_mode_has_no_integrity():
-    cdn = parse(viz.render_html(maya(), js_mode="cdn"))
+    cdn = parse(viz.render_html(santosh(), js_mode="cdn"))
     tag = next(a for a, _ in cdn.scripts if a.get("src"))
     assert tag["src"] == f"https://cdn.jsdelivr.net/npm/cytoscape@{viz.CYTOSCAPE_VERSION}/dist/cytoscape.min.js"
     assert tag["integrity"] == viz.CYTOSCAPE_SRI and tag["crossorigin"] == "anonymous"
     script_src = csp_of(cdn)["script-src"]
     assert script_src[0] == viz.CYTOSCAPE_CDN == tag["src"] and len(script_src) == 2    # that one file, not the host
     assert "https://cdn.jsdelivr.net" not in script_src and not any(s.endswith("/") for s in script_src)
-    rel = parse(viz.render_html(maya(), js_mode="relative"))
+    rel = parse(viz.render_html(santosh(), js_mode="relative"))
     tag = next(a for a, _ in rel.scripts if a.get("src"))
     assert tag["src"] == "cytoscape.min.js" and "integrity" not in tag
-    assert len(viz.render_html(maya(), js_mode="cdn").encode()) < 40_000
-    inline = viz.render_html(maya(), cytoscape_js=LIB)
+    assert len(viz.render_html(santosh(), js_mode="cdn").encode()) < 40_000
+    inline = viz.render_html(santosh(), cytoscape_js=LIB)
     assert "src=" not in "".join(t for t in re.findall(r"<script[^>]*>", inline))   # inline: no network at all
 
 
 def test_accessibility_contract():
-    page = viz.render_html(maya(), cytoscape_js=LIB)
+    page = viz.render_html(santosh(), cytoscape_js=LIB)
     doc = parse(page)
     assert doc.html_attrs["lang"] == "en"
     cy = doc.by_id["cy"]
@@ -287,7 +287,7 @@ def test_accessibility_contract():
         assert doc.by_id[bid]["tag"] == "button"
     assert doc.by_id["btn-in"]["aria-label"] == "Zoom in"
     assert page.count("<th scope=\"col\">") == 4 and "<caption" in page
-    assert page.count("<tr><td>") == len(maya().rows) == 20            # every edge also exists as text
+    assert page.count("<tr><td>") == len(santosh().rows) == 20            # every edge also exists as text
     assert "<noscript>" in page
     text = " ".join(doc.text)
     for item in ("Renewal being explained (1)", "Similar renewal (neighbour) (10)", "Limit hit (3)"):
@@ -296,20 +296,20 @@ def test_accessibility_contract():
 
 def test_theme_attribute_and_palette_tokens():
     for theme in viz.THEMES:
-        assert parse(viz.render_html(maya(), cytoscape_js=LIB, theme=theme)).html_attrs["data-theme"] == theme
-    css = parse(viz.render_html(maya(), cytoscape_js=LIB)).styles[0]
+        assert parse(viz.render_html(santosh(), cytoscape_js=LIB, theme=theme)).html_attrs["data-theme"] == theme
+    css = parse(viz.render_html(santosh(), cytoscape_js=LIB)).styles[0]
     assert "prefers-color-scheme:dark" in css and ':root[data-theme="dark"]' in css
     for mode in ("light", "dark"):
         for colour in viz.PALETTES[mode].values():
             assert colour in css
     with pytest.raises(ValueError, match="theme"):
-        viz.render_html(maya(), cytoscape_js=LIB, theme="blue")  # type: ignore[arg-type]
+        viz.render_html(santosh(), cytoscape_js=LIB, theme="blue")  # type: ignore[arg-type]
     with pytest.raises(ValueError, match="cose"):
-        viz.render_html(maya(), cytoscape_js=LIB, layout="cose")  # type: ignore[arg-type]
+        viz.render_html(santosh(), cytoscape_js=LIB, layout="cose")  # type: ignore[arg-type]
 
 
 def test_estimate_height_tracks_rows():
-    g = maya()
+    g = santosh()
     assert viz.estimate_height(g, height=520, table_open=False) == 520 + 330 + 40
     assert viz.estimate_height(g, height=520, table_open=True) == 520 + 330 + 70 + 30 * 20
 
@@ -319,7 +319,7 @@ HOSTILE = "</script><script>window.__xss=1</script><img src=x onerror=window.__x
 
 
 def hostile_graph() -> viz.Graph:
-    focus = {**MAYA_FOCUS, "plan_tier": HOSTILE, "user_name": HOSTILE}
+    focus = {**SANTOSH_FOCUS, "plan_tier": HOSTILE, "user_name": HOSTILE}
     evidence = [_ev("2026-09-24", "HIT_LIMIT", HOSTILE, detail=HOSTILE)]
     neighbours = [{"rank": 1, "renewal_id": "sub_x:2026-08-17", "outcome": HOSTILE, "d2_q": HOSTILE}]
     g = viz.build_evidence_graph(focus, evidence, neighbours, [{"id": "inc-002", "note": HOSTILE}])
@@ -357,21 +357,21 @@ def test_clean_drops_control_and_format_characters_and_caps_length():
 
 # --------------------------------------------------------------------------- point in time
 def test_post_as_of_evidence_is_refused():
-    late = _ev("2026-10-01", "HIT_LIMIT", "lh:sub_maya:004", "weekly", "limit_hits_14d")
+    late = _ev("2026-10-01", "HIT_LIMIT", "lh:sub_santosh:004", "weekly", "limit_hits_14d")
     with pytest.raises(ValueError, match="after as_of"):
-        viz.build_evidence_graph(MAYA_FOCUS, [*MAYA_EVIDENCE, late])
-    outcome = _ev("2026-09-29", "BILLED", "bill:sub_maya:001", "invoice_paid")
+        viz.build_evidence_graph(SANTOSH_FOCUS, [*SANTOSH_EVIDENCE, late])
+    outcome = _ev("2026-09-29", "BILLED", "bill:sub_santosh:001", "invoice_paid")
     with pytest.raises(ValueError, match="outcome evidence"):
-        viz.build_evidence_graph(MAYA_FOCUS, [outcome])
+        viz.build_evidence_graph(SANTOSH_FOCUS, [outcome])
     undeclared = _ev("2026-10-02", "FIRST_RENEWAL_AFTER", "cap-cut-2026-10", known=False, exception=False)
     with pytest.raises(ValueError, match="declared_exception"):
-        viz.build_evidence_graph(MAYA_FOCUS, [undeclared])
-    ok = viz.build_evidence_graph(MAYA_FOCUS, [_ev("2026-09-29", "BILLED", "bill:sub_maya:001", "cancel_scheduled")])
+        viz.build_evidence_graph(SANTOSH_FOCUS, [undeclared])
+    ok = viz.build_evidence_graph(SANTOSH_FOCUS, [_ev("2026-09-29", "BILLED", "bill:sub_santosh:001", "cancel_scheduled")])
     assert any(n["kind"] == "BillingEvent" for n in ok.nodes)
 
 
 def test_declared_exception_is_the_only_node_right_of_the_as_of_line():
-    focus = {**MAYA_FOCUS, "renewal_id": "sub_00003:2026-08-20", "subscription_id": "sub_00003",
+    focus = {**SANTOSH_FOCUS, "renewal_id": "sub_00003:2026-08-20", "subscription_id": "sub_00003",
              "as_of": "2026-08-13", "renewal_date": "2026-08-20", "route": "model", "visibility": "source_as_of"}
     exc = _ev("2026-08-15", "FIRST_RENEWAL_AFTER", "cap-cut-2026-08", None, "first_renewal_after_pricing_change",
               known=False, exception=True)
@@ -391,21 +391,21 @@ def test_declared_exception_is_the_only_node_right_of_the_as_of_line():
 
 
 def test_historical_source_never_draws_a_later_neighbour_outcome():
-    focus = {**MAYA_FOCUS, "route": "model", "visibility": "source_as_of"}
+    focus = {**SANTOSH_FOCUS, "route": "model", "visibility": "source_as_of"}
     late = [{"rank": 1, "renewal_id": "sub_x:2026-10-20", "outcome": "voluntary_lapse",
              "outcome_observed_on": "2026-10-15"}]
     with pytest.raises(ValueError, match="after the source's as_of"):
-        viz.build_evidence_graph(focus, MAYA_EVIDENCE, late)
+        viz.build_evidence_graph(focus, SANTOSH_EVIDENCE, late)
     masked = [{"rank": 1, "renewal_id": "sub_x:2026-10-20", "outcome": queries.NOT_YET_OBSERVED,
                "outcome_observed_on": None}]
-    g = viz.build_evidence_graph(focus, MAYA_EVIDENCE, masked)
+    g = viz.build_evidence_graph(focus, SANTOSH_EVIDENCE, masked)
     assert next(n for n in g.nodes if n["id"] == "sub_x:2026-10-20")["outcome"] == queries.NOT_YET_OBSERVED
     assert "1 not yet observed" in g.summary and "at the source as_of" in g.summary
 
 
 def test_parallel_evidence_rows_collapse_to_one_counted_edge():
     ev = [_ev(d, "EXPOSED_TO", "inc-002", window=False) for d in ("2026-08-25", "2026-08-26", "2026-08-27")]
-    g = viz.build_evidence_graph(MAYA_FOCUS, ev)
+    g = viz.build_evidence_graph(SANTOSH_FOCUS, ev)
     edge = next(e for e in g.edges if e["relation"] == "EXPOSED_TO")
     assert (edge["count"], edge["first"], edge["last"], edge["label"]) == (3, "2026-08-25", "2026-08-27",
                                                                            "EXPOSED_TO \u00d73")
@@ -413,14 +413,14 @@ def test_parallel_evidence_rows_collapse_to_one_counted_edge():
 
 
 def test_validation_rejects_bad_graphs():
-    g = maya()
+    g = santosh()
     with pytest.raises(ValueError, match="dangling"):
         viz.render_html(viz.Graph(g.nodes[:3], g.edges, g.rows, g.title, g.summary), cytoscape_js=LIB)
     with pytest.raises(ValueError, match="unknown evidence relation"):
-        viz.build_evidence_graph(MAYA_FOCUS, [_ev("2026-09-01", "DROP_TABLE", "x")])
+        viz.build_evidence_graph(SANTOSH_FOCUS, [_ev("2026-09-01", "DROP_TABLE", "x")])
     with pytest.raises(ValueError, match="needs cytoscape_js"):
         viz.render_html(g)
-    for bad in ("sub_maya", "sub_maya:2026-10-07 ", "SUB_X:2026-01-01", None, 42, "sub_x:2026-1-1"):
+    for bad in ("sub_santosh", "sub_santosh:2026-10-07 ", "SUB_X:2026-01-01", None, 42, "sub_x:2026-1-1"):
         with pytest.raises(ValueError, match="invalid renewal id"):
             viz.check_renewal_id(bad)
 
@@ -539,14 +539,14 @@ def test_unknown_renewal_is_a_clear_error(tiny_ctx):
     with pytest.raises(viz.UnknownRenewal, match="unknown renewal"):
         viz.evidence_data(tiny_ctx, "sub_nobody:2026-10-07")
     with pytest.raises(ValueError, match="invalid renewal id"):
-        viz.evidence_data(tiny_ctx, "sub_maya:2026-10-07' OR 1=1")
+        viz.evidence_data(tiny_ctx, "sub_santosh:2026-10-07' OR 1=1")
 
 
 def test_evidence_view_is_deterministic_and_embeddable(tiny_ctx):
-    page, height = viz.evidence_view(tiny_ctx, "sub_maya:2026-10-07")
-    again, _ = viz.evidence_view(tiny_ctx, "sub_maya:2026-10-07")
+    page, height = viz.evidence_view(tiny_ctx, "sub_santosh:2026-10-07")
+    again, _ = viz.evidence_view(tiny_ctx, "sub_santosh:2026-10-07")
     assert page == again and isinstance(height, int) and height > 560
-    embedded, h2 = viz.evidence_view(tiny_ctx, "sub_maya:2026-10-07", theme="dark", embed=True)
+    embedded, h2 = viz.evidence_view(tiny_ctx, "sub_santosh:2026-10-07", theme="dark", embed=True)
     assert payload_of(embedded)["options"]["wheelZoom"] is False and payload_of(page)["options"]["wheelZoom"] is True
     assert "<details open>" in page and "<details>" in embedded and h2 < height
     assert parse(embedded).html_attrs["data-theme"] == "dark"
@@ -555,7 +555,7 @@ def test_evidence_view_is_deterministic_and_embeddable(tiny_ctx):
 def test_evidence_rows_over_the_cap_are_cut_and_said_so(tiny_ctx, monkeypatch):
     """Over EVIDENCE_ROWS (the envelope's 200-row cap) the earliest rows are drawn, the page says the
     rest were cut, and the truncated Graph keeps everything else (legend note, table head)."""
-    rid = "sub_maya:2026-10-07"
+    rid = "sub_santosh:2026-10-07"
     full = viz.evidence_data(tiny_ctx, rid)
     page_full, _ = viz.evidence_view(tiny_ctx, rid)
     assert not full["truncated"] and len(full["evidence"]) > 3 and "Only the first" not in page_full
@@ -673,21 +673,21 @@ def test_lineage_view_draws_the_trace(core_build):  # noqa: F811 (the imported f
 
 def test_graph_viz_cli_writes_a_deterministic_standalone_file(tiny_build, tmp_path):
     bdir, man = tiny_build
-    a = run("graph_viz.py", "--renewal", "sub_maya:2026-10-07", "--build", str(bdir), "--graph-root", str(tmp_path))
+    a = run("graph_viz.py", "--renewal", "sub_santosh:2026-10-07", "--build", str(bdir), "--graph-root", str(tmp_path))
     assert a.returncode == 0, a.stderr
     info = json.loads(a.stdout.strip().splitlines()[-1])
     out = Path(info["path"])
-    assert out == tmp_path / "viz" / man["business_build_id"] / "sub_maya_2026-10-07.html"
+    assert out == tmp_path / "viz" / man["business_build_id"] / "sub_santosh_2026-10-07.html"
     body = out.read_bytes()
     assert info["bytes"] == len(body) and info["sha256"] == hashlib.sha256(body).hexdigest()
-    b = run("graph_viz.py", "--renewal", "sub_maya:2026-10-07", "--build", str(bdir), "--out", str(tmp_path / "b.html"))
+    b = run("graph_viz.py", "--renewal", "sub_santosh:2026-10-07", "--build", str(bdir), "--out", str(tmp_path / "b.html"))
     assert b.returncode == 0 and (tmp_path / "b.html").read_bytes() == body          # same input -> same bytes
     assert LIB.encode() in body                                                      # standalone: library inlined
     bad = run("graph_viz.py", "--renewal", "sub_nobody:2026-10-07", "--build", str(bdir), "--out", str(tmp_path / "x"))
     assert bad.returncode == 1 and "unknown renewal" in bad.stderr and not (tmp_path / "x").exists()
-    bad = run("graph_viz.py", "--renewal", "maya", "--build", str(bdir))
+    bad = run("graph_viz.py", "--renewal", "santosh", "--build", str(bdir))
     assert bad.returncode == 1 and "invalid renewal id" in bad.stderr
-    missing = run("graph_viz.py", "--renewal", "sub_maya:2026-10-07", "--graph-root", str(tmp_path / "empty"))
+    missing = run("graph_viz.py", "--renewal", "sub_santosh:2026-10-07", "--graph-root", str(tmp_path / "empty"))
     assert missing.returncode == 1 and "make graph-promote" in missing.stderr
 
 
@@ -700,13 +700,13 @@ def test_graph_viz_cli_lineage_view(core_build, tmp_path):  # noqa: F811 (the im
 
 
 @pytest.mark.slow
-def test_maya_view_on_s42_matches_the_plan(s42_build):
+def test_santosh_view_on_s42_matches_the_plan(s42_build):
     bdir, _ = s42_build
     with viz.VizContext(bdir) as ctx:
-        data = viz.evidence_data(ctx, "sub_maya:2026-10-07")
-        page, _ = viz.evidence_view(ctx, "sub_maya:2026-10-07")
+        data = viz.evidence_data(ctx, "sub_santosh:2026-10-07")
+        page, _ = viz.evidence_view(ctx, "sub_santosh:2026-10-07")
     assert [(r["event_date"], r["relation"], r["target_id"]) for r in data["evidence"]] == [
-        (r["event_date"], r["relation"].split(" ")[0], r["target_id"]) for r in MAYA_EVIDENCE]
+        (r["event_date"], r["relation"].split(" ")[0], r["target_id"]) for r in SANTOSH_EVIDENCE]
     assert [(n["rank"], n["renewal_id"], n["d2_q"], n["outcome"]) for n in data["neighbours"]] == [
-        (n["rank"], n["renewal_id"], n["d2_q"], n["outcome"]) for n in MAYA_NEIGHBOURS]
+        (n["rank"], n["renewal_id"], n["d2_q"], n["outcome"]) for n in SANTOSH_NEIGHBOURS]
     assert "8 evidence rows" in page and "2 lapsed" in page

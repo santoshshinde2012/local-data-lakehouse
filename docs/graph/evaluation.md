@@ -38,14 +38,14 @@ The latest run of every check, with its command and output: [results/index.md](r
 
 ## One renewal at T-7
 
-The hero is `sub_maya:2026-10-07`: plan pro, renewing seven days after the data ends, scored "today"
-(route `score_today`). Her T-7 is 2026-09-30. `graph_renewal_evidence` returns what the model could see
+The hero is `sub_santosh:2026-10-07`: plan pro, renewing seven days after the data ends, scored "today"
+(route `score_today`). His T-7 is 2026-09-30. `graph_renewal_evidence` returns what the model could see
 then, and nothing after it:
 
-<!-- graph-evidence:begin figure:maya-timeline -->
+<!-- graph-evidence:begin figure:santosh-timeline -->
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="img/maya-timeline-dark.svg">
-  <img src="img/maya-timeline-light.svg" alt="Timeline of sub_maya&#x27;s evidence before as_of 2026-09-30: 2026-08-15 CUT_CAP cap-cut-2026-08 (in window); 2026-08-25 EXPOSED_TO inc-002 (outside window); 2026-09-09 EXPOSED_TO inc-003 (in window); 2026-09-20 CUT_CAP cap-cut-2026-09 (in window); 2026-09-20 FIRST_RENEWAL_AFTER cap-cut-2026-09 (in window); 2026-09-24 HIT_LIMIT lh:sub_maya:001 (in window); 2026-09-25 HIT_LIMIT lh:sub_maya:002 (in window); 2026-09-27 HIT_LIMIT lh:sub_maya:003 (in window)." width="760">
+  <source media="(prefers-color-scheme: dark)" srcset="img/santosh-timeline-dark.svg">
+  <img src="img/santosh-timeline-light.svg" alt="Timeline of sub_santosh&#x27;s evidence before as_of 2026-09-30: 2026-08-15 CUT_CAP cap-cut-2026-08 (in window); 2026-08-25 EXPOSED_TO inc-002 (outside window); 2026-09-09 EXPOSED_TO inc-003 (in window); 2026-09-20 CUT_CAP cap-cut-2026-09 (in window); 2026-09-20 FIRST_RENEWAL_AFTER cap-cut-2026-09 (in window); 2026-09-24 HIT_LIMIT lh:sub_santosh:001 (in window); 2026-09-25 HIT_LIMIT lh:sub_santosh:002 (in window); 2026-09-27 HIT_LIMIT lh:sub_santosh:003 (in window)." width="760">
 </picture>
 
 | event_date | relation | target | feeds feature | in feature window | known by as_of | declared exception |
@@ -55,21 +55,21 @@ then, and nothing after it:
 | 2026-09-09 | EXPOSED_TO | inc-003 | incident_exposed_28d | yes | yes | no |
 | 2026-09-20 | CUT_CAP | cap-cut-2026-09 | allowance_used_pct | yes | yes | no |
 | 2026-09-20 | FIRST_RENEWAL_AFTER | cap-cut-2026-09 | first_renewal_after_pricing_change | yes | yes | no |
-| 2026-09-24 | HIT_LIMIT | lh:sub_maya:001 | limit_hits_14d | yes | yes | no |
-| 2026-09-25 | HIT_LIMIT | lh:sub_maya:002 | limit_hits_14d | yes | yes | no |
-| 2026-09-27 | HIT_LIMIT | lh:sub_maya:003 | limit_hits_14d | yes | yes | no |
+| 2026-09-24 | HIT_LIMIT | lh:sub_santosh:001 | limit_hits_14d | yes | yes | no |
+| 2026-09-25 | HIT_LIMIT | lh:sub_santosh:002 | limit_hits_14d | yes | yes | no |
+| 2026-09-27 | HIT_LIMIT | lh:sub_santosh:003 | limit_hits_14d | yes | yes | no |
 
 <sub>Rows as graph_renewal_evidence returns them (oracle.evidence). Source: graph build a2598a28e164 · profile s42 · seed 42, N_USERS 8000 (verified) · data_end 2026-09-30 · renewal-graph/v1 · commit 013dd4e · regenerate with scripts/graph_evidence.py.</sub>
-<!-- graph-evidence:end figure:maya-timeline -->
+<!-- graph-evidence:end figure:santosh-timeline -->
 
 `graph_similar_renewals` shows the ten closest past renewals of the same plan in feature space, with
-their outcomes. For a current renewal like hers every neighbour outcome is visible; a historical source
+their outcomes. For a current renewal like his every neighbour outcome is visible; a historical source
 would only see outcomes observed by its own as_of.
 
-<!-- graph-evidence:begin figure:maya-neighbours -->
+<!-- graph-evidence:begin figure:santosh-neighbours -->
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="img/maya-neighbours-dark.svg">
-  <img src="img/maya-neighbours-light.svg" alt="Radial graph: sub_maya at the centre and its 10 nearest renewals by SIMILAR_TO rank. rank 1 sub_07200:2026-08-17 distance 2.258 voluntary_lapse; rank 2 sub_06614:2026-08-21 distance 2.365 renewed; rank 3 sub_01541:2026-08-16 distance 2.370 renewed; rank 4 sub_04760:2026-09-09 distance 2.510 renewed; rank 5 sub_01355:2026-09-05 distance 2.570 voluntary_lapse; rank 6 sub_05564:2026-08-20 distance 2.693 renewed; rank 7 sub_01475:2026-08-19 distance 2.713 renewed; rank 8 sub_04856:2026-08-22 distance 2.715 renewed; rank 9 sub_01888:2026-08-23 distance 2.740 renewed; rank 10 sub_00228:2026-08-03 distance 2.777 renewed. 2 of 10 lapsed." width="760">
+  <source media="(prefers-color-scheme: dark)" srcset="img/santosh-neighbours-dark.svg">
+  <img src="img/santosh-neighbours-light.svg" alt="Radial graph: sub_santosh at the centre and its 10 nearest renewals by SIMILAR_TO rank. rank 1 sub_07200:2026-08-17 distance 2.258 voluntary_lapse; rank 2 sub_06614:2026-08-21 distance 2.365 renewed; rank 3 sub_01541:2026-08-16 distance 2.370 renewed; rank 4 sub_04760:2026-09-09 distance 2.510 renewed; rank 5 sub_01355:2026-09-05 distance 2.570 voluntary_lapse; rank 6 sub_05564:2026-08-20 distance 2.693 renewed; rank 7 sub_01475:2026-08-19 distance 2.713 renewed; rank 8 sub_04856:2026-08-22 distance 2.715 renewed; rank 9 sub_01888:2026-08-23 distance 2.740 renewed; rank 10 sub_00228:2026-08-03 distance 2.777 renewed. 2 of 10 lapsed." width="760">
 </picture>
 
 | rank | renewal | dist | d2_q | outcome |
@@ -87,12 +87,12 @@ would only see outcomes observed by its own as_of.
 |  | summary |  |  | 2 of 10 lapsed, Wilson 95% [0.057, 0.510] |
 
 <sub>SIMILAR_TO spec similar_to/renewal-v1: blocked by plan, 20 features, persisted z-score scaler, rank on floor(d2*1e9 + 0.5) then dst. Source: graph build a2598a28e164 · profile s42 · seed 42, N_USERS 8000 (verified) · data_end 2026-09-30 · renewal-graph/v1 · commit 013dd4e · regenerate with scripts/graph_evidence.py.</sub>
-<!-- graph-evidence:end figure:maya-neighbours -->
+<!-- graph-evidence:end figure:santosh-neighbours -->
 
 Why is `sub_07200` the closest? With `explain=true` the tool returns each pair's top feature shares of
 the squared distance: `cheap_model_share_28d` 0.408, `engagement_trend` 0.123, `weekend_usage_ratio`
-0.118 (pair d2 5.0991). This is narrative evidence: it says which past renewals look like hers, not that
-she will lapse. Her own risk score comes from the retention-radar model, not from any tool here.
+0.118 (pair d2 5.0991). This is narrative evidence: it says which past renewals look like his, not that
+he will lapse. His own risk score comes from the retention-radar model, not from any tool here.
 
 ## A global event
 
@@ -264,7 +264,7 @@ graph engine. It has to be re-measured on the new model before anything is claim
 ## Honesty notes
 
 1. The data is synthetic and has no relationship between subscriptions. Similar is not connected.
-2. "2 of her 10 nearest renewals lapsed" is narrative evidence (Wilson 6% to 51%), not a risk estimate.
+2. "2 of his 10 nearest renewals lapsed" is narrative evidence (Wilson 6% to 51%), not a risk estimate.
 3. Incident exposure shows no reliable effect; the pricing-cut association is planted by the generator.
 4. The point-in-time leak is real and measurable: a naive graph gets 1,165 limit-hit counts, 681 incident
    flags and 114 ticket counts wrong and calls 329 extra renewals exposed to inc-002.

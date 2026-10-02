@@ -15,7 +15,7 @@ The same build and arguments give byte-identical HTML. Light / dark follows the 
 or is forced.
 
 Usage (Python 3.12 venv from requirements-graph.txt; `make graph-venv`):
-  python scripts/graph_viz.py --renewal sub_maya:2026-10-07 [--build <dir> | --profile P] [--out <file>]
+  python scripts/graph_viz.py --renewal sub_santosh:2026-10-07 [--build <dir> | --profile P] [--out <file>]
   python scripts/graph_viz.py --lineage gold.churn_renewal_features.limit_hits_14d [--direction upstream]
   options: --theme auto|light|dark  --cdn  --graph-root <dir>
 
@@ -74,7 +74,7 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0],
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     what = ap.add_mutually_exclusive_group(required=True)
-    what.add_argument("--renewal", default=None, help="a renewal id, e.g. sub_maya:2026-10-07")
+    what.add_argument("--renewal", default=None, help="a renewal id, e.g. sub_santosh:2026-10-07")
     what.add_argument("--lineage", default=None, help="a ColumnRef, e.g. gold.churn_renewal_features.limit_hits_14d")
     ap.add_argument("--direction", default="upstream", choices=("upstream", "downstream"), help="lineage only")
     ap.add_argument("--max-depth", type=int, default=6, help="lineage only (1-6)")

@@ -353,7 +353,7 @@ def test_graph_ask_fails_closed_without_claude():
 def test_graph_ask_starts_claude_with_the_allowlist_only(tmp_path):
     record = tmp_path / "argv.txt"
     bindir = _stub_claude(tmp_path / "bin", record)
-    p = ask("What could the model see about Maya at T-7?", bindir=bindir)
+    p = ask("What could the model see about Santosh at T-7?", bindir=bindir)
     assert p.returncode == 0, p.stderr
     lines = record.read_text().splitlines()
     args = [x[4:] for x in lines if x.startswith("ARG=")]
@@ -361,7 +361,7 @@ def test_graph_ask_starts_claude_with_the_allowlist_only(tmp_path):
     assert args == ["--strict-mcp-config", "--mcp-config", str(REPO / ".mcp.json"), "--tools", "Read", "--restricted",
                     "--permission-mode", "manual", "--allowedTools", "mcp__lakehouse-graph", "mcp__lakehouse-metrics",
                     "mcp__lakehouse-lineage", "mcp__lakehouse-cohorts", "Read", "-p",
-                    "What could the model see about Maya at T-7?"]
+                    "What could the model see about Santosh at T-7?"]
     text = " ".join(args)
     assert "bypass" not in text and "dangerously" not in text and "Bash" not in text and "Web" not in text
     p = ask("--print-command", bindir=bindir)

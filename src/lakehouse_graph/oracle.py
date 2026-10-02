@@ -44,7 +44,7 @@ import pyarrow as pa
 from . import manifest as mf
 from . import queries, spec
 
-HERO_SUBSCRIPTION = "sub_maya"
+HERO_SUBSCRIPTION = "sub_santosh"
 GOLDEN_DIR = Path(__file__).resolve().parent / "goldens"
 GOLDEN_VERSION = 1
 # Committed golden file -> the (profile, seed, N_USERS) it is generated from (make graph-golden).

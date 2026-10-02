@@ -351,9 +351,9 @@ GRAPH_ROOT and diffs them against `src/lakehouse_graph/goldens/{tiny,s42}.json` 
 They are keyed by the bronze sha256. A few plan numbers also stay in the tests as a second witness
 (40,204 / 130,366; 1,165 / 681 / 114; 287; 14,862).
 
-The hero, `sub_maya:2026-10-07` (Pune, pro, route score_today, as_of 2026-09-30), has 8 evidence rows on
-or before as_of and nothing after it. Her timeline and her ten nearest renewals are drawn in
-[evaluation.md](evaluation.md#one-renewal-at-t-7). The tiny fixture gives her the same evidence.
+The hero, `sub_santosh:2026-10-07` (Pune, pro, route score_today, as_of 2026-09-30), has 8 evidence rows on
+or before as_of and nothing after it. His timeline and his ten nearest renewals are drawn in
+[evaluation.md](evaluation.md#one-renewal-at-t-7). The tiny fixture gives him the same evidence.
 
 ## Provenance
 

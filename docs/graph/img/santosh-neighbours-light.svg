@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="760" height="654" viewBox="0 0 760 654" role="img" font-family="system-ui, -apple-system, &#x27;Segoe UI&#x27;, sans-serif">
-<title>The 10 renewals most similar to sub_maya, and how they ended</title>
-<desc>Radial graph: sub_maya at the centre and its 10 nearest renewals by SIMILAR_TO rank. rank 1 sub_07200:2026-08-17 distance 2.258 voluntary_lapse; rank 2 sub_06614:2026-08-21 distance 2.365 renewed; rank 3 sub_01541:2026-08-16 distance 2.370 renewed; rank 4 sub_04760:2026-09-09 distance 2.510 renewed; rank 5 sub_01355:2026-09-05 distance 2.570 voluntary_lapse; rank 6 sub_05564:2026-08-20 distance 2.693 renewed; rank 7 sub_01475:2026-08-19 distance 2.713 renewed; rank 8 sub_04856:2026-08-22 distance 2.715 renewed; rank 9 sub_01888:2026-08-23 distance 2.740 renewed; rank 10 sub_00228:2026-08-03 distance 2.777 renewed. 2 of 10 lapsed.</desc>
+<title>The 10 renewals most similar to sub_santosh, and how they ended</title>
+<desc>Radial graph: sub_santosh at the centre and its 10 nearest renewals by SIMILAR_TO rank. rank 1 sub_07200:2026-08-17 distance 2.258 voluntary_lapse; rank 2 sub_06614:2026-08-21 distance 2.365 renewed; rank 3 sub_01541:2026-08-16 distance 2.370 renewed; rank 4 sub_04760:2026-09-09 distance 2.510 renewed; rank 5 sub_01355:2026-09-05 distance 2.570 voluntary_lapse; rank 6 sub_05564:2026-08-20 distance 2.693 renewed; rank 7 sub_01475:2026-08-19 distance 2.713 renewed; rank 8 sub_04856:2026-08-22 distance 2.715 renewed; rank 9 sub_01888:2026-08-23 distance 2.740 renewed; rank 10 sub_00228:2026-08-03 distance 2.777 renewed. 2 of 10 lapsed.</desc>
 <rect width="760" height="654" rx="8" fill="#fcfcfb"/>
-<text x="24" y="38" font-size="15" fill="#0b0b0b" font-weight="600">The 10 renewals most similar to sub_maya, and how they ended</text>
+<text x="24" y="38" font-size="15" fill="#0b0b0b" font-weight="600">The 10 renewals most similar to sub_santosh, and how they ended</text>
 <text x="24" y="58" font-size="12" fill="#52514e">2 of 10 lapsed (Wilson 95% 0.057-0.510); outcomes visible today (a current renewal). Edges are labelled by rank; distance</text>
 <text x="24" y="75" font-size="12" fill="#52514e">from the centre is the SIMILAR_TO distance (feature space, same plan; the rings start above 0). Narrative evidence, not a risk</text>
 <text x="24" y="92" font-size="12" fill="#52514e">estimate.</text>
@@ -103,7 +103,7 @@
 <circle cx="380" cy="361" r="12" fill="#fcfcfb"/>
 <circle cx="380" cy="361" r="10" fill="#0b0b0b"/>
 <rect x="331.38" y="377" width="97.24" height="31" fill="#fcfcfb" rx="4"/>
-<text x="380" y="390" font-size="11.5" fill="#0b0b0b" text-anchor="middle" font-weight="600">sub_maya</text>
+<text x="380" y="390" font-size="11.5" fill="#0b0b0b" text-anchor="middle" font-weight="600">sub_santosh</text>
 <text x="380" y="404" font-size="10.5" fill="#52514e" text-anchor="middle">as_of 2026-09-30</text>
 <text x="24" y="599" font-size="11" fill="#52514e">SIMILAR_TO spec similar_to/renewal-v1: blocked by plan, 20 features, persisted z-score scaler, rank on floor(d2*1e9 + 0.5) then dst.</text>
 <text x="24" y="614" font-size="11" fill="#52514e">Source: graph build a2598a28e164 · profile s42 · seed 42, N_USERS 8000 (verified) · data_end 2026-09-30 · renewal-graph/v1 · commit</text>

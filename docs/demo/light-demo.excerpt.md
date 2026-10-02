@@ -29,6 +29,6 @@ Retail (light) OK in 1.3 s.
    ('model', 'voluntary_lapse', 548, 1.0)
    ('score_today', 'pending', 1, 0.0)
   OK   8001 renewals published and read back
-  OK   exactly one renewal is scored today (sub_maya)
+  OK   exactly one renewal is scored today (sub_santosh)
 Churn twin (light) OK in 1.0 s.
 ```

@@ -134,7 +134,7 @@ def test_ladybug_counts_equal_parquet(tiny_build):
     db, conn = store.open_readonly(bdir / store.DB_FILE)
     try:
         assert store.count_all(conn) == {**TINY_NODES, **TINY_EDGES}
-        hero = queries.fetch(conn, "renewal_header", {"renewal_id": "sub_maya:2026-10-07"})[0]
+        hero = queries.fetch(conn, "renewal_header", {"renewal_id": "sub_santosh:2026-10-07"})[0]
         assert (hero["route"], hero["plan_tier"], str(hero["as_of"]), hero["city"]) == \
             ("score_today", "pro", "2026-09-30", "Pune")
         with pytest.raises(RuntimeError, match="read-only"):  # graph mutations are refused
@@ -1107,7 +1107,7 @@ def test_carry_over_is_a_registry_that_checks_each_entry(tmp_path, monkeypatch):
     build.register_carry_over("badge", ("badge.json",), still_valid=lambda old: "made by another badge version")
     assert dict(build.PHASE_ARTEFACTS)["viz"] == ("viz",)               # the old name is a live view
     (bdir / "viz").mkdir()
-    (bdir / "viz" / "sub_maya.html").write_text("<html></html>")
+    (bdir / "viz" / "sub_santosh.html").write_text("<html></html>")
     (bdir / "badge.json").write_text("{}")
     cohorts = _fake_cohorts(bdir, "cohorts")
     _fake_lineage(bdir, fresh=False)                                    # its code changed since: stale
@@ -1119,7 +1119,7 @@ def test_carry_over_is_a_registry_that_checks_each_entry(tmp_path, monkeypatch):
     assert ("not carried over: badge.json, lineage, lineage.lbdb (lineage: stale: a file it was extracted from, or "
             "the lineage code, changed since it was built; badge: made by another badge version; rebuild them with "
             "their own targets)") in line, line
-    assert (again / "viz" / "sub_maya.html").is_file() and (again / "cohorts.parquet").read_text() == "cohorts"
+    assert (again / "viz" / "sub_santosh.html").is_file() and (again / "cohorts.parquet").read_text() == "cohorts"
     assert not any((again / name).exists() for name in ("lineage", "lineage.lbdb", "badge.json"))
     assert (man2["viz"], man2["cohorts"]) == ({"views": 1}, cohorts) and "lineage" not in man2
     assert mf.read_manifest(again) == man2 and store.read_contract(again) == rec
@@ -1294,7 +1294,7 @@ def test_inject_profile_has_exactly_one_poisoned_user_name(tiny_build, inject_bu
     differing = sorted(rel for rel in man["files"] if man["files"][rel] != tiny_man["files"][rel])
     assert differing == ["parquet/nodes_Subscription.parquet"]
     # the poisoned subscription is the hero's nearest neighbour, so a hero walk reaches it
-    top = oracle.top_k(oracle.load_tables(bdir), "sub_maya:2026-10-07")
+    top = oracle.top_k(oracle.load_tables(bdir), "sub_santosh:2026-10-07")
     assert top[0]["renewal_id"].split(":")[0] == spec.INJECT_SUBSCRIPTION
 
     # exports (the user's gold script on the poisoned bronze) agree with the graph
@@ -1384,4 +1384,4 @@ def test_s42_verify_seed(s42_build, tmp_path):
     sdir = spec.sample_dir("s42", bdir.parents[2])
     assert mf.verify_seed(sdir, 42, 8000, tmp_path) is True
     assert mf.verify_seed(sdir, 7, 8000, tmp_path) is False
-    assert oracle.hero_renewal(oracle.load_tables(bdir)) == "sub_maya:2026-10-07"
+    assert oracle.hero_renewal(oracle.load_tables(bdir)) == "sub_santosh:2026-10-07"

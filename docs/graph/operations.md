@@ -46,7 +46,7 @@ command in the last column directly (from the repo root, with `GRAPH_PY=.venv-gr
 | `graph-evidence` | yes | `$GRAPH_PY scripts/graph_evidence.py --graph-root $GRAPH_ROOT` |
 | `lineage-local [PROFILE=]` | yes | `$GRAPH_PY scripts/build_lineage_local.py --graph-profile $PROFILE && $GRAPH_PY scripts/check_lineage_contract.py --graph-profile $PROFILE --strict` |
 | `graph-cohorts [PROFILE=]` | yes | `$GRAPH_PY scripts/build_graph_cohorts.py build --profile $PROFILE` |
-| `graph-viz RENEWAL=<id>` | no | `$GRAPH_PY scripts/graph_viz.py --renewal sub_maya:2026-10-07` (writes `$GRAPH_ROOT/viz/<build>/...html`) |
+| `graph-viz RENEWAL=<id>` | no | `$GRAPH_PY scripts/graph_viz.py --renewal sub_santosh:2026-10-07` (writes `$GRAPH_ROOT/viz/<build>/...html`) |
 | `graph-tools-check` | no | `$GRAPH_PY scripts/check_graph_tools.py --profile s42 [--bench 20]` |
 | `graph-serve` | no | `scripts/graph_mcp.sh --toolset graph` (debug; stdio) |
 | `graph-ask` | no | `scripts/graph_ask.sh` |

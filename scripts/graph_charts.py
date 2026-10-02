@@ -4,7 +4,7 @@
 Writes, for every chart, a light and a dark SVG (lakehouse_graph.charts; same input -> same bytes):
 
   docs/graph/img/<chart>-light.svg, <chart>-dark.svg
-      graph-composition, leak-surface, naive-vs-pit, maya-timeline, maya-neighbours, inc-002-exposure,
+      graph-composition, leak-surface, naive-vs-pit, santosh-timeline, santosh-neighbours, inc-002-exposure,
       lapse-first-after-cut, cohort-lapse-rates (needs cohorts.parquet), tool-latency (needs --tools-json),
       eval-pass3 (needs --eval-json), leakage-aucs (needs --leakage-json)
   docs/graph/results/mermaid/{schema,er,lineage-<column>}.mmd
@@ -200,7 +200,7 @@ def main(argv: list[str] | None = None) -> int:
     who.add_argument("--build", default=None, help="a graph build directory")
     who.add_argument("--profile", default="s42", help="the latest build of this profile (default s42)")
     ap.add_argument("--graph-root", default=None, help="default: $GRAPH_ROOT or <repo>/data/graph")
-    ap.add_argument("--renewal", default=None, help="hero renewal for the timeline / neighbours (default: sub_maya's)")
+    ap.add_argument("--renewal", default=None, help="hero renewal for the timeline / neighbours (default: sub_santosh's)")
     ap.add_argument("--incident", default="inc-002")
     ap.add_argument("--lineage-target", default="gold.churn_renewal_features.limit_hits_14d")
     ap.add_argument("--tools-json", default=None,

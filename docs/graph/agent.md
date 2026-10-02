@@ -51,10 +51,10 @@ field and never echo the rejected value. The only free text, `graph_find.query`,
 and never interpolated into Cypher. Resources: `graph://schema` and `graph://honesty`.
 
 Golden answers at seed 42 (all checked by `scripts/check_graph_tools.py` against the oracle of the
-build): Maya's 8 evidence rows; her top-10 with 2 voluntary lapses (`sub_07200`, `sub_01355`), Wilson
+build): Santosh's 8 evidence rows; his top-10 with 2 voluntary lapses (`sub_07200`, `sub_01355`), Wilson
 [0.057, 0.510]; `sub_07200`'s top-3 shares `cheap_model_share_28d` 0.408, `engagement_trend` 0.123,
 `weekend_usage_ratio` 0.118; inc-002 exposed pro 606 / pro_plus 185 / ultra 46 and 329 more for a naive
-graph; cap-cut-2026-09 total 1 with the breakdown suppressed and Maya a member; lapse rates pro 464 /
+graph; cap-cut-2026-09 total 1 with the breakdown suppressed and Santosh a member; lapse rates pro 464 /
 5,815, pro_plus 73 / 1,258, ultra 11 / 314; pro with 3 to 5 cap hits, first after a cut: 29 / 72
 [0.297, 0.518]; dunning 326, cancel flow 287.
 

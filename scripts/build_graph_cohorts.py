@@ -22,7 +22,7 @@ count that would give one back by subtraction (cohorts.withheld_cohorts).
 Usage (Python 3.12 venv from requirements-graph.txt; `make graph-venv`):
   python scripts/build_graph_cohorts.py [build] [--profile default] [--build <dir>] [--seed 42]
   python scripts/build_graph_cohorts.py list [--algorithm leiden] [--profile P | --build <dir>] [--json]
-  python scripts/build_graph_cohorts.py summary (--cohort leiden-01 | --renewal sub_maya:2026-10-07)
+  python scripts/build_graph_cohorts.py summary (--cohort leiden-01 | --renewal sub_santosh:2026-10-07)
                                         [--algorithm leiden] [--profile P | --build <dir>] [--json]
 
 ``--build`` defaults to the latest build of ``--profile`` under $GRAPH_ROOT (default data/graph).
@@ -140,7 +140,7 @@ def parse(argv: list[str]) -> argparse.Namespace:
     common(s)
     who = s.add_mutually_exclusive_group(required=True)
     who.add_argument("--cohort", default=None, help="e.g. leiden-01")
-    who.add_argument("--renewal", default=None, help="e.g. sub_maya:2026-10-07")
+    who.add_argument("--renewal", default=None, help="e.g. sub_santosh:2026-10-07")
     s.add_argument("--algorithm", default=None, choices=cohorts.ALGORITHMS, help="default: leiden (or the cohort's)")
     s.add_argument("--json", action="store_true")
     s.set_defaults(fn=cmd_summary)

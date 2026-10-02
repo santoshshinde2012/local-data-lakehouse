@@ -43,7 +43,7 @@ TINY = REPO / spec.TINY_FIXTURE
 TAG = "graph_0123456789ab"
 LAKE_URI = "sqlite:///file:/nonexistent/lakehouse/catalog.db?mode=ro&uri=true"   # recorded; the fake never opens it
 LAKE_WAREHOUSE = "file:///nonexistent/lakehouse/warehouse"
-DRIFT = {"sub_maya": +1e-4, "sub_00001": -1e-4}   # accept_rate_change: Spark vs pandas rounding at a 4-decimal edge
+DRIFT = {"sub_santosh": +1e-4, "sub_00001": -1e-4}   # accept_rate_change: Spark vs pandas rounding at a 4-decimal edge
 GOLD = f"{ice.CATALOG}.{ice.GOLD_TABLE}"
 QUIET = {"log": lambda *_: None}
 
@@ -242,7 +242,7 @@ def test_gold_content_is_the_gold_a_build_carries_and_a_drift_is_named_cell_by_c
     d = oracle.gold_drift(oracle.twin_gold_content(g2), theirs)
     assert d["columns"] == {"accept_rate_change": 2, "route": 1} and d["cells"] == 3
     assert [(c["subscription_id"], c["column"]) for c in d["cell_list"]] == [
-        ("sub_00001", "accept_rate_change"), ("sub_00002", "route"), ("sub_maya", "accept_rate_change")]
+        ("sub_00001", "accept_rate_change"), ("sub_00002", "route"), ("sub_santosh", "accept_rate_change")]
     assert d["sha256"][0] != d["sha256"][1]
     one_ulp = gold.copy()
     one_ulp["engagement_trend"] = one_ulp["engagement_trend"].astype(float)
@@ -270,12 +270,12 @@ def test_a_drifted_iceberg_build_passes_strict_with_the_drift_as_info(drift_buil
                    "info  gold drift vs the pandas twin on data/sample/churn/fixtures/tiny: 2 cell(s) differ "
                    "(accept_rate_change 2)",
                    "info     sub_00001 accept_rate_change: 0.7138 in this build, 0.7139 in the pandas twin",
-                   "info     sub_maya accept_rate_change: 0.8335 in this build, 0.8334 in the pandas twin",
+                   "info     sub_santosh accept_rate_change: 0.8335 in this build, 0.8334 in the pandas twin",
                    "derived: the builder on data/sample/churn/fixtures/tiny's events",
                    "rebuilds this build byte for byte",
                    "golden value(s) of tiny.json moved with the drift (SIMILAR_TO-derived",
                    "no golden value outside the drift's reach differs",
-                   "exactly the recorded gold drift cells", "sub_maya accept_rate_change",
+                   "exactly the recorded gold drift cells", "sub_santosh accept_rate_change",
                    "re-read the 11 inputs at graph_0123456789ab", "and rebuilt: byte-identical Parquet",
                    "the identity recomputed from the pins",
                    "PIT parity mismatches limit_hits_14d over 121 renewals = 0",
@@ -290,7 +290,7 @@ def test_a_drifted_iceberg_build_passes_strict_with_the_drift_as_info(drift_buil
     drift = rec["summary"]["gold_drift"]
     assert drift["cells"] == 2 and drift["columns"] == {"accept_rate_change": 2}
     assert {(c["subscription_id"], c["build"], c["twin"], c["kind"]) for c in drift["cell_list"]} == {
-        ("sub_00001", 0.7138, 0.7139, "rounding"), ("sub_maya", 0.8335, 0.8334, "rounding")}
+        ("sub_00001", 0.7138, 0.7139, "rounding"), ("sub_santosh", 0.8335, 0.8334, "rounding")}
     assert drift["beyond_rounding"] == 0 and drift["max_abs_delta"]["accept_rate_change"] == pytest.approx(1e-4)
     assert any("gold drift vs the pandas twin" in i for i in rec["info"])
     assert rec["summary"]["export"]["explained_by_gold_drift"]
@@ -387,7 +387,7 @@ def test_a_cent_of_pit_feature_drift_is_beyond_rounding_as_parity_says(fake, twi
     drift = rec["summary"]["gold_drift"]
     kinds = {(c["subscription_id"], c["column"]): c["kind"] for c in drift["cell_list"]}
     assert kinds == {(sub, "overage_usd_28d"): "beyond rounding", ("sub_00001", "accept_rate_change"): "rounding",
-                     ("sub_maya", "accept_rate_change"): "rounding"}, kinds
+                     ("sub_santosh", "accept_rate_change"): "rounding"}, kinds
     assert drift["beyond_rounding_columns"] == {"overage_usd_28d": 1} and drift["beyond_rounding"] == 1
     assert f"{sub} overage_usd_28d:" in out and "pandas twin (beyond rounding)" in out
     assert any(f.startswith("  WARN  gold drift beyond rounding") and "overage_usd_28d 1" in f for f in flagged(out))
@@ -429,7 +429,7 @@ def test_rounding_is_one_unit_in_the_last_decimal_the_twin_rounds_to(twin):
     d = oracle.gold_drift(oracle.twin_gold_content(g2), oracle.twin_gold_content(gold))
     assert d["beyond_rounding"] == 1 and d["beyond_rounding_columns"] == {"route": 1}
     assert [(c["subscription_id"], c["kind"]) for c in d["cell_list"]] == [
-        ("sub_00001", "rounding"), ("sub_00002", "beyond rounding"), ("sub_maya", "rounding")]
+        ("sub_00001", "rounding"), ("sub_00002", "beyond rounding"), ("sub_santosh", "rounding")]
     assert d["beyond_rounding_list"] == [c for c in d["cell_list"] if c["kind"] != "rounding"]
 
 

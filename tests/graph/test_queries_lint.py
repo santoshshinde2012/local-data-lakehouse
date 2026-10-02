@@ -1044,7 +1044,7 @@ PINNED_SECOND = ("tool_k_pins_second_renewal", "tool_k_concat_pins_second_renewa
                  "tool_hub_plan_rowfilter", "tool_hub_recursive_path", "tool_value_relation_nearest",
                  "tool_value_relation_window", "tool_value_relation_alias", "tool_value_relation_map")
 # Executed by test_a_renewal_pinned_through_the_pricing_hub_really_leaks (its own source and pinned renewal:
-# the one historical renewal of tiny's sub_maya plan is not a first renewal after a cut).
+# the one historical renewal of tiny's sub_santosh plan is not a first renewal after a cut).
 PINNED_THROUGH_PRICING = ("tool_hub_pricing_literal_pin",)
 # Executed and decoded on the tiny build by test_aggregates_that_encode_a_label_really_decode_masked_renewals.
 POPULATION_ENCODED = ("tool_population_encoded_extremes", "tool_population_bitmask_sum",
@@ -1346,7 +1346,7 @@ def test_second_identity_shapes_really_leak(tiny_build):
     historical = late["src"].iloc[0]
     hidden = set(late.loc[late["src"] == historical, "dst"])
     params = {"rid": historical, "subscription_id": ren.at[historical, "subscription_id"],
-              "renewal_id": "sub_maya:2026-10-07"}
+              "renewal_id": "sub_santosh:2026-10-07"}
     db, conn = store.open_readonly(bdir / store.DB_FILE)
     served = {}
     try:
@@ -1938,7 +1938,7 @@ def _hub_predicates(var: str, date: str) -> list[str]:
             f"CASE WHEN true AND {rule} THEN true ELSE true END", f"{var}.{date} > r.as_of", f"{var}.{date} >= r.as_of",
             f"{var}.{date} <= n.as_of", f"({rule}) IS NOT NULL", f"{var}.change_id <> ' AND {rule} AND '"]
 # what a second identity reads as $renewal_id in the "o" kind: the current renewal, whose as_of is the latest
-SECOND = "sub_maya:2026-10-07"
+SECOND = "sub_santosh:2026-10-07"
 # "o" kind, second renewal pinned without a second identity parameter: by $k (a string compared with its
 # id, or an integer compared with its agent_requests_28d), by a literal ('__rid__' = its id, 987654321 =
 # its agent_requests_28d), disconnected from the source or hanging off it through the Plan hub
@@ -2398,7 +2398,7 @@ def test_the_whole_catalog_fits_one_serving_connection(tiny_build):
     from lakehouse_graph import store
 
     bdir, _ = tiny_build
-    p = {"renewal_id": "sub_maya:2026-10-07", "k": 3, "limit": 10, "today": False, "incident_id": "inc-002",
+    p = {"renewal_id": "sub_santosh:2026-10-07", "k": 3, "limit": 10, "today": False, "incident_id": "inc-002",
          "change_id": "cap-cut-2026-09"}
     db, conn = store.open_readonly(bdir / store.DB_FILE, buffer_pool_mb=store.SERVE_BUFFER_POOL_MB)
     ran = with_params = 0
@@ -2505,7 +2505,7 @@ def test_fetch_refuses_contract_only_templates_unless_asked(tiny_build):
 
     bdir, _ = tiny_build
     db, conn = store.open_readonly(bdir / store.DB_FILE)
-    p = {"renewal_id": "sub_maya:2026-10-07", "k": 3, "incident_id": "inc-002"}
+    p = {"renewal_id": "sub_santosh:2026-10-07", "k": 3, "incident_id": "inc-002"}
     try:
         for name in queries.CONTRACT_ONLY:
             with pytest.raises(queries.ContractOnlyError, match="contract-only"):
@@ -2530,7 +2530,7 @@ def test_top_k_tool_variant_masks_outcomes_the_source_could_not_know(tiny_build)
     bdir, _ = tiny_build
     ren = oracle.load_tables(bdir)["Renewal"].set_index("renewal_id")
     current = ren.index[ren["route"].isin(["score_today", "pending"])].tolist()
-    assert current == ["sub_maya:2026-10-07"]
+    assert current == ["sub_santosh:2026-10-07"]
     db, conn = store.open_readonly(bdir / store.DB_FILE)
     masked = shown = 0
     try:
@@ -2600,7 +2600,7 @@ def test_nearest_lapses_tool_variant_only_serves_outcomes_known_by_as_of(tiny_bu
     db, conn = store.open_readonly(bdir / store.DB_FILE)
     served = hidden = 0
     try:
-        for rid in [*ren.index[::10], "sub_maya:2026-10-07"]:
+        for rid in [*ren.index[::10], "sub_santosh:2026-10-07"]:
             p = {"renewal_id": rid, "k": 1000}
             every = queries.fetch(conn, "similar_nearest_lapses", p, contract=True)
             known = queries.fetch(conn, "similar_nearest_lapses_known_by_as_of", p)

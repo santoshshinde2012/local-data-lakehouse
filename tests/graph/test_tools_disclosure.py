@@ -135,7 +135,7 @@ def test_verifier_case_1_tiny_inc_002(adv):
 
 def test_verifier_case_2_cap_cut_2026_09(adv):
     """Old answer: one listed cell (pro / score_today / known) with null renewals and the split 1 / 0: the key names
-    Maya's plan and route, and the cell is pinned at 1. New answer: the breakdown is withheld, all six rows null."""
+    Santosh's plan and route, and the cell is pinned at 1. New answer: the breakdown is withheld, all six rows null."""
     raw = [_pc("pro", "score_today", True, 1)]
     old = {"entity": {"id": "cap-cut-2026-09", "kind": "pricing_change"}, "total": 1, "breakdown_withheld": False,
            "known_by_as_of": {"true": 1, "false": 0},

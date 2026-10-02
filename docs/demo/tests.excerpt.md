@@ -55,7 +55,7 @@ Retail (light) OK in 1.6 s.
    ('model', 'voluntary_lapse', 9, 1.0)
    ('score_today', 'pending', 1, 0.0)
   OK   121 renewals published and read back
-  OK   exactly one renewal is scored today (sub_maya)
+  OK   exactly one renewal is scored today (sub_santosh)
 Churn twin (light) OK in 0.3 s.
 ..
 6 passed in 2.30s
@@ -78,7 +78,7 @@ LDL_REQUIRE_STACK=1 .venv/bin/python -m pytest -q -s tests/parity
    ('model', 'voluntary_lapse', 548, 1.0)
    ('score_today', 'pending', 1, 0.0)
   OK   8001 renewals published and read back
-  OK   exactly one renewal is scored today (sub_maya)
+  OK   exactly one renewal is scored today (sub_santosh)
 Churn twin (light) OK in 1.2 s.
 max |spark - pandas| per feature: {'accept_rate_change': 9.999999999998899e-05}
 ....

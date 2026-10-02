@@ -16,7 +16,7 @@ from lakehouse_graph import oracle, queries, tools
 from lakehouse_graph.context import CURRENT_ROUTES, ToolContext
 
 pytestmark = pytest.mark.slow
-MAYA = "sub_maya:2026-10-07"
+SANTOSH = "sub_santosh:2026-10-07"
 
 
 @pytest.fixture(scope="module")
@@ -31,14 +31,14 @@ def data(ctx, name, **args):
 
 
 def test_plan_goldens(ctx):
-    rows = data(ctx, "graph_renewal_evidence", renewal_id=MAYA)["rows"]
+    rows = data(ctx, "graph_renewal_evidence", renewal_id=SANTOSH)["rows"]
     assert [(r["event_date"], r["relation"], r["target_id"]) for r in rows] == [
         ("2026-08-15", "CUT_CAP", "cap-cut-2026-08"), ("2026-08-25", "EXPOSED_TO", "inc-002"),
         ("2026-09-09", "EXPOSED_TO", "inc-003"), ("2026-09-20", "CUT_CAP", "cap-cut-2026-09"),
-        ("2026-09-20", "FIRST_RENEWAL_AFTER", "cap-cut-2026-09"), ("2026-09-24", "HIT_LIMIT", "lh:sub_maya:001"),
-        ("2026-09-25", "HIT_LIMIT", "lh:sub_maya:002"), ("2026-09-27", "HIT_LIMIT", "lh:sub_maya:003")]
+        ("2026-09-20", "FIRST_RENEWAL_AFTER", "cap-cut-2026-09"), ("2026-09-24", "HIT_LIMIT", "lh:sub_santosh:001"),
+        ("2026-09-25", "HIT_LIMIT", "lh:sub_santosh:002"), ("2026-09-27", "HIT_LIMIT", "lh:sub_santosh:003")]
     assert [r["in_feature_window"] for r in rows if r["relation"] == "EXPOSED_TO"] == [False, True]
-    sim = data(ctx, "graph_similar_renewals", renewal_id=MAYA)
+    sim = data(ctx, "graph_similar_renewals", renewal_id=SANTOSH)
     assert [(r["renewal_id"], r["d2_q"]) for r in sim["rows"]][:2] == [("sub_07200:2026-08-17", 5099099315),
                                                                        ("sub_06614:2026-08-21", 5593304415)]
     assert sim["summary"]["lapsed"] == 2 and sim["summary"]["wilson_95"] == [0.057, 0.51]
@@ -58,8 +58,8 @@ def test_plan_goldens(ctx):
     assert inc["by_route"] == {"suppressed": False, "model": 751, "voluntary_lapses": 72, "cancel_flow": 44,
                                "dunning": 42, "current": 0}                # PLAN Q20: 751 model renewals, 72 lapses
     assert inc["naive_additional"] == 329 and inc["breakdown_withheld"] is False
-    sep = data(ctx, "graph_exposure", entity_id="cap-cut-2026-09", renewal_id=MAYA)
-    # PLAN Q6: total 1, the plan x route breakdown suppressed (all six rows null: no key names Maya's plan or route)
+    sep = data(ctx, "graph_exposure", entity_id="cap-cut-2026-09", renewal_id=SANTOSH)
+    # PLAN Q6: total 1, the plan x route breakdown suppressed (all six rows null: no key names Santosh's plan or route)
     assert sep["total"] == 1 and sep["breakdown_withheld"] and all(c["suppressed"] for c in sep["cells"])
     assert sep["named_renewal_member"] is True and sep["known_by_as_of"] == {"true": None, "false": None}
     assert all(c[k] is None for c in sep["cells"] for k in tools.ROUTE_COUNTS)
@@ -74,7 +74,7 @@ def test_plan_goldens(ctx):
     assert (tot["lapses"], tot["n"], tot["wilson_95"]) == (29, 72, [0.297, 0.518])
     rc = data(ctx, "metric_route_counts")
     routes = {c["route"]: c["renewals"] for c in rc["counts"]}
-    # score_today (Maya) is public by design: graph_find serves her with her route, graph_describe the 8,001
+    # score_today (Santosh) is public by design: graph_find serves him with his route, graph_describe the 8,001
     assert routes["dunning"] == 326 and routes["cancel_flow"] == 287 and routes["score_today"] == 1
     assert rc["total_renewals"] == 8001 == data(ctx, "graph_describe")["nodes"]["Renewal"]
 

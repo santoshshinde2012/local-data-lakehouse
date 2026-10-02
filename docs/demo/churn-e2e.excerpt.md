@@ -68,7 +68,7 @@ Churn gold features OK.
 ==> spark-submit /opt/jobs/churn/04_export_features.py
 Wrote /opt/data/export/churn_user_features.csv (7387 renewals routed to the model)
 Wrote /opt/data/export/churn_renewals_audit.csv (8001 renewals)
-Wrote /opt/data/export/hero_inference_record.json (sub_maya)
+Wrote /opt/data/export/hero_inference_record.json (sub_santosh)
 ==> Exports:
 -rw-r--r--@ 1 santosh  staff  1418788 Oct  2 21:06 churn_renewals_audit.csv
 -rw-r--r--@ 1 santosh  staff   831028 Oct  2 21:06 churn_user_features.csv
@@ -89,7 +89,7 @@ Wrote bronze to <repo>/data/sample/churn
 .venv/bin/python scripts/build_churn_gold_local.py
 Wrote <repo>/data/export/churn_renewals_audit.csv (8001 renewals; routes {'model': 7387, 'dunning': 326, 'cancel_flow': 287, 'score_today': 1})
 Wrote <repo>/data/export/churn_user_features.csv (7387 rows, voluntary-lapse rate 0.074)
-Wrote <repo>/data/export/hero_inference_record.json (sub_maya, as of 2026-09-30)
+Wrote <repo>/data/export/hero_inference_record.json (sub_santosh, as of 2026-09-30)
 .venv/bin/python scripts/check_churn_export.py
 Churn export contract OK (7387 renewals, 25 cols) → <repo>/data/export
 ```

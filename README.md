@@ -330,7 +330,7 @@ Gold (`sql/churn/gold_renewal_features.sql`) builds one row per renewal from the
 | Pandas twin (light demo, T3) | `lakehouse.gold.churn_renewal_features_twin` |
 | Train CSV | `data/export/churn_user_features.csv` (24-field contract + `churned`) |
 | Audit CSV | `data/export/churn_renewals_audit.csv` |
-| Inference JSON | `data/export/hero_inference_record.json` (`sub_maya`, scored as of the latest snapshot) |
+| Inference JSON | `data/export/hero_inference_record.json` (`sub_santosh`, scored as of the latest snapshot) |
 
 Seed 42, `make churn-sample` (8,000 subscriptions): 7,387 renewals routed to the model (7.4% voluntary lapse), 326 to dunning, 287 to the cancel flow, and one scored today.
 
@@ -363,7 +363,7 @@ calibration and the renewal policy live there, not in this lakehouse.
 |------|------------|---------|
 | Subscriptions | `N_USERS` | 8000 |
 | Seed | `CHURN_SEED` | 42 |
-| Inference subscriber | `CHURN_HERO_ID` | `sub_maya` |
+| Inference subscriber | `CHURN_HERO_ID` | `sub_santosh` |
 
 ---
 

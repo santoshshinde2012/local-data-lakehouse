@@ -689,7 +689,7 @@ def cohort_summary(ctx, cohort_id=None, renewal_id=None, algorithm=None) -> tupl
     cohort_id, renewal_id, algorithm = _absent(cohort_id), _absent(renewal_id), _absent(algorithm)
     if (cohort_id is None) == (renewal_id is None):
         raise ValueError("give exactly one of cohort_id (for example leiden-01) or renewal_id (for example "
-                         "sub_maya:2026-10-07)")
+                         "sub_santosh:2026-10-07)")
     f = _frames(_build_dir(ctx))
     cohorts = f["cohorts"]
     if cohort_id is not None:
@@ -709,7 +709,7 @@ def cohort_summary(ctx, cohort_id=None, renewal_id=None, algorithm=None) -> tupl
     algorithm = _check_algorithm(algorithm or DEFAULT_ALGORITHM)
     if not isinstance(renewal_id, str) or not RENEWAL_ID_RE.fullmatch(renewal_id):
         raise ValueError(f"invalid renewal_id {renewal_id!r}: expected sub_<id>:<YYYY-MM-DD>, for example "
-                         f"sub_maya:2026-10-07")
+                         f"sub_santosh:2026-10-07")
     if renewal_id not in cohorts.index:
         raise ValueError(f"unknown renewal_id {renewal_id!r}: not in this build")
     row = cohorts.loc[renewal_id]

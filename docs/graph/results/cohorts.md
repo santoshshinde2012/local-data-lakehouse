@@ -6,7 +6,7 @@
 |---|---|
 | Status | **pass** (exit 0) |
 | Profile | s42 |
-| Command | `scripts/build_graph_cohorts.py list (leiden, louvain) + summary --renewal sub_maya` |
+| Command | `scripts/build_graph_cohorts.py list (leiden, louvain) + summary --renewal sub_santosh` |
 | Commit | `2ad9612` (working tree dirty: no) |
 | Date | 2026-10-02 (UTC) |
 | Host | macOS-26.6.2 (macosx_arm64) |
@@ -60,7 +60,7 @@ caveat: Cohorts rediscover feature segments; labels, not structure.
 caveat: Descriptive context, not a risk estimate; rates count model-routed renewals only.
 caveat: Cohorts with fewer than 5 model renewals are suppressed (null), and so is the smallest other cohort of the same plan when exactly one of its cohorts is, or when its suppressed cohorts hold fewer than 5 together (else the plan's population totals would give them back by subtraction; a suppressed cohort that is exactly a metric_lapse_rate cell does not count, since that tool prints it). Withheld cohorts read alike, small or not.
 
-$ python scripts/build_graph_cohorts.py summary --renewal sub_maya:2026-10-07 --profile s42 --graph-root $GRAPH_ROOT
+$ python scripts/build_graph_cohorts.py summary --renewal sub_santosh:2026-10-07 --profile s42 --graph-root $GRAPH_ROOT
 {
   "algorithm": "leiden",
   "cohort_id": "leiden-02",
@@ -68,7 +68,7 @@ $ python scripts/build_graph_cohorts.py summary --renewal sub_maya:2026-10-07 --
   "named_renewal": {
     "assigned_via": "nearest_reference",
     "is_reference": false,
-    "renewal_id": "sub_maya:2026-10-07",
+    "renewal_id": "sub_santosh:2026-10-07",
     "via_renewal_id": "sub_07200:2026-08-17"
   },
   "outcomes": {

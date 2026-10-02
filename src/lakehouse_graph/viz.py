@@ -882,7 +882,7 @@ def _graph_conn(ctx):
 def check_renewal_id(renewal_id: Any) -> str:
     if not isinstance(renewal_id, str) or not RENEWAL_ID_RE.fullmatch(renewal_id):
         raise ValueError(f"invalid renewal id {renewal_id!r}: expected sub_<id>:<YYYY-MM-DD>, "
-                         f"for example sub_maya:2026-10-07")
+                         f"for example sub_santosh:2026-10-07")
     return renewal_id
 
 

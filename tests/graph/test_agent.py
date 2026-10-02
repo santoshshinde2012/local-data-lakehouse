@@ -38,11 +38,11 @@ CLAUDE = ag.ResolvedModel("anthropic:claude-opus-5-5", "anthropic", "claude-opus
 # ------------------------------------------------------------------------------------------------ pure parts
 def test_text_tool_call_detector():
     names = {"graph_find", "graph_renewal_evidence"}
-    assert ag.text_tool_call('Here is the call: {"name": "graph_find", "parameters": {"query": "Maya"}}', names)
+    assert ag.text_tool_call('Here is the call: {"name": "graph_find", "parameters": {"query": "Santosh"}}', names)
     assert ag.text_tool_call('{"name":"get_metric","parameters{"}}', names)          # broken JSON, unknown name
     assert ag.text_tool_call("<tool_call>graph_find</tool_call>", names)
     assert ag.text_tool_call('{"function": {"name": "graph_find"}}', names)
-    assert not ag.text_tool_call("Maya had 8 evidence rows before 2026-09-30.", names)
+    assert not ag.text_tool_call("Santosh had 8 evidence rows before 2026-09-30.", names)
     assert not ag.text_tool_call('{"route": "graph"}', names)
     assert not ag.text_tool_call("", names)
 
@@ -119,7 +119,7 @@ def test_agent_result_from_an_episode():
     res = {"arm": "R", "route": {"route": "graph", "ms": 5000}, "answer": "8 rows.", "wall_ms": 30000,
            "episode": {"status": "ok", "llm_ms": [100, 200], "usage": {"input_tokens": 10, "output_tokens": 5},
                        "provenance": prov, "wall_ms": 25000,
-                       "tool_calls": [{"name": "graph_find", "args": {"query": "Maya"}, "status": "ok", "ms": 4,
+                       "tool_calls": [{"name": "graph_find", "args": {"query": "Santosh"}, "status": "ok", "ms": 4,
                                        "caveats": ["a", "b"], "provenance": prov},
                                       {"name": "graph_renewal_evidence", "args": {"renewal_id": HERO}, "status": "ok",
                                        "ms": 6, "caveats": ["b", "c"], "provenance": prov}]}}
@@ -173,10 +173,10 @@ def _ask(root, build, arm, model, *, router=None, question="q?", cfg=None, engin
 @pytest.mark.slow
 def test_routed_episode_over_the_sandboxed_launcher(graph_root, tiny_build):
     root, build = rich_tiny(str(graph_root))
-    res = _ask(root, build, "R", _scripted([("graph_find", {"query": "Maya"}),
-                                            ("graph_renewal_evidence", {"renewal_id": HERO})], "Maya: 8 rows."),
+    res = _ask(root, build, "R", _scripted([("graph_find", {"query": "Santosh"}),
+                                            ("graph_renewal_evidence", {"renewal_id": HERO})], "Santosh: 8 rows."),
                router=_router(json.dumps({"route": "graph"})))
-    assert res["route"]["route"] == "graph" and res["route"]["error"] is None and res["answer"] == "Maya: 8 rows."
+    assert res["route"]["route"] == "graph" and res["route"]["error"] is None and res["answer"] == "Santosh: 8 rows."
     ep = res["episode"]
     assert ep["schema"] == ag.TRACE_SCHEMA and ep["status"] == "ok" and ep["toolset"] == "graph"
     assert ep["tool_names"] == sorted(["graph_describe", "graph_find", "graph_renewal_evidence",
@@ -201,7 +201,7 @@ def test_each_arm_sees_its_own_tool_surface(graph_root, tiny_build):
     root, build = rich_tiny(str(graph_root))
     m = _ask(root, build, "M", _scripted([("metric_route_counts", {})]))
     assert m["route"] is None and len(m["episode"]["tool_names"]) == 3
-    h = _ask(root, build, "H", _scripted([("graph_find", {"query": "Maya"}), ("lineage_pit", {}),
+    h = _ask(root, build, "H", _scripted([("graph_find", {"query": "Santosh"}), ("lineage_pit", {}),
                                           ("cohort_list", {}), ("metric_route_counts", {})]))
     assert len(h["episode"]["tool_names"]) == 14
     assert [c["status"] for c in h["episode"]["tool_calls"]] == ["ok"] * 4
@@ -284,7 +284,7 @@ def test_live_qwen3_answers_the_hero_question(graph_root, tiny_build):
     if not _ollama_up():
         pytest.skip("Ollama is not running")
     root, build = rich_tiny(str(graph_root))
-    r = ag.ask("What could the model see about Maya at T-7?", model="ollama:qwen3:4b", build=build, graph_root=root)
+    r = ag.ask("What could the model see about Santosh at T-7?", model="ollama:qwen3:4b", build=build, graph_root=root)
     assert r.route == "graph" and r.status == "ok"
     assert "graph_renewal_evidence" in [c["name"] for c in r.tool_calls]
     assert r.provenance and r.model["num_ctx"] == 8192
@@ -300,16 +300,16 @@ def _chat_module():
 
 def test_graph_chat_prints_answer_tool_rows_and_provenance():
     gc = _chat_module()
-    rows = [{"event_date": "2026-09-24", "relation": "HIT_LIMIT", "target_id": "lh:sub_maya:001",
+    rows = [{"event_date": "2026-09-24", "relation": "HIT_LIMIT", "target_id": "lh:sub_santosh:001",
              "in_feature_window": True}] * 8
     env = {"data": {"summary": {"rows": 8}, "rows": rows}, "provenance": {"build_id": "abc"}, "caveats": ["c1"]}
-    res = {"arm": "R", "route": {"route": "graph", "ms": 9000}, "answer": "Maya: 8 rows.", "wall_ms": 60000,
+    res = {"arm": "R", "route": {"route": "graph", "ms": 9000}, "answer": "Santosh: 8 rows.", "wall_ms": 60000,
            "episode": {"status": "ok", "llm_ms": [1], "usage": {}, "wall_ms": 50000,
                        "provenance": {"build_id": "abc", "profile": "s42", "sandboxed": True, "spec": {"graph": "g"}},
                        "tool_calls": [{"name": "graph_renewal_evidence", "args": {"renewal_id": HERO}, "status": "ok",
                                        "ms": 5, "caveats": ["c1"], "result": json.dumps(env)}]}}
     text = gc.render(ag.result_from("q", res, THINKING_ONLY), show_rows=3)
-    assert "route: graph" in text and "Maya: 8 rows." in text and "-> ok 5 ms: 8 rows" in text
+    assert "route: graph" in text and "Santosh: 8 rows." in text and "-> ok 5 ms: 8 rows" in text
     assert text.count("relation=HIT_LIMIT") == 3 and "... 5 more" in text
     assert "build_id: abc" in text and "sandboxed: True" in text and "spec: graph=g" in text
     assert "num_ctx 8192" in text and "thinking: on (thinking-only" in text and "- c1" in text
@@ -318,5 +318,5 @@ def test_graph_chat_prints_answer_tool_rows_and_provenance():
 def test_graph_chat_fails_with_the_fix_when_ollama_is_down(monkeypatch, capsys):
     gc = _chat_module()
     monkeypatch.setenv("OLLAMA_BASE_URL", "http://127.0.0.1:9/v1")
-    assert gc.main(["What could the model see about Maya at T-7?"]) == 2
+    assert gc.main(["What could the model see about Santosh at T-7?"]) == 2
     assert "Ollama is not reachable" in capsys.readouterr().err

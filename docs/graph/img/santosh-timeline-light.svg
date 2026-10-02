@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="760" height="491" viewBox="0 0 760 491" role="img" font-family="system-ui, -apple-system, &#x27;Segoe UI&#x27;, sans-serif">
-<title>What the model could see: sub_maya at T-7</title>
-<desc>Timeline of sub_maya&#x27;s evidence before as_of 2026-09-30: 2026-08-15 CUT_CAP cap-cut-2026-08 (in window); 2026-08-25 EXPOSED_TO inc-002 (outside window); 2026-09-09 EXPOSED_TO inc-003 (in window); 2026-09-20 CUT_CAP cap-cut-2026-09 (in window); 2026-09-20 FIRST_RENEWAL_AFTER cap-cut-2026-09 (in window); 2026-09-24 HIT_LIMIT lh:sub_maya:001 (in window); 2026-09-25 HIT_LIMIT lh:sub_maya:002 (in window); 2026-09-27 HIT_LIMIT lh:sub_maya:003 (in window).</desc>
+<title>What the model could see: sub_santosh at T-7</title>
+<desc>Timeline of sub_santosh&#x27;s evidence before as_of 2026-09-30: 2026-08-15 CUT_CAP cap-cut-2026-08 (in window); 2026-08-25 EXPOSED_TO inc-002 (outside window); 2026-09-09 EXPOSED_TO inc-003 (in window); 2026-09-20 CUT_CAP cap-cut-2026-09 (in window); 2026-09-20 FIRST_RENEWAL_AFTER cap-cut-2026-09 (in window); 2026-09-24 HIT_LIMIT lh:sub_santosh:001 (in window); 2026-09-25 HIT_LIMIT lh:sub_santosh:002 (in window); 2026-09-27 HIT_LIMIT lh:sub_santosh:003 (in window).</desc>
 <rect width="760" height="491" rx="8" fill="#fcfcfb"/>
-<text x="24" y="38" font-size="15" fill="#0b0b0b" font-weight="600">What the model could see: sub_maya at T-7</text>
+<text x="24" y="38" font-size="15" fill="#0b0b0b" font-weight="600">What the model could see: sub_santosh at T-7</text>
 <text x="24" y="58" font-size="12" fill="#52514e">8 evidence rows on or before as_of 2026-09-30 (renewal 2026-10-07). Events after as_of are never served (0 exist for this</text>
 <text x="24" y="75" font-size="12" fill="#52514e">renewal). Shaded: each feature&#x27;s window. FIRST_RENEWAL_AFTER follows the gold rule, the one declared exception; here</text>
 <text x="24" y="92" font-size="12" fill="#52514e">the cut was known by as_of.</text>
@@ -75,15 +75,15 @@
 <path d="M499.01 325.6L504.41 331L499.01 336.4L493.61 331Z" fill="#2a78d6"/>
 </g>
 <text x="489.01" y="335" font-size="10.5" fill="#52514e" text-anchor="end">cap-cut-2026-09</text>
-<g><title>2026-09-24 HIT_LIMIT lh:sub_maya:001</title>
+<g><title>2026-09-24 HIT_LIMIT lh:sub_santosh:001</title>
 <circle cx="526.77" cy="377.5" r="6" fill="#fcfcfb"/>
 <circle cx="526.77" cy="377.5" r="4" fill="#2a78d6"/>
 </g>
-<g><title>2026-09-25 HIT_LIMIT lh:sub_maya:002</title>
+<g><title>2026-09-25 HIT_LIMIT lh:sub_santosh:002</title>
 <circle cx="533.71" cy="388.5" r="6" fill="#fcfcfb"/>
 <circle cx="533.71" cy="388.5" r="4" fill="#2a78d6"/>
 </g>
-<g><title>2026-09-27 HIT_LIMIT lh:sub_maya:003</title>
+<g><title>2026-09-27 HIT_LIMIT lh:sub_santosh:003</title>
 <circle cx="547.59" cy="383" r="6" fill="#fcfcfb"/>
 <circle cx="547.59" cy="383" r="4" fill="#2a78d6"/>
 </g>

@@ -18,16 +18,16 @@ from conftest import REPO, make_exports, run_script
 from lakehouse_graph import build, oracle, spec, store
 from lakehouse_graph import manifest as mf
 
-MAYA = "sub_maya:2026-10-07"
-MAYA_EVIDENCE = [  # (event_date, relation, target_id, in_feature_window): PLAN 6.6, identical on tiny and seed 42
+SANTOSH = "sub_santosh:2026-10-07"
+SANTOSH_EVIDENCE = [  # (event_date, relation, target_id, in_feature_window): PLAN 6.6, identical on tiny and seed 42
     ("2026-08-15", "CUT_CAP", "cap-cut-2026-08", True),
     ("2026-08-25", "EXPOSED_TO", "inc-002", False),
     ("2026-09-09", "EXPOSED_TO", "inc-003", True),
     ("2026-09-20", "CUT_CAP", "cap-cut-2026-09", True),
     ("2026-09-20", "FIRST_RENEWAL_AFTER", "cap-cut-2026-09", True),
-    ("2026-09-24", "HIT_LIMIT", "lh:sub_maya:001", True),
-    ("2026-09-25", "HIT_LIMIT", "lh:sub_maya:002", True),
-    ("2026-09-27", "HIT_LIMIT", "lh:sub_maya:003", True),
+    ("2026-09-24", "HIT_LIMIT", "lh:sub_santosh:001", True),
+    ("2026-09-25", "HIT_LIMIT", "lh:sub_santosh:002", True),
+    ("2026-09-27", "HIT_LIMIT", "lh:sub_santosh:003", True),
 ]
 
 
@@ -164,8 +164,8 @@ def test_tiny_golden_equals_plan_numbers():
     assert s["cut_quantised_ties_broken_by_dst"] == 0 and s["exact_halves"] == 0
     hero = v["goldens"]["hero"]
     assert (hero["renewal_id"], hero["as_of"], hero["route"], hero["plan_tier"], hero["city"]) == \
-        (MAYA, "2026-09-30", "score_today", "pro", "Pune")
-    assert _evidence_rows(hero) == MAYA_EVIDENCE and hero["evidence_hidden_after_as_of"] == 0
+        (SANTOSH, "2026-09-30", "score_today", "pro", "Pune")
+    assert _evidence_rows(hero) == SANTOSH_EVIDENCE and hero["evidence_hidden_after_as_of"] == 0
     assert [x["renewal_id"] for x in hero["top10"]] == [
         "sub_00052:2026-09-09", "sub_00020:2026-09-03", "sub_00088:2026-07-20", "sub_00076:2026-08-17",
         "sub_00051:2026-08-23", "sub_00014:2026-08-23", "sub_00045:2026-09-12", "sub_00118:2026-06-21",
@@ -552,8 +552,8 @@ def test_s42_golden_equals_plan_numbers():
     g = v["goldens"]
     hero = g["hero"]
     assert (hero["renewal_id"], hero["as_of"], hero["route"], hero["plan_tier"], hero["city"]) == \
-        (MAYA, "2026-09-30", "score_today", "pro", "Pune")
-    assert _evidence_rows(hero) == MAYA_EVIDENCE and hero["evidence_hidden_after_as_of"] == 0
+        (SANTOSH, "2026-09-30", "score_today", "pro", "Pune")
+    assert _evidence_rows(hero) == SANTOSH_EVIDENCE and hero["evidence_hidden_after_as_of"] == 0
     assert [e["detail"] for e in hero["evidence"] if e["relation"] == "HIT_LIMIT"] == ["weekly"] * 3
     fra = next(e for e in hero["evidence"] if e["relation"] == "FIRST_RENEWAL_AFTER")
     assert fra["known_by_as_of"] is True and fra["declared_exception"] is False
