@@ -361,5 +361,5 @@ snapshot or row count no longer matches, the read fails with "provenance unavail
   took effect after T-7. That is only valid if cuts are announced at least 7 days ahead, and no
   `announced_on` column exists. It is a gold-rule decision for the data owner, documented here, not
   changed by the graph.
-- Every exact number on this page was measured on macOS arm64. The first CI run will be the first Linux
-  validation of ladybug 0.21.1; until then `d2_q` goldens are compared tie-aware (±1 quantum at the cut).
+- Every exact number on this page was measured on macOS arm64. The CI `graph` job runs the tiny build and
+  strict contract on Linux; `d2_q` goldens are compared tie-aware (±1 quantum at the cut).

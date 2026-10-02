@@ -184,7 +184,7 @@ the eval keeps an unrouted arm to test it ([evaluation.md](evaluation.md#agent-e
 
 ## The open-source path
 
-Built, **experimental**, local only: a Pydantic AI 2.52 harness (`src/lakehouse_graph/agent.py`) with a
+Built, **experimental**, local only: a Pydantic AI harness (2.53.0 in the lock) (`src/lakehouse_graph/agent.py`) with a
 terminal chat (`scripts/graph_chat.py`), Ollama and a 4B Qwen model. A structured-output router picks one
 toolset (graph, metrics, lineage, cohorts or refuse) and a sub-agent that sees only that toolset answers
 through `scripts/graph_mcp.sh` (sandboxed on macOS, 4,000-character answers); every episode can be written

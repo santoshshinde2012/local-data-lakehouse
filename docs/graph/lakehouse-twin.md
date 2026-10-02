@@ -70,11 +70,12 @@ An Iceberg-sourced build is checked like any other, plus:
 
 ## Parity: Spark SQL vs numpy
 
-`scripts/check_graph_parity.py parity --strict` runs the twin's SQL in local PySpark 3.5.3 (JDK 17, no
-Docker, no jars needed) on the same pandas input as the numpy builder. This hermetic harness
-(`requirements-graph-spark.txt`: pyspark 3.5.3, iceberg-spark-runtime-3.5_2.12 1.6.1, a SQLite JDBC
-catalog) deliberately stays on the Spark 3.5 line; the stack itself runs Spark 4.1.3 / Iceberg 1.11.0,
-and the Docker run below checks the same SQL there. Latest run
+`scripts/check_graph_parity.py parity --strict` runs the twin's SQL in local PySpark 4.1.3 (JDK 17 or
+21, no Docker, no jars needed) on the same pandas input as the numpy builder. The hermetic harness
+(`requirements-graph-spark.txt`: pyspark 4.1.3, iceberg-spark-runtime-4.1_2.13 1.12.0, a SQLite JDBC
+catalog) is on the same Spark and Iceberg versions as the stack, and the Docker run below checks the
+same SQL there. On 2026-10-02 the tiny parity passed on 4.1.3 (21 tables equal, SIMILAR_TO 1,182 edges
+identical, 23 s); the table below is the generated 2026-10-01 record from pyspark 3.5.3. Latest run
 ([results/graph-parity-s42.md](results/graph-parity-s42.md), [tiny](results/graph-parity-tiny.md)):
 
 | | tiny | seed 42 |
@@ -136,7 +137,7 @@ then `./pipelines/run_graph_e2e.sh`.
 
 - Always pass both compose files, base first; the overlay is not a project on its own. Switching between
   plain `make up-full` and the overlay recreates `ldl-spark` (its config hash changes).
-- `ldl-graph`: `python:3.12.14-slim-trixie` pinned by digest, `pip install --require-hashes
+- `ldl-graph`: `python:3.12.15-slim-trixie` pinned by digest, `pip install --require-hashes
   --only-binary=:all:` of the core lock plus the PyIceberg client lock, uid 10001, `read_only: true`, a
   256 MB tmpfs `/tmp`, `cap_drop: ALL`, `no-new-privileges`, `mem_limit: 1536m`, `pids_limit: 256`, no
   ports. The image measured 629 MB.
@@ -167,6 +168,10 @@ chain is unchanged). `tests/graph/test_dag_graph.py` checks the chain with stubb
 ## The Docker run
 
 Docker is not started by the docs tooling; these are recorded runs on this Mac (Docker Desktop, seed 42).
+
+**2026-10-02, after the Iceberg 1.12.0 bump** (`ldl-graph` on python 3.12.15, ladybug 0.21.2): `make
+graph-e2e` passed again, 161 s including the overlay build (`run_graph_e2e.sh` itself 97 s), with the same
+40,204 nodes / 130,366 edges and both contracts passing.
 
 **2026-10-02, REST catalog stack** (Spark 4.1.3 / Iceberg 1.11.0 / Lakekeeper v0.13.6 / RustFS 1.0.0,
 `pipelines/run_graph_e2e.sh` on branch `feat/local-first-stack-2026`): every step passed in **178 s**

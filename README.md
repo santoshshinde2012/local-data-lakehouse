@@ -167,7 +167,7 @@ TEACHING-ONLY banner and threat model in [docs/graph/agent.md](docs/graph/agent.
 | [uv](https://docs.astral.sh/uv/) | `make venv` builds `.venv` (Python 3.12) from the hash-locked `requirements.txt` |
 | Java 17 or 21 | only for `make churn-parity` (local pyspark 4.1.3) |
 | Ports free | `8181` Lakekeeper, `9000` S3 API, `9001` store console, `4040` Spark UI, `8088` Trino, `8080` Airflow (all configurable in `.env`) |
-| Host resolver | `objectstore.localhost` must resolve to loopback (macOS, systemd-resolved and glibc 2.36+ do; else add `127.0.0.1 objectstore.localhost` to `/etc/hosts`) |
+| Host resolver | `objectstore.localhost` must resolve to loopback (macOS and systemd-resolved / nss-myhostname do; plain glibc does not: add `127.0.0.1 objectstore.localhost` to `/etc/hosts`) |
 
 Apple Silicon (arm64) and amd64 are supported (every image is multi-arch).
 
@@ -349,9 +349,9 @@ calibration and the renewal policy live there, not in this lakehouse.
 | Tier | Command | Needs | What it proves | Measured |
 |---|---|---|---|---|
 | T0 | `make test-t0` | `.venv` | static stack checks (tag + digest pins, non-root, healthchecks, no keys in clients, versions in this README), client and SQL contracts | 19 passed in 1.5 s |
-| T1 | `make test-t1` | Docker | REST catalog contract on throwaway Postgres + Lakekeeper + RustFS (testcontainers): appends, overwrite, delete, snapshots, time travel in PyIceberg / DuckDB / Polars | 5 passed in 11.7 s |
-| T2 | `make test-t2` | Docker | brings up `light`; init idempotency; the light demo contract | 6 passed in 3.0 s (SILO 4.25 s) |
-| T3 | `make test-t3` | Docker, about 4 GB | brings up `full` + Trino; Spark pipelines, then the same tables in Spark, Trino, DuckDB, PyIceberg and Polars; Spark gold vs pandas twin | 7 passed in 234.7 s (from empty volumes) |
+| T1 | `make test-t1` | Docker | REST catalog contract on throwaway Postgres + Lakekeeper + RustFS (testcontainers): appends, overwrite, delete, snapshots, time travel in PyIceberg / DuckDB / Polars | 5 passed in 5.7 s |
+| T2 | `make test-t2` | Docker | brings up `light`; init idempotency; the light demo contract | 6 passed in 2.8 s (SILO 3.4 s) |
+| T3 | `make test-t3` | Docker, about 4 GB | brings up `full` + Trino; Spark pipelines, then the same tables in Spark, Trino, DuckDB, PyIceberg and Polars; Spark gold vs pandas twin | 7 passed in 188.4 s (from empty volumes) |
 | graph | `make graph-test` | `.venv-graph` | the graph layer's own suite | about 13 min; see [docs/graph/README.md](docs/graph/README.md#status) for the known failures |
 
 `make test` runs T0–T3. CI (`.github/workflows/ci.yml`) runs T0, the graph job and T1 + T2 on every pull
@@ -397,12 +397,13 @@ tag floats, a digest is missing, or this table drifts from the pins.
 | PyArrow | pyarrow 25.0.1 | PyPI | https://pypi.org/project/pyarrow/ |
 | testcontainers | 4.15.0 | PyPI | https://pypi.org/project/testcontainers/ |
 | pyspark (parity check) | 4.1.3 | PyPI | https://pypi.org/project/pyspark/ |
-| uv (CI) | 0.12.4 | PyPI | https://github.com/astral-sh/uv/releases |
+| uv (CI) | 0.12.22 | PyPI | https://github.com/astral-sh/uv/releases |
 
 **DuckDB 2.0** is due on 21 Oct 2026 and **1.5 reaches end of life on 1 Nov 2026**. This repo pins 1.5.6;
 before moving to 2.0, re-lock `requirements.txt` and re-run `make test-t1 test-t2` (the iceberg
 extension's `ATTACH` options may change). Spark 4.2 has no Iceberg runtime yet; 3.5.x is the LTS
-fallback. The graph layer's local Spark harness stays on pyspark 3.5.3 ([MIGRATION.md](MIGRATION.md)).
+fallback. The graph layer's local Spark harness uses the same pyspark 4.1.3 with
+`iceberg-spark-runtime-4.1_2.13` 1.12.0 on a SQLite JDBC catalog ([MIGRATION.md](MIGRATION.md)).
 
 ---
 
@@ -458,6 +459,7 @@ docker-compose.airflow.yml
 | Host engines: `Could not resolve host objectstore.localhost` | Add `127.0.0.1 objectstore.localhost` to `/etc/hosts` |
 | A Spark job fails after the laptop slept: S3 `400 Bad Request`, `Failed to refresh storage credentials … Invalid credentials endpoint: null` | The vended credentials expired (Lakekeeper advertises no refresh endpoint). Re-run the job (`make e2e`, `make churn-e2e`, or the one `./pipelines/run_job.sh <job>`) |
 | DuckDB: `Metadata-log exists but none of the entries were valid for the current transaction start time` | The connection was attached before another engine replaced the table: open a fresh connection (`lakehouse_client.duckdb_connect()`) |
+| DuckDB `UPDATE` / `DELETE` / `MERGE` on an Iceberg table fails | DuckDB writes only merge-on-read tables; it fails on copy-on-write or sorted tables. Make the change in Spark or Trino, or set the table's `write.update.mode` / `write.delete.mode` / `write.merge.mode` to `merge-on-read` |
 | Polars hangs or calls `169.254.169.254` | Read with `reader_override="pyiceberg"` (`lakehouse_client.polars_scan` does) |
 | `NoSuchBucket` or `warehouse … not found` | `./pipelines/create_bucket.sh` (re-runs `lakehouse-init --once`) |
 | Odd counts or a catalog that does not match the objects (for example after switching `STORE`) | `make reset` (this project's volumes only) |

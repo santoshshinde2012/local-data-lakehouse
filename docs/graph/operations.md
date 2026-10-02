@@ -1,8 +1,8 @@
 # Graph on gold: operations runbook
 
 How to build, check, serve, refresh and clean up the graph on a laptop. Prerequisites: macOS 15+ (the
-ladybug 0.21.1 wheels are `macosx_15_0`) or Linux, [uv](https://docs.astral.sh/uv/), Python 3.12 (uv
-fetches it), and for the parity check only a JDK 17 plus `.venv-graph-spark`. The system `python3` is
+ladybug 0.21.2 wheels are `macosx_15_0`) or Linux, [uv](https://docs.astral.sh/uv/), Python 3.12 (uv
+fetches it), and for the parity check only a JDK 17 or 21 plus `.venv-graph-spark`. The system `python3` is
 never used by the graph targets.
 
 ## Quick path (no Docker)
@@ -59,8 +59,8 @@ command in the last column directly (from the repo root, with `GRAPH_PY=.venv-gr
 
 The spark venv: `uv venv --python 3.12 .venv-graph-spark && uv pip sync --python
 .venv-graph-spark/bin/python --require-hashes requirements-graph-spark.txt`. The parity check finds a JDK
-17 through `GRAPH_JAVA_HOME`, `JAVA_HOME` or the Zulu 17 path; the local Iceberg lakehouse also needs
-`iceberg-spark-runtime-3.5_2.12-1.6.1.jar` and `sqlite-jdbc-3.46.1.3.jar` in `~/.ivy2`, `~/.m2` or
+17 or 21 through `GRAPH_JAVA_HOME`, `JAVA_HOME`, the Zulu 17 path or `java_home`; the local Iceberg
+lakehouse also needs `iceberg-spark-runtime-4.1_2.13-1.12.0.jar` and `sqlite-jdbc-3.46.1.3.jar` in `~/.ivy2`, `~/.m2` or
 `GRAPH_SPARK_JARS_DIR` (never downloaded at run time).
 
 ## RAM and modes
@@ -120,9 +120,9 @@ them only with a written reason.
 - **pandas / numpy / pyarrow**: also in the build id. Parquet bytes are asserted within one platform and
   lock only; expect new build ids and identical contract answers.
 - **The renewal model** (`3efe31a` today): rebuild, run the contracts, refresh the goldens with a reason.
-- **Linux**: no run exists yet. The first CI run is the first Linux validation of ladybug 0.21.1; the
-  `d2_q` goldens are compared tie-aware until then.
-- **Airflow**: 2.10.4 is end of life (2026-04-22); see [lakehouse-twin.md](lakehouse-twin.md#airflow).
+- **Linux**: the CI `graph` job (ubuntu-latest) builds tiny and runs the strict contract; the
+  `d2_q` goldens stay compared tie-aware across platforms.
+- **Airflow**: the stack runs 3.3.2 (2.10.4 reached end of life on 2026-04-22); see [lakehouse-twin.md](lakehouse-twin.md#airflow).
 
 ## Troubleshooting
 

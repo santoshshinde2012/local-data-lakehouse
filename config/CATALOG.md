@@ -86,5 +86,8 @@ The light demo writes the retail tables with Spark-compatible types (DuckDB `TIM
 
 - **Iceberg JDBC catalog** (the previous design): no extra service, but every client needs database
   access and root S3 keys, and DuckDB / Trino cannot share it as easily.
-- **Apache Polaris, Gravitino, Nessie:** heavier (JVM) REST catalogs for a laptop stack.
+- **Apache Polaris 1.8.0:** a JVM REST catalog; about 315 MB idle and a 3 s start with in-memory
+  persistence (measured on x86 Linux in a research cross-check, not on this stack). A real setup adds its
+  own database.
+- **Gravitino, Nessie:** heavier (JVM) REST catalogs for a laptop stack.
 - **Hive Metastore:** classic; heavier and not REST.

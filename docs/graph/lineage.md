@@ -13,7 +13,7 @@ Nothing else in the lakehouse holds this information today, and building it foun
 
 | Tier | Source | Needs | Status |
 |---|---|---|---|
-| 0 | sqlglot 30.20 (qualify + a scope walk) over `sql/churn/gold_renewal_features.sql` and `sql/retail/*.sql`; Python `ast` over the Spark jobs, scripts and DAGs; the Makefile, shell pipelines, CI workflow and README numbers; contract constants imported from the check scripts | nothing (offline) | built: `scripts/build_lineage_local.py` (no `lineage-local` Make target, [operations.md](operations.md#make-targets)) |
+| 0 | sqlglot 30.21 (qualify + a scope walk) over `sql/churn/gold_renewal_features.sql` and `sql/retail/*.sql`; Python `ast` over the Spark jobs, scripts and DAGs; the Makefile, shell pipelines, CI workflow and README numbers; contract constants imported from the check scripts | nothing (offline) | built: `scripts/build_lineage_local.py` (no `lineage-local` Make target, [operations.md](operations.md#make-targets)) |
 | 1 | PyIceberg `.snapshots` and `.refs` (never `.history`, which expiry trims): Snapshot / Ref nodes, HAS_SNAPSHOT / POINTS_TO / SUPERSEDES / CONSUMED_SNAPSHOT edges | the Docker lakehouse (REST catalog) | built: `src/lakehouse_graph/lineage/iceberg_facts.py`, `build_lineage_local.py --iceberg`; ran through Lakekeeper in the 2026-10-02 Docker run |
 | 2 | OpenLineage (`openlineage-spark_2.13` 1.53.0, file transport) | Docker, opt-in `OPENLINEAGE=1` | measured on the earlier JDBC catalog: the Spark job emitted runs, parents and timing but no Iceberg datasets (OpenLineage issue #4677); not re-run on the REST catalog; no loader into the graph yet |
 

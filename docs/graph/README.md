@@ -129,7 +129,7 @@ What exists and passes, what exists and fails, and what is not built (updated 20
 | Tier-0 lineage graph and tools | **built, passing**: the lineage contract passes again (the CI clone line is resolved) | [lineage.md](lineage.md#known-issue-the-ci-clone-line) |
 | Tier-1 Iceberg lineage facts (`build_lineage_local.py --iceberg`) | **built**; reads snapshots and refs through the REST catalog (2026-10-02) | [lineage.md](lineage.md#tiers) |
 | Feature cohorts, Cytoscape.js evidence views | **built, passing** (outside the contract) | [cohorts.md](results/cohorts.md) |
-| Spark SQL twin, Iceberg tags, PyIceberg REST reader, source-aware contract | **built, passing** (local parity exact on tiny and s42 in the 3.5 harness) | [graph-parity-s42.md](results/graph-parity-s42.md) |
+| Spark SQL twin, Iceberg tags, PyIceberg REST reader, source-aware contract | **built, passing** (parity exact on tiny and s42 in the 2026-10-01 record on pyspark 3.5.3; tiny re-run on pyspark 4.1.3 + Iceberg 1.12.0 on 2026-10-02) | [graph-parity-s42.md](results/graph-parity-s42.md) |
 | Docker overlay, `make graph-e2e` / `run_graph_e2e.sh` | **built, passing** on the REST stack: every step in 178 s (2026-10-02) | [lakehouse-twin.md](lakehouse-twin.md#the-docker-run) |
 | Airflow DAG `lakehouse_graph` | **built** on Airflow 3.3.2 (chain unit-tested); not triggered on Airflow 3 yet | [lakehouse-twin.md](lakehouse-twin.md#airflow) |
 | Export fix in `src/jobs/churn/04_export_features.py` | **applied** | [lakehouse-twin.md](lakehouse-twin.md#the-export-fix-04_export_featurespy) |
@@ -140,12 +140,17 @@ What exists and passes, what exists and fails, and what is not built (updated 20
 | Guarded raw Cypher (`scripts/graph_mcp.sh --enable-cypher`, `cypher_guard.py`) | **built, opt-in**: served alone and only under the macOS sandbox | [agent.md](agent.md) |
 | OpenLineage loader (Tier 2) | **not built** | [lineage.md](lineage.md#tiers) |
 | CI `graph` job | **added** (graph tests + tiny build and strict contract) | `.github/workflows/ci.yml` |
-| Linux validation of ladybug 0.21.1 | **not run locally**; the CI `graph` job runs on Linux once pushed | |
+| Linux validation | **run in CI** (`graph` job on ubuntu-latest, PR #13): the same 18 known failures as macOS plus one shellcheck finding, now fixed | `.github/workflows/ci.yml` |
 
-`make graph-test` on 2026-10-02 (macOS arm64, after the docs commit): 1,373 passed, 18 failed, 32 skipped
-in 11 min. The 18 fail identically on unmodified `origin/main` with the same venv and are not caused by
-the stack upgrade: the disclosure / small-cell suppression tests (`test_tools_disclosure.py` ×11,
-`test_metrics.py` ×2, `test_tools.py` ×2, `test_tools_s42.py` ×2) and `test_evidence.py` ×1. Open findings worth fixing first: those suppression failures; one
+`make graph-test` on 2026-10-02 (macOS arm64, after the dependency bump: ladybug 0.21.2, sqlglot 30.21.0):
+1,371 passed, 20 failed, 32 skipped in 11 min. `test_build.py::test_manifest_provenance` pinned ladybug
+0.21.1 and is fixed; `test_a_rebuild_keeps_a_fresh_lineage_build_and_its_contract_verdict` passed when
+re-run (149 passed in `test_build.py`). The other 18 fail identically on unmodified `origin/main` and are not
+caused by the stack upgrade: the disclosure / small-cell suppression tests (`test_tools_disclosure.py` ×11,
+`test_metrics.py` ×2, `test_tools.py` ×2, `test_tools_s42.py` ×2) and `test_evidence.py` ×1. The CI
+`graph` job on Linux (ubuntu-latest, PR #13, ladybug 0.21.1) had the same 18 plus a shellcheck finding
+in `scripts/graph_mcp.sh` (SC2015, also on `main`), now fixed. The Spark harness tests need
+`.venv-graph-spark` and are skipped by `make graph-test`; run with that venv they pass (pyspark 4.1.3). Open findings worth fixing first: those suppression failures; one
 population-template encoding the leak lint does not catch (the served templates are safe,
 [data-model.md](data-model.md#point-in-time-rules)); the sandbox check's unified-log step is not
 filtered by process.

@@ -20,7 +20,7 @@ Both images are pinned by tag **and** multi-arch index digest in `docker-compose
 | Healthcheck | `curl -fsS http://127.0.0.1:${S3_API_PORT}/health` | `silo healthcheck ready` |
 | RAM measured on the Mac (light profile) | 113 MiB idle, 140 MiB after `make demo-light` | 182–196 MiB after `make demo-light` |
 | Cold `make up-light` (empty volumes, images cached) | 8.1 s (warm restart 7.2 s) | 8.7 s (one run 17.2 s) |
-| T2 smoke + light demo | 6 passed in 3.0 s; demo OK | 6 passed in 4.25 s; demo OK (1.8 s + 1.2 s) |
+| T2 smoke + light demo | 6 passed in 2.8 s; demo OK | 6 passed in 3.4 s; demo OK (1.8 s + 1.2 s) |
 
 The service is called `objectstore` for both, so nothing else (Lakekeeper warehouse, Spark, Trino,
 host clients) changes when you switch.
@@ -32,7 +32,8 @@ in the warehouse must therefore work from inside the Compose network (Spark, Tri
 container) *and* from the host (DuckDB, PyIceberg, Polars). This repo uses one name for both:
 
 - inside `ldl-net`, `objectstore.localhost` is a network alias of the `objectstore` service;
-- on the host, `*.localhost` resolves to loopback (macOS, systemd-resolved, glibc 2.36+), and port
+- on the host, `*.localhost` resolves to loopback on macOS and with systemd-resolved / nss-myhostname
+  (plain glibc does not: add `127.0.0.1 objectstore.localhost` to `/etc/hosts`), and port
   9000 is published as `9000:9000`, so the same URL reaches the same server.
 
 Keep `S3_API_PORT` equal on both sides of the mapping (the store listens on it inside the container
@@ -57,7 +58,7 @@ uses PyIceberg's fsspec/s3fs FileIO (`py-io-impl=pyiceberg.io.fsspec.FsspecFileI
 | Store | Why not the default |
 |---|---|
 | **SILO** | Works (kept as the alternative). AGPL; heavier; MinIO-era console. |
-| **Garage** | No STS, so no vended credentials; you would hand root keys to every engine. |
+| **Garage** | No STS. Lakekeeper falls back to remote signing (PyIceberg works); DuckDB needs its own S3 secret plus `ACCESS_DELEGATION_MODE none`; Sail and similar engines need static keys. |
 | **SeaweedFS** | Its built-in Iceberg catalog refused DuckDB writes in testing; with an external catalog it is a valid store but heavier to operate. |
 | **MinIO community** | Archived upstream; no maintained community binaries. |
 

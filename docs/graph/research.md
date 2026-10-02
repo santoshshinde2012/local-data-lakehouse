@@ -87,9 +87,9 @@ date-sensitive fact.
 The versions in this page are research-time (2026-10-01): Spark 3.5.3, Iceberg 1.6.1, SILO and a JDBC
 catalog. The stack now runs Spark 4.1.3, Iceberg 1.12.0, the Lakekeeper REST catalog and RustFS (SILO is
 an option), and Airflow 3.3.2 (current pins: the version table in the [README](../../README.md#versions)).
-pyspark 3.5.3 remains only in the graph's local Spark harness (`requirements-graph-spark.txt`).
-psycopg2 and SQLAlchemy were removed from the client lock (`requirements-graph-spark-client.txt`); they
-remain in the spark harness lock for its SQLite / JDBC catalog code.
+The graph's local Spark harness also moved to pyspark 4.1.3 + Iceberg 1.12.0. psycopg2 is gone from
+every lock; SQLAlchemy remains only in the spark harness lock (PyIceberg's SQLite catalog). Current
+graph pins: ladybug 0.21.2, sqlglot 30.21.0, pydantic-ai-slim 2.53.0.
 
 | Component | Version | Licence | Where |
 |---|---|---|---|
@@ -105,9 +105,9 @@ remain in the spark harness lock for its SQLite / JDBC catalog code.
 | pyspark | 3.5.3 | Apache-2.0 | spark lock (parity, local Iceberg) |
 | pyiceberg | 0.12.0 | Apache-2.0 | spark and client locks |
 | SQLAlchemy | 2.1.1 | MIT | spark lock (removed from the client lock) |
-| psycopg2-binary | 2.9.13 | **LGPL-3.0 with exceptions** (flagged; pg8000, BSD-3, is the permissive alternative) | spark lock (removed from the client lock) |
+| psycopg2-binary | 2.9.13 | **LGPL-3.0 with exceptions** (flagged) | removed from every lock (2026-10-02) |
 | Cytoscape.js | 3.34.3 | MIT (vendored in `src/lakehouse_graph/vendor/`, sha256 pinned) | evidence views |
-| Apache Spark / Iceberg runtime | 3.5.3 / 1.6.1 at research time; the stack now runs 4.1.3 / 1.12.0 | Apache-2.0 | the stack (3.5.3 only in the graph harness) |
+| Apache Spark / Iceberg runtime | 3.5.3 / 1.6.1 at research time; now 4.1.3 / 1.12.0 | Apache-2.0 | the stack and the graph harness |
 | Silo (`pgsty/silo`) | the repo's pin | **AGPL-3.0** (flagged) | optional object store (`STORE=silo`); the default is RustFS 1.0.0 (Apache-2.0) |
 | Apache Airflow | 2.10.4 at research time (**end of life 2026-04-22**); the stack now runs 3.3.2 | Apache-2.0 | optional DAG |
 | Ollama / Qwen3 4B | 0.35.0 / `qwen3:4b` | MIT / Apache-2.0 | experimental open-source agent path |

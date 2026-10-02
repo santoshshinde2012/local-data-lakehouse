@@ -30,7 +30,7 @@ volumes that a service of the loaded model mounts.
 | Trino | none | **Trino 483**, optional (`TRINO=1`, port 8088) | Cross-engine parity in T3. |
 | Airflow | 2.10.4 (EOL 2026-04-22), root, Docker socket, committed Fernet key, admin/admin, EXPOSE_CONFIG | **3.3.2**: api-server + scheduler + dag-processor, non-root, socket **proxy** limited to `docker exec` into ldl-spark/ldl-graph, generated secrets, config hidden, UI on 127.0.0.1 | Supported version; much smaller blast radius. Still a teaching overlay. |
 | Tests | ad-hoc scripts | **T0** unit (no containers), **T1** testcontainers contract, **T2** light smoke, **T3** full cross-engine parity; `make test-t0…t3` | Each tier answers one question; CI runs T0-T2 per PR, T3 on main or label `full-stack`. |
-| CI | checkout@v4, setup-python@v5, setup-java@v4 (Node 20, removed 2026-09-23) | checkout@v6, setup-python@v6, setup-java@v5 | Node 24 actions. |
+| CI | checkout@v4, setup-python@v5, setup-java@v4 (Node 20, removed 2026-09-23) | checkout@v7, setup-python@v7, setup-java@v6; uv 0.12.22 | Node 24 actions. |
 | Radar step | cloned retention-radar `main` (v1 consumer) and failed on main | pinned v2 consumer commit unless a same-named branch exists (`pipelines/radar_consume.sh`) | See "Retention Radar step" below. |
 | Graph | PyIceberg SqlCatalog on the JDBC tables (+ optional Postgres read-only role) | PyIceberg **REST** catalog (`type rest`), vended credentials, fsspec FileIO in the container | The graph container no longer touches Postgres; `config/graph/postgres_graph_ro.sql` removed. |
 | Time travel demo | `05_query_timetravel.py` read only the latest snapshot | bronze day-1 snapshot (10 rows) vs current (22) via `VERSION AS OF`; the light demo shows the same with DuckDB `AT (VERSION => …)`, PyIceberg and Polars | Shows what Iceberg time travel is for. |
@@ -67,9 +67,14 @@ Spark-compatible types (`TIMESTAMPTZ`), so `make e2e` can append to them afterwa
 - **Iceberg 1.11+ (also 1.12) rejects `option("snapshot-id")`.** Use `VERSION AS OF` or `option("versionAsOf", …)`.
 - **Silver dedupe fix.** Bronze now records one `_ingested_at` per orders file and silver breaks ties
   on `_source_file DESC`; before, o-1006 (same `order_ts` on both days) made the silver count 18 or 19.
-- **Graph Spark harness stays on 3.5.** `scripts/check_graph_parity.py` keeps its hermetic local
-  harness (`requirements-graph-spark.txt`: pyspark 3.5.3 + iceberg-spark-runtime 3.5_2.12 1.6.1 on a
-  SQLite JDBC catalog, no Docker). The stack and `scripts/check_gold_parity.py` use Spark 4.1.3.
+- **Graph Spark harness on 4.1.** `scripts/check_graph_parity.py` keeps its hermetic local harness
+  (SQLite JDBC catalog, no Docker), now on pyspark 4.1.3 + `iceberg-spark-runtime-4.1_2.13` 1.12.0 and a
+  JDK 17 or 21, like the stack. Put the runtime jar in `~/.m2` or `GRAPH_SPARK_JARS_DIR` (it is never
+  downloaded at run time). `requirements-graph-spark.txt` no longer pulls psycopg2 (LGPL).
+- **Iceberg 1.12** removes the deprecated S3 signer classes and moves the AWS HTTP client to Apache
+  HttpClient 5. Neither is configured here; the jobs ran unchanged on RustFS and on SILO.
+- **Switching `STORE`** keeps the Postgres catalog but not the objects: `make reset` after a switch
+  (T2 on RustFS right after a SILO run fails with `FileNotFoundError` until then).
 - **Airflow:** DAGs import `airflow.sdk.DAG` and `airflow.providers.standard.operators.bash.BashOperator`.
   Secrets come from `pipelines/airflow_env.sh` (`make airflow-up`); on Linux it also writes `AIRFLOW_UID`.
   `make airflow-down` removes only the Airflow services.
@@ -86,17 +91,20 @@ commit (or to `main`).
 
 ## Verified on macOS arm64 (2026-10-02)
 
+Re-run after the Iceberg 1.12.0 / graph dependency bump, except where marked.
+
 | Check | Result |
 |---|---|
 | T0 `make test-t0` | 19 passed |
-| T1 `make test-t1` | 5 passed in 11.7 s (stack ready in 8.7 s) |
-| T2 `make test-t2` | 6 passed in 3.0 s (RustFS); 6 passed in 4.25 s (`STORE=silo`) |
-| T3 `make test-t3` (from empty volumes) | 7 passed in 234.7 s; max Spark vs pandas difference 1e-4 (`accept_rate_change`) |
-| `make e2e` / `make churn-e2e` | OK in 111 s / 109 s; export contract `--strict` OK |
-| `make churn-parity` with pyspark 4.1.3 | 8,001 × 27 match (20.8 s); tiny 121 × 27 (23.6 s) |
-| `pipelines/run_graph_e2e.sh` | OK in 178 s; graph and lineage contracts pass |
-| `make airflow-up` + `make airflow-demo` | healthy in 65 s; both DAGs `success` |
-| `pipelines/radar_consume.sh` (Linux container) | radar v2 consumer scored 7,387 rows |
+| T1 `make test-t1` | 5 passed in 5.7 s |
+| T2 `make test-t2` | 6 passed in 2.8 s (RustFS); 6 passed in 3.4 s (`STORE=silo`) |
+| T3 `make test-t3` (from empty volumes) | 7 passed in 188.4 s; max Spark vs pandas difference 1e-4 (`accept_rate_change`) |
+| `make e2e` / `make churn-e2e` | OK in 98 s / 90 s on RustFS, 101 s / 86 s on SILO (`STORE=silo`); export contract `--strict` OK |
+| `make churn-parity` with pyspark 4.1.3 (before the bump; no Iceberg) | 8,001 × 27 match (20.8 s); tiny 121 × 27 (23.6 s) |
+| `make graph-e2e` | OK in 161 s including the overlay build (`run_graph_e2e.sh` 97 s); graph and lineage contracts pass |
+| `check_graph_parity.py parity --profile tiny --strict` (pyspark 4.1.3) | OK in 23 s; Spark harness tests 10 passed |
+| `make airflow-up` + `make airflow-demo` (before the bump) | healthy in 65 s; both DAGs `success` |
+| `pipelines/radar_consume.sh` (Linux container, before the bump) | radar v2 consumer scored 7,387 rows |
 | `make graph-test` | 1,373 passed, 18 failed, 32 skipped in 11 min: the 18 fail identically on `origin/main` (privacy-suppression tests and `test_evidence`), see [docs/graph/README.md](docs/graph/README.md#status) |
 
 ## Changelog
@@ -112,9 +120,13 @@ commit (or to `main`).
   socket proxy with generated secrets.
 - **Airflow 3.3.2** overlay (was 2.10.4).
 - **Graph:** PyIceberg REST catalog (was `SqlCatalog` on the JDBC tables); Postgres read-only role removed.
-- **Tests and CI:** T0–T3 tiers; CI on Node 24 actions, uv 0.12.4, pyspark 4.1.3 parity on Java 21;
+- **Graph dependencies:** `ldl-graph` on python 3.12.15; ladybug 0.21.2, sqlglot 30.21.0, pydantic-ai-slim
+  2.53.0, openai 3.23.0; the local Spark harness on pyspark 4.1.3 + Iceberg 1.12.0 (was 3.5.3 / 1.6.1),
+  psycopg2 removed from every lock.
+- **Tests and CI:** T0–T3 tiers; CI on Node 24 actions (checkout@v7, setup-python@v7, setup-java@v6), uv 0.12.22, pyspark 4.1.3 parity on Java 21;
   the Retention Radar step uses radar's v2 consumer.
 - **Fixes:** nondeterministic silver dedupe; Iceberg 1.11+ time-travel option; lineage extractor
-  resolution of the bronze ingest and the radar step.
+  resolution of the bronze ingest and the radar step; CI Airflow compose validation; shellcheck SC2015
+  in `scripts/graph_mcp.sh`.
 - **Docs:** README, `config/CATALOG.md`, `docs/object-store.md`, `docs/graph/*`, demo excerpts; the
   49 MB demo video removed from the tree (attach it to a GitHub Release).
