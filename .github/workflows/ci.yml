@@ -60,7 +60,8 @@ jobs:
       - name: Retention Radar consumes the export
         # Radar main still reads the v1 export (santosh_inference_record.json); the v2 consumer that reads
         # hero_inference_record.json lives on radar's feat/coding-assistant-renewal-v2 branch (PR #18, closed
-        # unmerged; head 953af3a). Use the same-named radar branch when one exists, else that branch.
+        # unmerged; head 953af3a) and on feat/local-first-stack-2026 (radar PR #21: v2 on top of main). Use the
+        # same-named radar branch when one exists, else the v2 branch.
         run: |
           URL=https://github.com/santoshshinde2012/retention-radar.git
           BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
