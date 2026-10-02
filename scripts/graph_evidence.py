@@ -34,7 +34,7 @@ an AWS key id) <redacted>. Nothing here writes outside --out, --img-dir and the 
 
 Exit code: 0 when every check that ran passed (pieces that are absent are "not run", not failures;
 so is a chart build that does not exist: the index then says "charts not regenerated"), 1 when one failed.
-There is no `make graph-evidence` target yet; run the script directly.
+`make graph-evidence` runs it with the defaults (GRAPH_ROOT from the Makefile).
 
 Usage (Python 3.12 venv; `make graph-venv`):
   python scripts/graph_evidence.py [--graph-root DIR] [--profiles tiny,s42,default] [--bench 20]
