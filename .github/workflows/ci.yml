@@ -109,6 +109,13 @@ jobs:
           docker compose -f docker-compose.yml -f docker-compose.graph.yml --profile full config -q
           cp .env.example /tmp/airflow.env && printf 'AIRFLOW_DB_PASSWORD=x\nAIRFLOW_FERNET_KEY=x\n_AIRFLOW_WWW_USER_PASSWORD=x\nAIRFLOW_JWT_SECRET=x\nAIRFLOW_API_SECRET_KEY=x\n' >> /tmp/airflow.env
           docker compose --env-file /tmp/airflow.env -f docker-compose.yml -f docker-compose.airflow.yml --profile full config -q
+      - name: Pull the pinned images (with retries; testcontainers' docker-py pull hides registry errors)
+        run: |
+          for i in 1 2 3; do
+            docker compose --profile light pull && exit 0
+            echo "pull attempt $i failed; retrying"; sleep 15
+          done
+          exit 1
       - name: T1 contract (testcontainers)
         run: make test-t1
       - name: T2 light smoke
