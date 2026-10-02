@@ -1,7 +1,8 @@
 # Retail E2E excerpt (verified 2026-10-02)
 
 `make e2e` on the full profile: Spark 4.1.3 + Iceberg 1.11.0 through the Lakekeeper REST catalog.
-Total 1 min 51 s on a running stack (five `spark-submit` runs). Snapshot ids shortened.
+Total 1 min 51 s on a running stack (five `spark-submit` runs). Re-run on Iceberg 1.12.0 from empty
+volumes (2026-10-02): 100 s, same rows and snapshot log. Snapshot ids shortened.
 
 ```text
 $ make e2e
