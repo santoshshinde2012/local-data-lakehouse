@@ -7,6 +7,10 @@ Polars on the host** (no JVM) or by **Spark 4.1 and Trino** in containers.
 This repository is the **hands-on companion** to the article *Stop Reading About Lakehouses. Build One
 Locally.* It contains Compose files, jobs, sample data, tests and verified demos (no article prose).
 
+> **Results:** [RESULTS.md](RESULTS.md) has the measured numbers of one end-to-end run from empty volumes
+> (2026-10-02, M1 Pro): start-up and memory per profile, T0–T3 counts, every step with its time and console
+> excerpt, the retail / churn / parity / Retention Radar numbers, the graph summary and the CI runs.
+
 | Component | Role |
 |---|---|
 | **Lakekeeper** v0.13.6 | Iceberg REST catalog; vends short-lived S3 credentials per table ([config/CATALOG.md](config/CATALOG.md)) |
@@ -82,9 +86,9 @@ flowchart LR
   style AIR stroke-dasharray:5 5
 ```
 
-End-to-end evidence of one run from empty volumes (every step with its time and console excerpt,
-memory per phase, the full architecture drawing and Airflow 3 screenshots):
-[docs/demo/README.md](docs/demo/README.md).
+End-to-end evidence of one run from empty volumes: the summary with every number is [RESULTS.md](RESULTS.md);
+every step with its time and console excerpt, memory per phase, the full architecture drawing and Airflow 3
+screenshots are in [docs/demo/README.md](docs/demo/README.md).
 
 Every engine asks Lakekeeper for a table; Lakekeeper answers with the metadata location **and**
 short-lived S3 credentials plus the endpoint `http://objectstore.localhost:9000`, which resolves to the
