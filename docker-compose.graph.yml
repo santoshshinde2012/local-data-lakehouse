@@ -1,24 +1,22 @@
 # Graph-on-gold overlay: a Python 3.12 container (ldl-graph) that reads the lakehouse through
-# PyIceberg and builds / checks / serves the renewal graph, plus one extra mount on the Spark
-# service so the Spark graph job and ldl-graph share $GRAPH_ROOT.
+# PyIceberg (the Lakekeeper REST catalog, vended credentials) and builds / checks / serves the
+# renewal graph, plus one extra mount on the Spark service so the Spark graph job and ldl-graph
+# share $GRAPH_ROOT. Part of the full profile.
 #
 # Always pass BOTH files, base first (this file is not a valid project on its own):
-#   docker compose -f docker-compose.yml -f docker-compose.graph.yml up -d --build spark graph
+#   docker compose -f docker-compose.yml -f docker-compose.graph.yml --profile full up -d --build --wait
 #   ./pipelines/run_graph_e2e.sh          # Spark publish -> PyIceberg build -> contract -> ... -> promote
-# Stop ldl-graph BEFORE `make down` (the base project file does not know it):
-#   docker compose -f docker-compose.yml -f docker-compose.graph.yml stop graph && make down
-# Switching between plain `make up` and this overlay recreates ldl-spark (its config hash changes).
+# `make down` loads every overlay, so it stops ldl-graph too.
+# Switching between plain `make up-full` and this overlay recreates ldl-spark (its config hash changes).
 #
 # TEACHING-ONLY / NOT PRODUCTION:
-# - Same sample credentials as the base stack (.env.example): Postgres iceberg/iceberg and the Silo
-#   ROOT key. The Postgres side can be narrowed to a SELECT-only role: create it with
-#   config/graph/postgres_graph_ro.sql (idempotent; how to run it is in its header), then start this
-#   service with GRAPH_PG_USER=graph_ro GRAPH_PG_PASSWORD=<the same password>. That password goes
-#   verbatim into the SQLAlchemy URI below, so it must be URL-safe (letters, digits, . _ ~ -; the
-#   role script refuses anything else). The S3 side cannot be narrowed without a second Silo user,
-#   so a bug in this container could still write objects to the bucket.
+# - The graph container holds NO credentials: no database URI and no S3 keys. It talks to the REST
+#   catalog only (GET requests), and S3 access comes from the short-lived, per-table credentials
+#   Lakekeeper vends. (Lakekeeper runs without authentication in this stack, see docker-compose.yml.)
 # - No published ports, no Docker socket, non-root, read-only root filesystem, every capability
 #   dropped. The only writable paths are ./data/graph and a tmpfs /tmp.
+# - Python in a container must use the fsspec FileIO (s3fs): pyarrow's bundled AWS SDK resolves
+#   *.localhost to the container itself, so objectstore.localhost (the vended endpoint) would fail.
 # GRAPH_HOST_ROOT (default ./data/graph) is the host directory behind /opt/data/graph in both
 # containers (for example a scratch directory for a verification run); it must exist before `up`.
 
@@ -37,13 +35,10 @@ services:
       dockerfile: docker/graph/Dockerfile
     image: ldl-graph:local
     container_name: ldl-graph
+    profiles: [full]
     depends_on:
-      postgres:
+      lakehouse-init:
         condition: service_healthy
-      silo:
-        condition: service_healthy
-      silo-init:
-        condition: service_completed_successfully
     environment:
       GRAPH_ROOT: /opt/data/graph
       # The default profile's bronze CSVs and exports inside this container (the repo's own by default;
@@ -54,21 +49,14 @@ services:
       PYTHONPATH: /opt/lakehouse/src
       PYTHONDONTWRITEBYTECODE: "1"
       HOME: /tmp
-      # PyIceberg SqlCatalog over the SAME Postgres JDBC catalog Spark uses (config/spark-defaults.conf).
-      # The catalog name must stay `lakehouse` (the catalog_name column of iceberg_tables).
-      # init_catalog_tables=false is NOT set here: PyIceberg ignores that variable (it becomes
-      # `init-catalog-tables`); src/lakehouse_graph/iceberg_source.py passes it in code and never sets
-      # schema_version. GRAPH_PG_USER / GRAPH_PG_PASSWORD (optional, URL-safe): the SELECT-only role of
-      # config/graph/postgres_graph_ro.sql instead of the catalog owner.
-      PYICEBERG_CATALOG__LAKEHOUSE__TYPE: sql
-      PYICEBERG_CATALOG__LAKEHOUSE__URI: postgresql+psycopg2://${GRAPH_PG_USER:-${POSTGRES_USER:-iceberg}}:${GRAPH_PG_PASSWORD:-${POSTGRES_PASSWORD:-iceberg}}@postgres:5432/${POSTGRES_DB:-iceberg}
-      PYICEBERG_CATALOG__LAKEHOUSE__WAREHOUSE: ${WAREHOUSE:-s3a://lake/warehouse}
-      PYICEBERG_CATALOG__LAKEHOUSE__PY_IO_IMPL: pyiceberg.io.pyarrow.PyArrowFileIO
-      PYICEBERG_CATALOG__LAKEHOUSE__S3__ENDPOINT: http://silo:9000
-      PYICEBERG_CATALOG__LAKEHOUSE__S3__ACCESS_KEY_ID: ${MINIO_ROOT_USER:-minioadmin}
-      PYICEBERG_CATALOG__LAKEHOUSE__S3__SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
-      # Always next to the endpoint: without a region PyIceberg asks real AWS about bucket `lake`.
-      PYICEBERG_CATALOG__LAKEHOUSE__S3__REGION: us-east-1
+      # PyIceberg RestCatalog over the SAME Lakekeeper catalog Spark uses (config/spark-defaults.conf).
+      PYICEBERG_CATALOG__LAKEHOUSE__TYPE: rest
+      PYICEBERG_CATALOG__LAKEHOUSE__URI: http://lakekeeper:8181/catalog
+      PYICEBERG_CATALOG__LAKEHOUSE__WAREHOUSE: ${LAKEKEEPER_WAREHOUSE:-lakehouse}
+      PYICEBERG_CATALOG__LAKEHOUSE__HEADER__X_ICEBERG_ACCESS_DELEGATION: vended-credentials
+      PYICEBERG_CATALOG__LAKEHOUSE__PY_IO_IMPL: pyiceberg.io.fsspec.FsspecFileIO
+      # Always next to the endpoint: without a region the S3 client asks real AWS.
+      PYICEBERG_CATALOG__LAKEHOUSE__S3__REGION: ${S3_REGION:-us-east-1}
     working_dir: /opt/lakehouse
     volumes:
       # Repo-shaped, read-only tree (lakehouse_graph.spec.repo_root() = /opt/lakehouse).

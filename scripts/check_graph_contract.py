@@ -706,7 +706,7 @@ def check_iceberg_determinism(rep: Report, bdir: Path, man: dict, uri: str | Non
     ice = man["iceberg"]
     uri, warehouse = _catalog_args(man, uri, warehouse)
     try:
-        iceberg_source.open_catalog(uri, warehouse).engine.dispose()
+        iceberg_source.close_catalog(iceberg_source.open_catalog(uri, warehouse))
     except ImportError as e:
         rep.warn(f"Iceberg determinism check skipped: pyiceberg is not installed here ({e.name or e}); re-read the "
                  f"pins from .venv-graph-spark or the ldl-graph image")

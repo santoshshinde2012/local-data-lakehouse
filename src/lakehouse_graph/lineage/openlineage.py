@@ -4,7 +4,7 @@
 Input: the JSON Lines file of the OpenLineage *file* transport (one RunEvent per line, appended
 across applications). The optional OPENLINEAGE=1 path writes it: pipelines/run_graph_e2e.sh and
 the lakehouse_graph DAG run the Spark graph job with ``--packages
-io.openlineage:openlineage-spark_2.12:1.53.0`` and ``spark.openlineage.transport.type=file`` into
+io.openlineage:openlineage-spark_2.13:1.53.0`` and ``spark.openlineage.transport.type=file`` into
 ``$GRAPH_ROOT/lineage/openlineage.jsonl`` (spec.OPENLINEAGE_FILE).
 
   read_events(path) -> (events, problems)   a line that is not a RunEvent (not JSON, no string run.runId /

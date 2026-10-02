@@ -1,7 +1,7 @@
 # PyIceberg client for the ldl-graph container (docker/graph/Dockerfile), installed NEXT TO
 # requirements-graph.txt. No pyspark, no JVM: the container reads the Iceberg tables Spark
-# publishes (gold.graph_*, pinned by tag + snapshot id) through the same Postgres JDBC catalog
-# and the Silo S3 endpoint. Python 3.12 only.
+# publishes (gold.graph_*, pinned by tag + snapshot id) through the same Lakekeeper REST catalog,
+# with the S3 credentials the catalog vends (s3fs: see docker-compose.graph.yml). Python 3.12 only.
 #
 # Lock (compiled AGAINST the core lock, so the two files agree on every shared pin; pip refuses
 # the install otherwise):
@@ -9,6 +9,6 @@
 #     -c requirements-graph.txt requirements-graph-spark-client.in -o requirements-graph-spark-client.txt
 # Recompile whenever requirements-graph.txt changes (tests/graph/test_compose_graph.py checks it).
 #
-# License: Apache-2.0. The sql-postgres extra adds SQLAlchemy (MIT) and psycopg2-binary
-# (LGPL-3.0 with exceptions: flagged; pg8000, BSD-3, is the permissive alternative driver).
-pyiceberg[pyarrow,sql-postgres]==0.12.0
+# License: Apache-2.0. The s3fs extra adds s3fs / fsspec / aiobotocore (BSD-3 / BSD-3 / Apache-2.0).
+# No database driver: the graph never connects to the catalog's Postgres.
+pyiceberg[pyarrow,s3fs]==0.12.0

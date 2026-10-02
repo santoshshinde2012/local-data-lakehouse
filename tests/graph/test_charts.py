@@ -490,7 +490,7 @@ def test_mermaid_blocks_are_well_formed():
     for page in PAGES:
         for block in re.findall(r"```mermaid\n(.*?)```", page.read_text(encoding="utf-8"), flags=re.S):
             first = block.splitlines()[0]
-            assert first in ("flowchart LR", "flowchart TD", "erDiagram"), f"{page.name}: {first}"
+            assert first in ("flowchart LR", "flowchart TD", "flowchart TB", "erDiagram"), f"{page.name}: {first}"
             assert block.count("subgraph ") == len(re.findall(r"^\s*end\s*$", block, flags=re.M))
             assert block.count('"') % 2 == 0, f"{page.name}: unbalanced quotes"
 

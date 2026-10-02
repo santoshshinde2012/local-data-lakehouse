@@ -5,7 +5,9 @@ graph (lakehouse.gold.graph_nodes / graph_edges / graph_similar_to_scaler) and t
 read or wrote ``graph_<build_id>``; gold.graph_build_manifest lists them with their snapshot ids.
 ``scripts/build_graph_local.py build --source iceberg`` then calls build_from_iceberg(), which
 
-  1. opens the Iceberg JDBC catalog with PyIceberg SqlCatalog under every safety rule below;
+  1. opens catalog ``lakehouse`` with PyIceberg under every safety rule below: the Lakekeeper REST
+     catalog of the Compose stack (type rest, vended credentials), or a SqlCatalog (the local
+     SQLite harness of scripts/check_graph_parity.py);
   2. resolves the publish (the newest in gold.graph_build_manifest, or --iceberg-tag) and reads
      gold.churn_renewal_features + the ten silver inputs AT THE TAG, each checked against the
      manifest: tag exists and is a tag, tag -> the recorded snapshot id, the snapshot still exists,
@@ -28,7 +30,11 @@ read or wrote ``graph_<build_id>``; gold.graph_build_manifest lists them with th
      sequence number / rows of every table read, the twin comparison and the local comparison.
 
 Safety rules (BRIEF 2, verified in apinotes spark-iceberg-harness / docker-airflow-ci):
-  * catalog name ``lakehouse`` (it is the catalog_name column of iceberg_tables);
+  * REST (the stack): the catalog URI must be http(s), the warehouse is the Lakekeeper warehouse
+    NAME, S3 access comes from the credentials the catalog vends per table (no S3 keys needed), and
+    the catalog is probed with list_namespaces before use. The REST API is the only access path: the
+    graph never connects to the catalog's database;
+  * SQL (harness): catalog name ``lakehouse`` (it is the catalog_name column of iceberg_tables);
   * init_catalog_tables=false passed IN CODE (the environment variable is ignored by PyIceberg);
   * schema_version is never set (v1 ALTERs the catalog Spark owns) and a config that sets it is refused;
   * an s3 warehouse needs a local s3.endpoint (never *.amazonaws.com) AND s3.region, else PyIceberg
@@ -104,9 +110,8 @@ def _redact(uri: str) -> str:
     """A catalog URI without credentials, query or fragment (scheme://host[:port][/db]), or the SQLite
     file path (it holds no credentials).
 
-    Not urlsplit, and not "after the last '@'": a password in the userinfo may hold / : ? # % or @ (the
-    role password of config/graph/postgres_graph_ro.sql must be URL-safe; nothing enforces that for the
-    owner's), and a query parameter may hold an '@' too (``?password=sec@ret``), so neither the first nor
+    Not urlsplit, and not "after the last '@'": a password in the userinfo may hold / : ? # % or @ (nothing
+    enforces URL-safe passwords in a SQL catalog URI), and a query parameter may hold an '@' too (``?password=sec@ret``), so neither the first nor
     the last '@' is known to end the userinfo. Every reading is tried: no userinfo, or userinfo up to each
     '@'. A reading counts when what follows is exactly host[:port][/db], then the end, a '?' or a '#'.
     When the readings that count all print the same host[:port][/db], that is the answer; when they
@@ -154,12 +159,25 @@ def catalog_config(uri: str | None = None, warehouse: str | None = None, **props
     if bad:
         raise ProvenanceUnavailable(f"refusing to open catalog {CATALOG!r}: {bad[0]} is set (it would ALTER the "
                                     f"catalog Spark owns)")
-    if cfg.get("type", "sql") != "sql":
-        raise ProvenanceUnavailable(f"catalog {CATALOG!r} must be a SqlCatalog over the Iceberg JDBC catalog "
-                                    f"(type sql), got type {cfg['type']!r}")
+    kind = cfg.get("type", "sql")
+    if kind not in ("sql", "rest"):
+        raise ProvenanceUnavailable(f"catalog {CATALOG!r} must be the Iceberg REST catalog (type rest) or a "
+                                    f"SqlCatalog (type sql, the local harness), got type {kind!r}")
     if not cfg.get("uri"):
         raise ProvenanceUnavailable(f"catalog {CATALOG!r} is not configured: pass --catalog-uri or set "
                                     f"PYICEBERG_CATALOG__LAKEHOUSE__URI")
+    if kind == "rest":
+        if not cfg["uri"].startswith(("http://", "https://")):
+            raise ProvenanceUnavailable(f"REST catalog URI must be http(s)://...: {_redact(cfg['uri'])}")
+        if not cfg.get("warehouse"):
+            raise ProvenanceUnavailable(f"REST catalog {CATALOG!r} needs the warehouse name "
+                                        f"(PYICEBERG_CATALOG__LAKEHOUSE__WAREHOUSE, e.g. lakehouse)")
+        endpoint = cfg.get("s3.endpoint", "")
+        if endpoint and (urlsplit(endpoint).hostname or "").endswith("amazonaws.com"):
+            raise ProvenanceUnavailable(f"s3.endpoint {endpoint} is AWS: the lakehouse endpoint must be local")
+        # Vended credentials: the catalog hands out short-lived S3 credentials and the endpoint per table.
+        cfg.setdefault("header.X-Iceberg-Access-Delegation", "vended-credentials")
+        return cfg
     wh = cfg.get("warehouse", "")
     endpoint = cfg.get("s3.endpoint", "")
     if wh.startswith(("s3://", "s3a://", "s3n://")) and not endpoint:
@@ -167,7 +185,7 @@ def catalog_config(uri: str | None = None, warehouse: str | None = None, **props
     if endpoint:
         host = urlsplit(endpoint).hostname or ""
         if host.endswith("amazonaws.com"):
-            raise ProvenanceUnavailable(f"s3.endpoint {endpoint} is AWS: the lakehouse endpoint must be local (Silo)")
+            raise ProvenanceUnavailable(f"s3.endpoint {endpoint} is AWS: the lakehouse endpoint must be local")
         if not cfg.get("s3.region"):
             raise ProvenanceUnavailable("s3.endpoint is set without s3.region (PyIceberg would ask AWS for the "
                                         "bucket's region): set PYICEBERG_CATALOG__LAKEHOUSE__S3__REGION=us-east-1")
@@ -179,12 +197,15 @@ def catalog_config(uri: str | None = None, warehouse: str | None = None, **props
 
 
 def open_catalog(uri: str | None = None, warehouse: str | None = None, **props: str):
-    """PyIceberg SqlCatalog ``lakehouse`` over the Iceberg JDBC catalog, probed, read-only-safe."""
+    """PyIceberg catalog ``lakehouse``, probed before use: the REST catalog (Lakekeeper) of the stack,
+    or a SqlCatalog over the local harness's SQLite JDBC catalog (read-only). close_catalog() it after."""
+    cfg = catalog_config(uri, warehouse, **props)
+    if cfg.get("type") == "rest":
+        return _open_rest(cfg)
     from pyiceberg.catalog.sql import SqlCatalog
     from sqlalchemy import text
     from sqlalchemy.exc import SQLAlchemyError
 
-    cfg = catalog_config(uri, warehouse, **props)
     logging.getLogger("pyiceberg.catalog.sql").setLevel(logging.ERROR)   # "detected a v0 schema" on every open
     try:
         catalog = SqlCatalog(CATALOG, **cfg)
@@ -200,6 +221,29 @@ def open_catalog(uri: str | None = None, warehouse: str | None = None, **props: 
     return catalog
 
 
+def _open_rest(cfg: dict[str, str]):
+    """RestCatalog + a list_namespaces probe: a dead host, a wrong warehouse or a refused token fails
+    here with a clear message instead of looking like an empty catalog."""
+    from pyiceberg.catalog.rest import RestCatalog
+
+    try:
+        catalog = RestCatalog(CATALOG, **cfg)
+        catalog.list_namespaces()
+    except Exception as e:  # noqa: BLE001 - requests / pyiceberg raise many types; all mean "unusable"
+        raise ProvenanceUnavailable(_explain(e, cfg["uri"])) from e
+    return catalog
+
+
+def close_catalog(catalog) -> None:
+    """Release what open_catalog() opened (SQLAlchemy pool or HTTP session)."""
+    engine = getattr(catalog, "engine", None)
+    if engine is not None:
+        engine.dispose()
+    session = getattr(catalog, "_session", None)
+    if session is not None:
+        session.close()
+
+
 def _explain(exc: Exception, uri: str) -> str:
     where = _redact(uri)
     msg = (str(getattr(exc, "orig", exc)).strip().splitlines() or [type(exc).__name__])[0]
@@ -210,11 +254,21 @@ def _explain(exc: Exception, uri: str) -> str:
         return f"the catalog role lacks SELECT on {' and '.join(CATALOG_TABLES)} at {where}"
     if "password authentication failed" in low or ("role" in low and "does not exist" in low):
         return f"catalog login rejected at {where}"
+    if "warehouse" in low and ("not found" in low or "does not exist" in low or "404" in low):
+        return f"the REST catalog at {where} has no such warehouse (run lakehouse-init / make up-full)"
     return f"cannot reach the Iceberg catalog at {where}: {msg[:200]}"
 
 
 def catalog_schema(catalog) -> list:
-    """The catalog database's own schema (tables, columns): read before and after to prove no ALTER."""
+    """What the read must not change, read before and after it.
+
+    SqlCatalog: the catalog database's own schema (tables, columns): proves no ALTER.
+    REST: the namespaces and the tables in them (the REST API exposes no database schema; the graph
+    only ever calls GET endpoints, so this proves no create / drop happened through this client).
+    """
+    if getattr(catalog, "engine", None) is None:
+        return [[".".join(ns), sorted(".".join(t) for t in catalog.list_tables(ns))]
+                for ns in sorted(catalog.list_namespaces())]
     from sqlalchemy import inspect
 
     insp = inspect(catalog.engine)
@@ -683,7 +737,7 @@ def build_from_iceberg(profile: str = "default", graph_root: str | os.PathLike |
     read_s = time.perf_counter() - t0
     if catalog_schema(catalog) != schema_before:
         raise ProvenanceUnavailable("the Iceberg catalog's own schema changed while it was read")
-    catalog.engine.dispose()
+    close_catalog(catalog)
     code = _code_status(pub)
     if not code["matches_checkout"]:
         log(f"    NOTE: {pub.tag} was published by other job / SQL bytes than this checkout's")
@@ -707,7 +761,8 @@ def build_from_iceberg(profile: str = "default", graph_root: str | os.PathLike |
     diagnostics = build.similar_to_diagnostics(tables["SIMILAR_TO"], tables["similar_to_cut"])
     counts = build.graph_counts(tables)
     pins = {p["table"]: p["snapshot_id"] for p in prov_in}
-    iceberg = {"catalog": CATALOG, "catalog_uri": _redact(str(getattr(catalog, "properties", {}).get("uri", ""))),
+    iceberg = {"catalog": CATALOG, "catalog_type": "rest" if getattr(catalog, "engine", None) is None else "sql",
+               "catalog_uri": _redact(str(getattr(catalog, "properties", {}).get("uri", ""))),
                "warehouse": str(getattr(catalog, "properties", {}).get("warehouse", "")), "tag": pub.tag,
                "lakehouse_build_id": pub.build_id, "published_at": pub.info["published_at"],
                "spark_version": pub.info["spark_version"], "spark_app_id": pub.info["spark_app_id"],
@@ -813,7 +868,7 @@ def verify_build(build_dir: str | os.PathLike, catalog_uri: str | None = None, w
             raise ProvenanceUnavailable(f"{table}: the manifest at {ice['tag']} now pins snapshot {pin['snapshot_id']} "
                                         f"({pin['rows']} rows), the build read {p['snapshot_id']} ({p['rows']} rows)")
     silver, gold, _prov = read_inputs(catalog, pub)
-    catalog.engine.dispose()
+    close_catalog(catalog)
     sdir = mf.resolve_path(man["inputs"]["sample_dir"])
     tables = build.build_tables(silver, gold, silver["snapshots"]["snapshot_date"].max(),
                                 build.gold_constants(build.load_gold_twin(sdir)))

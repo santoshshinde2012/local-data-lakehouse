@@ -207,25 +207,6 @@ def test_redaction_never_prints_a_fragment_of_a_secret():
     assert printed > 2000 and redacted > 200, (printed, redacted)          # measured: 2,731 and 269 of 3,000
 
 
-def test_the_role_script_says_what_its_default_privilege_reaches():
-    """config/graph/postgres_graph_ro.sql (p2c round 2 minor): ALTER DEFAULT PRIVILEGES cannot name tables,
-    so the header says it reaches every later table of the catalog owner in schema public of that
-    database, why that is the two catalog tables in this stack, and how to drop it elsewhere (in a
-    comment: the script itself revokes nothing)."""
-    text = (REPO / "config/graph/postgres_graph_ro.sql").read_text()
-    head = text.split(r"\set ON_ERROR_STOP on")[0]
-    for phrase in ("ALTER DEFAULT PRIVILEGES cannot name tables", "EVERY table the role running this script",
-                   "holds the Iceberg JDBC catalog alone", "airflow-postgres",
-                   "ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE SELECT ON TABLES FROM graph_ro;"):
-        assert phrase in " ".join(line.lstrip("- ") for line in head.splitlines()), phrase
-    code = [line for line in text.splitlines() if line.strip() and not line.lstrip().startswith("--")]
-    assert [line for line in code if "DEFAULT PRIVILEGES" in line] == [
-        "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO graph_ro;"]
-    assert not [line for line in code if "REVOKE" in line]
-    spark = (REPO / "config/spark-defaults.conf").read_text()
-    assert "spark.sql.catalog.lakehouse.uri                       jdbc:postgresql://postgres:5432/iceberg" in spark
-
-
 # --------------------------------------------------------------------------- identity: pins, never the local CSVs
 PINS = {"lakehouse.gold.churn_renewal_features": 7_000_011, "lakehouse.silver.churn_usage_daily": 7_000_009}
 
