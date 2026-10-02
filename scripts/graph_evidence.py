@@ -70,6 +70,7 @@ CHECKS = ("graph-contract", "iceberg-contract", "lineage-contract", "repo-contra
 MAX_LINES = 400
 NOT_AVAILABLE = "not available"
 NOT_RUN = "not run"
+EXIT_NO_BUILD = 3   # scripts/graph_bench.py, graph_leakage_demo.py, graph_charts.py: "no build", not a failed measurement
 SUMMARY_RE = re.compile(r"^(Graph contract|Lineage contract|Repo contracts|check_graph_tools|graph_sandbox_check|"
                         r"Graph parity|Graph cohorts|Spark SQL twin|Parity|graph_bench|SKIP|.*\b(OK|FAILED|FAIL)\b)")
 
@@ -413,6 +414,14 @@ def main(argv: list[str] | None = None) -> int:
         res.status, res.summary, res.note = status, why, why
         return res
 
+    def no_build_is_not_run(res: Result) -> Result:
+        """A measurement script that found no build (exit EXIT_NO_BUILD and a SKIP line) did not run: 'not run',
+        never FAIL. A real failure (any other non-zero exit) stays FAIL."""
+        if res.rc == EXIT_NO_BUILD and "SKIP" in res.output:
+            line = next((ln.strip() for ln in res.output.splitlines() if "SKIP" in ln), "SKIP: no build")
+            res.status, res.summary, res.note = NOT_RUN, line[:300], line
+        return res
+
     try:
         if "graph-contract" in only:
             for p in profiles:
@@ -535,7 +544,7 @@ def main(argv: list[str] | None = None) -> int:
         if "bench" in only:
             res = Result("bench", "Build and serve benchmark", "bench")
             if (ROOT / "scripts/graph_bench.py").is_file():
-                run(res, [py, "scripts/graph_bench.py", "--graph-root", gr], red, a.timeout)
+                no_build_is_not_run(run(res, [py, "scripts/graph_bench.py", "--graph-root", gr], red, a.timeout))
             else:
                 absent(res, "scripts/graph_bench.py (PHASE 3a) is not in this checkout yet. Measured figures "
                             "today: the builder and loader RSS in each graph contract (Resources section) and the "
@@ -549,8 +558,8 @@ def main(argv: list[str] | None = None) -> int:
                 res.extra_md = "```json\n" + red(json.dumps(rep, indent=1, sort_keys=True))[:20000] + "\n```"
                 res.summary = f"eval report {Path(a.eval_json).name} recorded"
             else:
-                absent(res, "No eval report yet: the eval harness (scripts/graph_eval.py, evals/graph_cases.yaml, "
-                            "PHASE 3a) is not in this checkout. LLM results gate article claims, never merges.",
+                absent(res, "No eval report given (--eval-json): run scripts/graph_eval.py on evals/graph_cases.yaml "
+                            "and pass its report. LLM results gate article claims, never merges.",
                        NOT_AVAILABLE)
             results.append(res)
         leak_json = None
@@ -558,8 +567,8 @@ def main(argv: list[str] | None = None) -> int:
             res = Result("leakage", "Leakage demo (AUCs)", "leakage")
             if (ROOT / "scripts/graph_leakage_demo.py").is_file():
                 leak_json = scratch / "leakage.json"
-                run(res, [py, "scripts/graph_leakage_demo.py", "--graph-root", gr, "--json", str(leak_json)], red,
-                    a.timeout)
+                no_build_is_not_run(run(res, [py, "scripts/graph_leakage_demo.py", "--graph-root", gr, "--json",
+                                              str(leak_json)], red, a.timeout))
             else:
                 absent(res, "scripts/graph_leakage_demo.py (PHASE 3a) is not in this checkout yet; the planning "
                             "prototype's figures are quoted in docs/graph/evaluation.md and marked as such.",
