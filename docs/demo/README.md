@@ -1,5 +1,7 @@
 # End-to-end evidence (local-first stack)
 
+The summary of this run, with every number and the CI runs, is [RESULTS.md](../../RESULTS.md) at the repo root.
+
 | | |
 |---|---|
 | Date | 2026-10-02 (IST), one run from empty volumes (`make purge` first) |
