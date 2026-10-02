@@ -157,7 +157,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--iceberg", action="store_true",
                     help="Tier 1: add Snapshot / Ref facts from the Iceberg catalog (read-only; needs PyIceberg)")
     ap.add_argument("--catalog-uri", default=None,
-                    help="--iceberg: SQLAlchemy URI of the Iceberg JDBC catalog (default: "
+                    help="--iceberg: catalog URI, the Lakekeeper REST endpoint (http...) or a local SQLite harness (default: "
                          "PYICEBERG_CATALOG__LAKEHOUSE__URI, else the SQLite catalog the business build records; "
                          "sqlite:////abs/catalog.db opens read-only)")
     ap.add_argument("--warehouse", default=None,

@@ -240,7 +240,7 @@ def parse(argv: list[str]) -> argparse.Namespace:
                    help="--source iceberg: the publish to read (graph_<12 hex>; default: the newest in "
                         "lakehouse.gold.graph_build_manifest)")
     b.add_argument("--catalog-uri", default=None,
-                   help="--source iceberg: SQLAlchemy URI of the Iceberg JDBC catalog (default: "
+                   help="--source iceberg: catalog URI, the Lakekeeper REST endpoint (http...) or a local SQLite harness (default: "
                         "PYICEBERG_CATALOG__LAKEHOUSE__URI; sqlite:////abs/catalog.db opens read-only)")
     b.add_argument("--warehouse", default=None,
                    help="--source iceberg: warehouse URI (default: PYICEBERG_CATALOG__LAKEHOUSE__WAREHOUSE)")
