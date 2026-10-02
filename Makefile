@@ -149,9 +149,12 @@ churn-check:
 	$(PY_CHECK)
 	$(PY) scripts/check_churn_export.py
 
+# Needs pyspark 4.1.3 (+ Java 17/21): the graph Spark venv has it; else install it into .venv:
+#   uv pip install --python .venv/bin/python pyspark==4.1.3   (what CI does)
+PARITY_PY ?= $(if $(wildcard .venv-graph-spark/bin/python),.venv-graph-spark/bin/python,$(PY))
 churn-parity:
-	$(PY_CHECK)
-	$(PY) scripts/check_gold_parity.py
+	@$(PARITY_PY) -c 'import pyspark' 2>/dev/null || { echo "$(PARITY_PY) has no pyspark: uv pip install --python $(PARITY_PY) pyspark==4.1.3 (or make the graph Spark venv, docs/graph/operations.md)"; exit 2; }
+	$(PARITY_PY) scripts/check_gold_parity.py
 
 demo: e2e churn-e2e
 	@echo ""

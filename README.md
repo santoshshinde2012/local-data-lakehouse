@@ -324,6 +324,7 @@ make churn-gold-local      # pandas gold → data/export/ (+ contract check)
 make churn-check           # re-validate data/export/ against the retention-radar contract
 uv pip install --python .venv/bin/python pyspark==4.1.3   # once; needs Java 17 or 21
 make churn-parity          # run the gold SQL in local Spark 4.1.3 and compare with pandas row by row
+                           # (needs pyspark 4.1.3: uses .venv-graph-spark if present, else PARITY_PY=...)
 ```
 
 `churn-check` fails on structural breaks: columns, nulls, plan tiers, 0/1 flags, `active_days_7d > active_days_28d`, dunning or cancel-flow rows in the train export, and label or metadata leaking into the inference JSON. It warns on schema range breaches (`--strict` fails on them). CI runs `churn-parity` on the tiny fixture and the full sample (measured locally: 23.6 s and 20.8 s).
