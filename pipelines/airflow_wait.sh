@@ -1,17 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-cd "$ROOT"
-COMPOSE=(docker compose -f docker-compose.yml -f docker-compose.airflow.yml)
-
-echo "==> Waiting for Airflow webserver…"
-for i in $(seq 1 60); do
-  if curl -fsS "http://localhost:${AIRFLOW_WEBSERVER_PORT:-8080}/health" >/dev/null 2>&1; then
-    echo "Airflow UI healthy: http://localhost:${AIRFLOW_WEBSERVER_PORT:-8080}"
-    exit 0
+PORT="${AIRFLOW_API_PORT:-8080}"
+echo "==> Waiting for the Airflow API server…"
+for _ in $(seq 1 90); do
+  if body="$(curl -fsS "http://localhost:${PORT}/api/v2/monitor/health" 2>/dev/null)"; then
+    if python3 -c 'import json,sys; h=json.loads(sys.argv[1]); sys.exit(0 if all(h.get(k,{}).get("status")=="healthy" for k in ("metadatabase","scheduler","dag_processor")) else 1)' "$body"; then
+      echo "Airflow healthy: http://localhost:${PORT}"
+      exit 0
+    fi
   fi
   sleep 3
 done
-echo "Timed out waiting for Airflow on port ${AIRFLOW_WEBSERVER_PORT:-8080}" >&2
-"${COMPOSE[@]}" ps
+echo "Timed out waiting for Airflow on port ${PORT}" >&2
+echo "$body" >&2 || true
 exit 1

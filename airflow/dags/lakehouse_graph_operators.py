@@ -12,7 +12,7 @@ import os
 import shlex
 from collections.abc import Mapping, Sequence
 
-from airflow.operators.bash import BashOperator
+from airflow.providers.standard.operators.bash import BashOperator
 
 from lakehouse_operators import SPARK_CONTAINER
 
