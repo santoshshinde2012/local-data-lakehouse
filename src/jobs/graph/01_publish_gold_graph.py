@@ -248,7 +248,7 @@ def pin_inputs(spark) -> dict[str, int]:
             raise PublishError(f"input {table} is missing ({type(e).__name__}): run the churn pipeline first "
                                f"(make churn-e2e, or the lakehouse_churn_features DAG)") from e
         pins[table] = main_snapshot(spark, table)
-        spark.read.option("snapshot-id", str(pins[table])).table(table).createOrReplaceGlobalTempView(view)
+        spark.read.option("versionAsOf", str(pins[table])).table(table).createOrReplaceGlobalTempView(view)
     return pins
 
 
@@ -268,7 +268,7 @@ def complete_tags(session, rows: list, tag: str) -> dict[str, str]:
 
 
 def part_counts(session, table: str, snapshot_id: int, col: str) -> dict[str, int]:
-    df = session.read.option("snapshot-id", str(snapshot_id)).table(table)
+    df = session.read.option("versionAsOf", str(snapshot_id)).table(table)
     return {r[col]: int(r["count"]) for r in df.groupBy(col).count().collect()}
 
 
@@ -306,7 +306,7 @@ def publish(spark) -> dict:
     nodes, edges = graph_tables(spark, "global_temp", "global_temp")
     fit_scaler(spark).writeTo(SCALER_TABLE).using("iceberg").createOrReplace()
     scaler_sid = main_snapshot(spark, SCALER_TABLE)
-    scaler = spark.read.option("snapshot-id", str(scaler_sid)).table(SCALER_TABLE)
+    scaler = spark.read.option("versionAsOf", str(scaler_sid)).table(SCALER_TABLE)
     edges["SIMILAR_TO"] = similar_to(spark, scaler)
 
     (union_wide(nodes, NODE_LABELS, "label", node_id=True).sortWithinPartitions("label", "node_id")
