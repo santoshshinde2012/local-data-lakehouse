@@ -163,6 +163,9 @@ def churn_twin_arrow():
     import pyarrow as pa
 
     twin = _load_twin()
+    if not (Path(twin.SAMPLE) / "subscription_snapshots.csv").is_file():
+        raise SystemExit(f"light_demo churn: no churn sample in {twin.SAMPLE}: run `make churn-sample` first "
+                         f"(or set CHURN_SAMPLE_DIR=data/sample/churn/fixtures/tiny)")
     s = twin.silver()
     g = twin.gold(s, s["snapshots"]["snapshot_date"].max()).sort_values("user_id").reset_index(drop=True)
     table = pa.Table.from_pandas(g, preserve_index=False)

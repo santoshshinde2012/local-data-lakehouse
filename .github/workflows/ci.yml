@@ -113,8 +113,10 @@ jobs:
         run: make test-t1
       - name: T2 light smoke
         run: make test-t2
-      - name: Light demo
-        run: .venv/bin/python scripts/light_demo.py all
+      - name: Light demo (seed-42 churn sample first; data/sample/churn is generated, not committed)
+        run: |
+          make churn-sample
+          .venv/bin/python scripts/light_demo.py all
       - name: Logs on failure
         if: failure()
         run: docker compose --profile '*' logs --tail 200

@@ -202,7 +202,7 @@ make venv             # .venv with DuckDB / PyIceberg / Polars (uv, hash-checked
 
 ```bash
 make up-light         # Postgres + Lakekeeper + RustFS + init, waits for health (about 8 s)
-make demo-light       # retail medallion + churn twin with DuckDB / PyIceberg / Polars
+make demo-light       # retail medallion + churn twin with DuckDB / PyIceberg / Polars (runs make churn-sample if the sample is missing)
 make down
 ```
 

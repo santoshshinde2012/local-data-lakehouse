@@ -122,6 +122,7 @@ reset: purge
 
 demo-light: up-light
 	$(PY_CHECK)
+	@test -s data/sample/churn/subscription_snapshots.csv || $(MAKE) churn-sample
 	$(PY) scripts/light_demo.py all
 
 e2e: wait
