@@ -152,7 +152,7 @@ def test_manifest_provenance(tiny_build):
     assert set(man["inputs"]["sha256"]) == set(spec.BRONZE_FILES)
     assert set(man["code_sha256"]) == set(mf.CONTENT_CODE) and "missing" not in man["code_sha256"].values()
     assert set(man["versions"]) == {"ladybug", "pyarrow", "pandas", "numpy", "python"}
-    assert man["versions"]["ladybug"] == "0.21.1" and man["platform"] == mf.platform_tag()
+    assert man["versions"]["ladybug"] == "0.21.2" and man["platform"] == mf.platform_tag()
     assert (man["seed"], man["n_users"]) == (42, 120) and man["seed_n_status"] in ("declared", "verified")
     assert "commit" in man and "dirty" in man
     assert man["data_end"] == "2026-09-30" and man["synthetic"] is True
