@@ -43,6 +43,7 @@ The upstream lineage of `gold.churn_renewal_features.limit_hits_14d`, generated 
 
 <!-- graph-evidence:begin mermaid:lineage-limit_hits_14d -->
 ```mermaid
+%%{init: {"theme": "base", "flowchart": {"wrappingWidth": 360}, "themeVariables": {"primaryColor": "#CCFBF1", "primaryTextColor": "#0F172A", "primaryBorderColor": "#0F766E", "lineColor": "#64748B", "textColor": "#0F172A", "edgeLabelBackground": "#FFFFFF", "clusterBkg": "#FFFFFF", "clusterBorder": "#64748B", "titleColor": "#0F172A", "attributeBackgroundColorOdd": "#FFFFFF", "attributeBackgroundColorEven": "#F0FDFA", "relationColor": "#64748B", "relationLabelBackground": "#FFFFFF", "relationLabelColor": "#0F172A"}}}%%
 flowchart LR
   subgraph source["source"]
     n8["limit_events.hit_at"]
@@ -73,6 +74,15 @@ flowchart LR
   n8 -->|"VALUE CAST(TIMESTAMP)"| n0
   n9 -->|"VALUE CAST(STRING)"| n1
   n10 -->|"VALUE CAST(DATE)"| n2
+
+  classDef storage fill:#DBEAFE,stroke:#1D4ED8,color:#0F172A,stroke-width:1.5px
+  classDef catalog fill:#FEF3C7,stroke:#B45309,color:#0F172A,stroke-width:1.5px
+  classDef compute fill:#ECFCCB,stroke:#4D7C0F,color:#0F172A,stroke-width:1.5px
+  classDef orchestration fill:#FCE7F3,stroke:#BE185D,color:#0F172A,stroke-width:1.5px
+  classDef graphlayer fill:#CCFBF1,stroke:#0F766E,color:#0F172A,stroke-width:1.5px
+  classDef consumer fill:#FFEDD5,stroke:#C2410C,color:#0F172A,stroke-width:1.5px
+  classDef data fill:#F1F5F9,stroke:#475569,color:#0F172A,stroke-width:1.5px
+  class n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10 data
 ```
 
 <sub>Generated from the lineage Parquet of build a2598a28e164 (lineage build 1030de6ac5e1, core profile) by the pure-Python oracle: 10 edges, 9 columns.</sub>
