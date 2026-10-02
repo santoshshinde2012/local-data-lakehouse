@@ -7,33 +7,33 @@
 | Status | **pass** (exit 0) |
 | Profile | default |
 | Command | `python scripts/check_lineage_contract.py --graph-profile default --graph-root $GRAPH_ROOT --strict` |
-| Commit | `6225473` (working tree dirty: no) |
+| Commit | `2ad9612` (working tree dirty: no) |
 | Date | 2026-10-02 (UTC) |
 | Host | macOS-26.6.2 (macosx_arm64) |
 | Python | 3.12.9 · ladybug 0.21.2 · pandas 3.0.6 · numpy 2.5.3 · pyarrow 25.0.1 · networkx 3.7 · mcp 2.2.0 · pydantic 2.13.5 · sqlglot 30.21.0 |
 | Spark venv | pyiceberg 0.12.0 · pyspark 4.1.3 |
-| Duration | 1.3 s |
-| Summary | Lineage contract OK (metadata-graph/0.1, profile core, lineage build 1030de6ac5e1): 30 gold SQL columns resolve (137 DERIVED_FROM + 3 COUNTS_ROWS_OF); 20 of 22 features compliant, declared exceptions renewals_completed, first_renewal_after_pricing_change; Cypher = oracle; slowest question Q15_dow... |
+| Duration | 1.2 s |
+| Summary | Lineage contract OK (metadata-graph/0.1, profile core, lineage build cd69f7f940ff): 30 gold SQL columns resolve (137 DERIVED_FROM + 3 COUNTS_ROWS_OF); 20 of 22 features compliant, declared exceptions renewals_completed, first_renewal_after_pricing_change; Cypher = oracle; slowest question Q15_dow... |
 
 ## Output
 
 ```text
-Lineage contract metadata-graph/0.1: profile core, lineage build 1030de6ac5e1 ($GRAPH_ROOT/default/builds/a2598a28e164) [strict]
+Lineage contract metadata-graph/0.1: profile core, lineage build cd69f7f940ff ($GRAPH_ROOT/default/builds/a2598a28e164) [strict]
 
 == Integrity and identity
   ok    72 Parquet files match the lineage manifest sha256
   ok    spec version = metadata-graph/0.1
   ok    one table per node label (24) and edge type (48)
-  ok    lineage_build_id 1030de6ac5e1 = sha256(files read, lineage code, spec, versions): 64 files unchanged since the build
+  ok    lineage_build_id cd69f7f940ff = sha256(files read, lineage code, spec, versions): 64 files unchanged since the build
   ok    manifest.json["lineage"] records this lineage build (business_build_id a2598a28e164 is a separate id)
-  note  profile core; commit 6225473; ladybug 0.21.2, pyarrow 25.0.1, python 3.12.9, sqlglot 30.21.0
+  note  profile core; commit 2ad9612; ladybug 0.21.2, pyarrow 25.0.1, python 3.12.9, sqlglot 30.21.0
 
 == Extraction
   ok    no unresolved name in 64 files
 
 == Structure (Parquet)
-  ok    manifest counts = {"edges": {"CALLS": 2, "CHECKS": 121, "CLONES": 2, "COMPUTED_IN": 58, "CONFIGURES": 17, "CONSUMED_SNAPSHOT": 0, "CONSUMES": 2, "CONSUMES_... (oracle recount)
-  ok    every edge joins two existing nodes (1,746 edges)
+  ok    manifest counts = {"edges": {"CALLS": 2, "CHECKS": 121, "CLONES": 1, "COMPUTED_IN": 58, "CONFIGURES": 17, "CONSUMED_SNAPSHOT": 0, "CONSUMES": 2, "CONSUMES_... (oracle recount)
+  ok    every edge joins two existing nodes (1,745 edges)
   ok    every edge uses a label pair its type allows
   ok    stored column degrees (n_sources, n_readers) = the edges counted
   ok    312 of 322 columns are addressable by a unique ColumnRef
@@ -58,7 +58,7 @@ Lineage contract metadata-graph/0.1: profile core, lineage build 1030de6ac5e1 ($
 
 == Ladybug (Cypher on lineage.lbdb, read only, 128 MB pool) = Python oracle
   ok    Ladybug node counts = {"Assertion": 47, "CiStep": 14, "Contract": 9, "Cte": 15, "Dag": 3, "DagTask": 16, "DataColumn": 322, "Dataset": 69, "DownstreamRepo": 1,... (Parquet)
-  ok    Ladybug edge counts = {"CALLS": 2, "CHECKS": 121, "CLONES": 2, "COMPUTED_IN": 58, "CONFIGURES": 17, "CONSUMED_SNAPSHOT": 0, "CONSUMES": 2, "CONSUMES_VIA": 0, "... (Parquet)
+  ok    Ladybug edge counts = {"CALLS": 2, "CHECKS": 121, "CLONES": 1, "COMPUTED_IN": 58, "CONFIGURES": 17, "CONSUMED_SNAPSHOT": 0, "CONSUMES": 2, "CONSUMES_VIA": 0, "... (Parquet)
   ok    gold_columns: Cypher = oracle
   ok    counts_rows_of: Cypher = oracle
   ok    range_guarantees: Cypher = oracle
@@ -82,14 +82,14 @@ Lineage contract metadata-graph/0.1: profile core, lineage build 1030de6ac5e1 ($
   ok    unused_silver_retail: lineage_unused(layer=silver, domain=retail) -> 11 rows, Cypher = oracle
 
 == Latency (warm, 25 runs each, and cold; reported, never gated)
-  note  Q13_feature_pit: best 1.09 ms, median 1.14 ms, max 1.57 ms
-  note  Q14_pit_exceptions: best 1.09 ms, median 1.27 ms, max 2.2 ms
-  note  Q15_downstream_bronze_hit_at: best 2.14 ms, median 2.43 ms, max 3.76 ms
-  note  Q16_unguarded_gold: best 1.09 ms, median 1.24 ms, max 2.22 ms
-  note  Q17_unused_silver: best 1.06 ms, median 1.21 ms, max 1.82 ms
-  note  impact_silver_agent_requests: best 1.96 ms, median 2.25 ms, max 3.03 ms
-  note  severity_limit_hits_guards: best 0.89 ms, median 0.97 ms, max 1.31 ms
-  note  cold (a fresh read-only connection, 128 MB pool): open 71.9 ms, then the first call of each question Q13_feature_pit 23.89 ms, Q14_pit_exceptions 1.76 ms, Q15_downstream_bronze_hit_at 13.59 ms, Q16_unguarded_gold 4.37 ms, Q17_unused_silver 4.04 ms, impact_silver_agent_requests 2.8 ms, severity_limit_hits_guards 6.3 ms; the 10 ms target is for warm calls (a served connection stays open)
+  note  Q13_feature_pit: best 1.05 ms, median 1.17 ms, max 1.55 ms
+  note  Q14_pit_exceptions: best 1.08 ms, median 1.1 ms, max 1.41 ms
+  note  Q15_downstream_bronze_hit_at: best 2.06 ms, median 2.22 ms, max 4.73 ms
+  note  Q16_unguarded_gold: best 1.05 ms, median 1.11 ms, max 1.54 ms
+  note  Q17_unused_silver: best 1.0 ms, median 1.04 ms, max 1.33 ms
+  note  impact_silver_agent_requests: best 1.9 ms, median 1.99 ms, max 2.29 ms
+  note  severity_limit_hits_guards: best 0.86 ms, median 0.9 ms, max 1.17 ms
+  note  cold (a fresh read-only connection, 128 MB pool): open 67.26 ms, then the first call of each question Q13_feature_pit 22.76 ms, Q14_pit_exceptions 1.39 ms, Q15_downstream_bronze_hit_at 12.24 ms, Q16_unguarded_gold 4.71 ms, Q17_unused_silver 4.26 ms, impact_silver_agent_requests 2.52 ms, severity_limit_hits_guards 3.08 ms; the 10 ms target is for warm calls (a served connection stays open)
 
 == Goldens (semantic answers; generated by the oracle, never typed)
   ok    oracle = golden core.json (commit d317368): gold columns, PIT statuses, COUNT(*) windows, unused and unguarded columns, range guarantees, LEAKY, parameters, invariant 9, churn-gold sub-graph counts, bridge, the plan's lineage questions
@@ -98,8 +98,8 @@ Lineage contract metadata-graph/0.1: profile core, lineage build 1030de6ac5e1 ($
 
 == Whole-graph totals (reported, not gated)
   note  641 nodes: Assertion 47, CiStep 14, Contract 9, Cte 15, Dag 3, DagTask 16, DataColumn 322, Dataset 69, DownstreamRepo 1, EnvVar 12, Export 3, GraphElement 21, Job 32, MakeTarget 33, Metric 8, Parameter 6, PointInTimeRule 2, ShellScript 12, SqlFile 7, Window 9
-  note  1,746 edges: CALLS 2, CHECKS 121, CLONES 2, COMPUTED_IN 58, CONFIGURES 17, CONSUMES 2, COUNTS_ROWS_OF 4, DEFINED_ON 8, DEFINES 15, DEPENDS_ON 45, DERIVED_FROM 346, DESCRIBES 6, EXCLUDED_FROM 13, EXECUTES_SQL 5, GUARDS 28, HAS_ASSERTION 47, HAS_COLUMN 322, HAS_TASK 16, IMPLEMENTS 7, IMPORTS 5, MATERIALIZED_AS 26, MIRRORS 25, PARITY_TWIN_OF 4, PRODUCED_BY 1, READS 181, RELATIVE_TO 9, ROW_GRAIN_FROM 1, RUNS 79, SOURCED_FROM 165, SUBJECT_TO 30, TRIGGERS 2, UPSTREAM_OF 13, USED_BY 5, USES 7, USES_WINDOW 57, WRITES 72
-  note  build 2.72 s; Ladybug 0.21.2 load 0.55 s, 12.2 MB, pool 256 MB, 2 threads
+  note  1,745 edges: CALLS 2, CHECKS 121, CLONES 1, COMPUTED_IN 58, CONFIGURES 17, CONSUMES 2, COUNTS_ROWS_OF 4, DEFINED_ON 8, DEFINES 15, DEPENDS_ON 45, DERIVED_FROM 346, DESCRIBES 6, EXCLUDED_FROM 13, EXECUTES_SQL 5, GUARDS 28, HAS_ASSERTION 47, HAS_COLUMN 322, HAS_TASK 16, IMPLEMENTS 7, IMPORTS 5, MATERIALIZED_AS 26, MIRRORS 25, PARITY_TWIN_OF 4, PRODUCED_BY 1, READS 181, RELATIVE_TO 9, ROW_GRAIN_FROM 1, RUNS 79, SOURCED_FROM 165, SUBJECT_TO 30, TRIGGERS 2, UPSTREAM_OF 13, USED_BY 5, USES 7, USES_WINDOW 57, WRITES 72
+  note  build 2.62 s; Ladybug 0.21.2 load 0.56 s, 12.2 MB, pool 256 MB, 2 threads
   note  9 silver churn columns never read by gold; 4 gold columns with no value check (feature_as_of, renewal_date, city, built_at); 6 of 18 contract ranges guaranteed by the SQL
 
 == Non-interference
@@ -108,7 +108,7 @@ Lineage contract metadata-graph/0.1: profile core, lineage build 1030de6ac5e1 ($
 == Template lint
   ok    all 42 lineage Cypher templates have ORDER BY and end with LIMIT
 
-Lineage contract OK (metadata-graph/0.1, profile core, lineage build 1030de6ac5e1): 30 gold SQL columns resolve (137 DERIVED_FROM + 3 COUNTS_ROWS_OF); 20 of 22 features compliant, declared exceptions renewals_completed, first_renewal_after_pricing_change; Cypher = oracle; slowest question Q15_downstream_bronze_hit_at 2.43 ms (median, warm); slowest first call Q13_feature_pit 23.89 ms (cold, after a 71.9 ms open); golden core.json; strict
+Lineage contract OK (metadata-graph/0.1, profile core, lineage build cd69f7f940ff): 30 gold SQL columns resolve (137 DERIVED_FROM + 3 COUNTS_ROWS_OF); 20 of 22 features compliant, declared exceptions renewals_completed, first_renewal_after_pricing_change; Cypher = oracle; slowest question Q15_downstream_bronze_hit_at 2.22 ms (median, warm); slowest first call Q13_feature_pit 22.76 ms (cold, after a 67.26 ms open); golden core.json; strict
 ```
 
 [Back to the results index](index.md)

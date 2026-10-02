@@ -7,12 +7,12 @@
 | Status | **pass** (exit 0) |
 | Profile | s42 |
 | Command | `scripts/build_graph_cohorts.py list (leiden, louvain) + summary --renewal sub_maya` |
-| Commit | `6225473` (working tree dirty: no) |
+| Commit | `2ad9612` (working tree dirty: no) |
 | Date | 2026-10-02 (UTC) |
 | Host | macOS-26.6.2 (macosx_arm64) |
 | Python | 3.12.9 · ladybug 0.21.2 · pandas 3.0.6 · numpy 2.5.3 · pyarrow 25.0.1 · networkx 3.7 · mcp 2.2.0 · pydantic 2.13.5 · sqlglot 30.21.0 |
 | Spark venv | pyiceberg 0.12.0 · pyspark 4.1.3 |
-| Duration | 2.0 s |
+| Duration | 2.1 s |
 | Summary | outside the graph contract; 15 leiden cohorts (modularity 0.805592, seed 42, networkx 3.7); 15 louvain cohorts (modularity 0.806498, seed 42, networkx 3.7) |
 
 ## Output

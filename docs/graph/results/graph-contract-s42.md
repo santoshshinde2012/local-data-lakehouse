@@ -7,12 +7,12 @@
 | Status | **pass** (exit 0) |
 | Profile | s42 |
 | Command | `python scripts/check_graph_contract.py --profile s42 --graph-root $GRAPH_ROOT --strict` |
-| Commit | `6225473` (working tree dirty: no) |
+| Commit | `2ad9612` (working tree dirty: no) |
 | Date | 2026-10-02 (UTC) |
 | Host | macOS-26.6.2 (macosx_arm64) |
 | Python | 3.12.9 · ladybug 0.21.2 · pandas 3.0.6 · numpy 2.5.3 · pyarrow 25.0.1 · networkx 3.7 · mcp 2.2.0 · pydantic 2.13.5 · sqlglot 30.21.0 |
 | Spark venv | pyiceberg 0.12.0 · pyspark 4.1.3 |
-| Duration | 8.9 s |
+| Duration | 8.7 s |
 | Summary | Graph contract OK (renewal-graph/v1, profile s42, build a2598a28e164): 40,204 nodes / 130,366 edges; PIT parity 0 mismatches x 6 features in pandas and Cypher; naive wrong in 1,165 / 681 / 114 renewals; golden s42; strict |
 
 ## Output

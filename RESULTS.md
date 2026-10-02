@@ -99,11 +99,11 @@ Every step exited 0.
 
 ## Graph layer
 
-Full record: [docs/graph/results/index.md](docs/graph/results/index.md) (commit `6225473`, 15 pass, 0 fail, 2 not run or not available).
+Full record: [docs/graph/results/index.md](docs/graph/results/index.md) (commit `2ad9612`, 15 pass, 0 fail, 2 not run or not available).
 
 - **Graph contracts:** tiny build 616 nodes / 1,949 edges; s42 and default builds 40,204 nodes / 130,366 edges. All strict, with point-in-time parity 0 mismatches × 6 features (pandas and Cypher).
-- **Agent tools:** tiny 61/61 checks; s42 97/97 (189.2 s). The macOS sandbox check passed 47/47.
-- **Spark SQL twin parity:** tiny in 24.72 s (1,182 SIMILAR_TO edges identical); s42 in 68.23 s (80,010 edges identical).
+- **Agent tools:** tiny 61/61 checks; s42 97/97 (275.4 s). The macOS sandbox check passed 47/47.
+- **Spark SQL twin parity:** tiny in 24.38 s (1,182 SIMILAR_TO edges identical); s42 in 74.51 s (80,010 edges identical).
 - **Lineage contract:** 30 gold SQL columns resolve; 20 of 22 features compliant, with 2 declared exceptions.
 - **Cohorts:** leiden and louvain each found 15 cohorts (modularity 0.8056 / 0.8065).
 - **Docker run:** the Iceberg-sourced build and its strict contract ran in `ldl-graph` ([docker-e2e.md](docs/graph/results/docker-e2e.md)).

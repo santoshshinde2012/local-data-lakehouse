@@ -6,12 +6,12 @@
 |---|---|
 | Status | **pass** (exit 0) |
 | Command | `python scripts/graph_leakage_demo.py --graph-root $GRAPH_ROOT --json <tmp>` |
-| Commit | `6225473` (working tree dirty: no) |
+| Commit | `2ad9612` (working tree dirty: no) |
 | Date | 2026-10-02 (UTC) |
 | Host | macOS-26.6.2 (macosx_arm64) |
 | Python | 3.12.9 · ladybug 0.21.2 · pandas 3.0.6 · numpy 2.5.3 · pyarrow 25.0.1 · networkx 3.7 · mcp 2.2.0 · pydantic 2.13.5 · sqlglot 30.21.0 |
 | Spark venv | pyiceberg 0.12.0 · pyspark 4.1.3 |
-| Duration | 3.6 s |
+| Duration | 3.8 s |
 | Summary | The data has no relationships between subscriptions: any lift from a neighbour feature is leakage (self-inclusive, as of today) or noise. Reported, never pinned. |
 
 ## Output

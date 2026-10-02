@@ -3,7 +3,7 @@
 Spec `renewal-graph/v1` (nodes and edges) and `similar_to/renewal-v1` (the kNN edge), both in
 `src/lakehouse_graph/spec.py`. Contract: `scripts/check_graph_contract.py --strict`, version
 `renewal-graph/v1`. Checked 2026-10-02 · seed 42, `N_USERS=8000` · graph build `a2598a28e164` ·
-commit `6225473` · macOS arm64 · `make graph-local PROFILE=s42`
+commit `2ad9612` · macOS arm64 · `make graph-local PROFILE=s42`
 ([results/graph-contract-s42.md](results/graph-contract-s42.md)).
 
 **The honest thesis.** Subscriptions have no relationships to each other in this synthetic data: no

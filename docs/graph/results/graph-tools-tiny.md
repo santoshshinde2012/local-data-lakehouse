@@ -7,13 +7,13 @@
 | Status | **pass** (exit 0) |
 | Profile | tiny |
 | Command | `python scripts/check_graph_tools.py --profile tiny --graph-root $GRAPH_ROOT --json <tmp>` |
-| Commit | `6225473` (working tree dirty: no) |
+| Commit | `2ad9612` (working tree dirty: no) |
 | Date | 2026-10-02 (UTC) |
 | Host | macOS-26.6.2 (macosx_arm64) |
 | Python | 3.12.9 · ladybug 0.21.2 · pandas 3.0.6 · numpy 2.5.3 · pyarrow 25.0.1 · networkx 3.7 · mcp 2.2.0 · pydantic 2.13.5 · sqlglot 30.21.0 |
 | Spark venv | pyiceberg 0.12.0 · pyspark 4.1.3 |
-| Duration | 19.5 s |
-| Summary | check_graph_tools: OK (61/61 checks, 0 warning(s), 18.8 s) |
+| Duration | 18.5 s |
+| Summary | check_graph_tools: OK (61/61 checks, 0 warning(s), 17.8 s) |
 
 ## Output
 
@@ -69,7 +69,7 @@ check_graph_tools: build 6c8fea296d84 (profile tiny, seed 42, N 120), contract s
   ok    0 BILLED outcome-evidence rows served
   ok    auto / source_as_of: 0 neighbour outcomes observed after a historical source's as_of (1116 visible outcomes checked; nearest lapses too)
   ok    'today' rejected for all 120 historical sources, accepted for 1 current
-  note  sweep took 1.4 s
+  note  sweep took 1.3 s
 == 5 audit log
   ok    one line per call: 7 lines for 7 calls (3 failed)
   ok    every line has exactly ('ts', 'session', 'pid', 'toolset', 'tool', 'args_hash', 'args_key', 'latency_ms', 'rows', 'chars', 'truncated', 'outcome', 'build_id')
@@ -85,18 +85,18 @@ check_graph_tools: build 6c8fea296d84 (profile tiny, seed 42, N 120), contract s
   ok    5 unknown-but-well-formed ids (graph, lineage, cohorts): a repairable error that never repeats the id sent
 == 9 MCP stdio smoke through scripts/graph_mcp.sh (GRAPH_PY=.venv-graph/bin/python)
   note  GRAPH_PY is the repo's .venv-graph interpreter
-  ok    graph/legacy: protocol 2025-11-25, 5 tools, read-only hints, call + resources ok, sandboxed=True (1157 ms)
-  ok    graph/2026-07-28: protocol 2026-07-28, 5 tools, read-only hints, call + resources ok, sandboxed=True (1031 ms)
-  ok    metrics/legacy: protocol 2025-11-25, 3 tools, read-only hints, call + resources ok, sandboxed=True (2401 ms)
-  ok    metrics/2026-07-28: protocol 2026-07-28, 3 tools, read-only hints, call + resources ok, sandboxed=True (2392 ms)
-  ok    lineage/legacy: protocol 2025-11-25, 4 tools, read-only hints, call + resources ok, sandboxed=True (1148 ms)
-  ok    lineage/2026-07-28: protocol 2026-07-28, 4 tools, read-only hints, call + resources ok, sandboxed=True (1107 ms)
+  ok    graph/legacy: protocol 2025-11-25, 5 tools, read-only hints, call + resources ok, sandboxed=True (1030 ms)
+  ok    graph/2026-07-28: protocol 2026-07-28, 5 tools, read-only hints, call + resources ok, sandboxed=True (957 ms)
+  ok    metrics/legacy: protocol 2025-11-25, 3 tools, read-only hints, call + resources ok, sandboxed=True (2288 ms)
+  ok    metrics/2026-07-28: protocol 2026-07-28, 3 tools, read-only hints, call + resources ok, sandboxed=True (2295 ms)
+  ok    lineage/legacy: protocol 2025-11-25, 4 tools, read-only hints, call + resources ok, sandboxed=True (1101 ms)
+  ok    lineage/2026-07-28: protocol 2026-07-28, 4 tools, read-only hints, call + resources ok, sandboxed=True (1041 ms)
 == 9b MCP smoke of the optional toolsets this build lacks (cohorts)
   ok    cohorts: the server starts, lists 2 tools and answers unavailable with the fix
 == 9c guarded raw Cypher (opt-in: graph_mcp.sh --enable-cypher, evidence graph only)
   ok    graph_cypher is in no default toolset (the default servers never offer it)
   note  skipped: needs macOS (its sandbox) and the build's evidence graph (scripts/build_evidence_graph.py)
-check_graph_tools: OK (61/61 checks, 0 warning(s), 18.8 s)
+check_graph_tools: OK (61/61 checks, 0 warning(s), 17.8 s)
 ```
 
 [Back to the results index](index.md)
