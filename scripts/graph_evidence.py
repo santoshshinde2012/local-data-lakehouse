@@ -438,6 +438,15 @@ def main(argv: list[str] | None = None) -> int:
             if ib is None:
                 absent(res, "No Iceberg-sourced build in this GRAPH_ROOT. The Docker path builds one "
                             "(pipelines/run_graph_e2e.sh); its recorded result is in docker-e2e.md.", NOT_AVAILABLE)
+            elif (built_on := json.loads((ib / "manifest.json").read_text(encoding="utf-8")).get("platform")) \
+                    != env["platform_tag"]:
+                # The Docker path builds in ldl-graph (manylinux): the platform is part of business_build_id,
+                # so a host re-check under --strict always reports a stale build. Its strict check ran in the
+                # container and is in the recorded run (docker-e2e.md).
+                absent(res, f"The newest Iceberg-sourced build ({ib.name}) was built on {built_on}, this host is "
+                            f"{env['platform_tag']}: the platform is part of its business_build_id, so a strict host "
+                            "re-check reports it stale. Its strict contract ran in ldl-graph; the recorded Docker run "
+                            "is in docker-e2e.md.", NOT_RUN)
             elif not spark_py.is_file():
                 absent(res, "An Iceberg-sourced build exists, but re-reading its pins needs .venv-graph-spark "
                             "(PyIceberg).", NOT_AVAILABLE)
