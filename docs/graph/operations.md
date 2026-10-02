@@ -41,7 +41,7 @@ command in the last column directly (from the repo root, with `GRAPH_PY=.venv-gr
 | `graph-promote [BUILD=<id>]` | yes | `scripts/build_graph_local.py promote` |
 | `graph-clean` | yes | `scripts/build_graph_local.py gc --keep 3` |
 | `graph-golden [CONFIRM=1] [ONLY=tiny\|s42]` | yes | `scripts/build_graph_local.py golden` |
-| `graph-test` | yes | `.venv-graph/bin/python -m pytest -q tests/graph` (about 13 min on an M1 Pro) |
+| `graph-test` | yes | `.venv-graph/bin/python -m pytest -q tests/graph` (about 11 to 13 min on an M1 Pro) |
 | `graph-e2e` | yes | `make up-full`, then `docker-compose.graph.yml` up `--build --wait`, then `pipelines/run_graph_e2e.sh` ([lakehouse-twin.md](lakehouse-twin.md#docker-overlay)) |
 | `graph-evidence` | no | `$GRAPH_PY scripts/graph_evidence.py [--graph-root DIR]` |
 | `lineage-local` | no | `$GRAPH_PY scripts/build_lineage_local.py --graph-profile default && $GRAPH_PY scripts/check_lineage_contract.py --graph-profile default --strict` |

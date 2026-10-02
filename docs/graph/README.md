@@ -142,11 +142,10 @@ What exists and passes, what exists and fails, and what is not built (updated 20
 | CI `graph` job | **added** (graph tests + tiny build and strict contract) | `.github/workflows/ci.yml` |
 | Linux validation of ladybug 0.21.1 | **not run locally**; the CI `graph` job runs on Linux once pushed | |
 
-`make graph-test` on 2026-10-02 (macOS arm64): 1,368 passed, 23 failed, 32 skipped in 13 min. 18 of the
-failures fail identically on unmodified `origin/main` with the same venv and are not caused by the
-stack upgrade: the disclosure / small-cell suppression tests (`test_tools_disclosure.py`,
-`test_metrics.py`, `test_tools.py`, `test_tools_s42.py`) and `test_evidence.py`. The other 5 were the
-upgrade's own and are fixed. Open findings worth fixing first: those suppression failures; one
+`make graph-test` on 2026-10-02 (macOS arm64, after the docs commit): 1,373 passed, 18 failed, 32 skipped
+in 11 min. The 18 fail identically on unmodified `origin/main` with the same venv and are not caused by
+the stack upgrade: the disclosure / small-cell suppression tests (`test_tools_disclosure.py` ×11,
+`test_metrics.py` ×2, `test_tools.py` ×2, `test_tools_s42.py` ×2) and `test_evidence.py` ×1. Open findings worth fixing first: those suppression failures; one
 population-template encoding the leak lint does not catch (the served templates are safe,
 [data-model.md](data-model.md#point-in-time-rules)); the sandbox check's unified-log step is not
 filtered by process.
