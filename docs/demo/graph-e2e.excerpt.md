@@ -1,4 +1,4 @@
-# Graph on gold excerpt (no-Docker path, verified 2026-10-01)
+# Graph on gold excerpt (no-Docker path verified 2026-10-01; Docker path 2026-10-02)
 
 Real output from one run on Apple Silicon (macOS arm64), seed 42, `N_USERS=8000`, commit `d317368` with
 the uncommitted graph work, in a scratch `GRAPH_ROOT` (shown as `$GRAPH_ROOT`). Lines are cut where they
@@ -30,8 +30,31 @@ $ .venv-graph/bin/python scripts/build_graph_cohorts.py --profile s42
 Graph cohorts OK (cohorts/renewal-v1, networkx 3.7, seed 42, weight 1 / (1 + dist)): leiden 15 cohorts (modularity 0.8056, plan purity 1.00); louvain 15 cohorts (modularity 0.8065, plan purity 1.00); 7,387 reference renewals, 614 assigned by nearest reference neighbour; outside the contract
 ```
 
-The lineage build on this commit reports one unresolved name (the CI clone line, see
-[lineage.md](../graph/lineage.md#known-issue-the-ci-clone-line)), so its strict contract fails here.
+On `d317368` the lineage build reported one unresolved name (the CI clone line, see
+[lineage.md](../graph/lineage.md#known-issue-the-ci-clone-line)); on `feat/local-first-stack-2026` the
+lineage contract passes (Docker run below).
+
+## Docker path: `pipelines/run_graph_e2e.sh` (verified 2026-10-02)
+
+Full profile + `docker-compose.graph.yml`, Spark 4.1.3 / Iceberg 1.11.0, the graph container reading
+through the Lakekeeper REST catalog with vended credentials (no keys in the container). 178 s end to end.
+
+```text
+==> Graph E2E (2026-10-02T07:40Z), profile default
+======== ldl-spark: spark-submit /opt/jobs/graph/01_publish_gold_graph.py ========
+======== ldl-graph: python scripts/build_graph_local.py build --source iceberg --profile default ========
+Graph build OK (renewal-graph/v1, similar_to/renewal-v1) from Iceberg: 40,204 nodes / 130,366 edges; iceberg tag graph_589e49f34a09 (lakehouse build 589e49f34a09), lakehouse.gold.churn_renewal_features snapshot 2614…1992 (table uuid 01a0fb61-…), identity iceberg inputs -> /opt/data/graph/default/builds/ee3ae7d4f8e4
+======== ldl-graph: python scripts/check_graph_contract.py --profile default --strict ========
+Graph contract OK (renewal-graph/v1, profile default, build ee3ae7d4f8e4): 40,204 nodes / 130,366 edges; PIT parity 0 mismatches x 6 features in pandas and Cypher; naive wrong in 1,165 / 681 / 114 renewals; golden s42 (derived); source Iceberg graph_589e49f34a09; gold drift 2 cell(s), info; strict
+======== ldl-graph: python scripts/build_lineage_local.py --graph-profile default ========
+Lineage build OK (metadata-graph/0.1, profile core): 638 nodes / 1,739 edges (322 columns, 346 DERIVED_FROM, 21 graph elements), lineage_build_id 2d4b7cd3ddba, 64 files hashed, commit None -> /opt/data/graph/default/builds/ee3ae7d4f8e4
+======== ldl-graph: python scripts/check_lineage_contract.py --graph-profile default ========
+Lineage contract OK (metadata-graph/0.1, profile core, lineage build 2d4b7cd3ddba): 30 gold SQL columns resolve (137 DERIVED_FROM + 3 COUNTS_ROWS_OF); 20 of 22 features compliant, declared exceptions renewals_completed, first_renewal_after_pricing_change; Cypher = oracle; ...; golden core.json
+======== ldl-graph: python scripts/build_graph_cohorts.py build --profile default ========
+Graph cohorts OK (cohorts/renewal-v1, networkx 3.7, seed 42, weight 1 / (1 + dist)): leiden 15 cohorts (modularity 0.8056, plan purity 1.00); louvain 15 cohorts (modularity 0.8065, plan purity 1.00); 7,387 reference renewals, 614 assigned by nearest reference neighbour; outside the contract
+======== ldl-graph: python scripts/build_graph_local.py promote --profile default --build /opt/data/graph/default/latest ========
+Graph promote OK: /opt/data/graph/current -> /opt/data/graph/default/builds/ee3ae7d4f8e4 (under the build lock; temp symlink + os.replace)
+```
 
 ## Tool-only session (no LLM)
 
