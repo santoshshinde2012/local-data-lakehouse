@@ -4,14 +4,13 @@
 #              on gold.churn_renewal_features, the silver inputs and every graph table
 #   ldl-graph  build --source iceberg (PyIceberg, pinned by tag + snapshot id) -> graph contract --strict
 #              -> lineage -> lineage contract -> cohorts -> promote (the build just checked)
-# Needs the base stack, the churn gold and the overlay:
-#   make up && make wait && make churn-e2e
-#   mkdir -p data/graph && docker compose -f docker-compose.yml -f docker-compose.graph.yml up -d --build spark graph
-#   ./pipelines/run_graph_e2e.sh
+# Needs the full profile with the graph overlay, and the churn gold:
+#   make up-full && make churn-e2e
+#   mkdir -p data/graph && docker compose -f docker-compose.yml -f docker-compose.graph.yml --profile full up -d --build --wait
+#   ./pipelines/run_graph_e2e.sh                    # or: make graph-e2e (does the two lines above too)
 # OPENLINEAGE=1 ./pipelines/run_graph_e2e.sh: the publish job also writes OpenLineage runs, parents and
 #   timing as JSON lines to data/graph/lineage/openlineage.jsonl. spark-submit --packages downloads
-#   io.openlineage:openlineage-spark_2.12 from Maven Central on first use; the driver log (very noisy on
-#   a JDBC catalog) goes to data/graph/logs/ instead of the terminal.
+#   io.openlineage:openlineage-spark_2.13 from Maven Central on first use; the driver log (noisy) goes to data/graph/logs/ instead of the terminal.
 # GRAPH_HOST_ROOT=<dir> (default data/graph): the host directory the overlay mounts at /opt/data/graph.
 # GRAPH_E2E_SAMPLE_DIR / GRAPH_E2E_EXPORT_DIR (paths INSIDE ldl-graph; default: the repo's
 #   data/sample/churn and data/export): the default profile's bronze CSVs and exports, e.g. the tiny
@@ -19,7 +18,7 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
-COMPOSE=(docker compose -f docker-compose.yml -f docker-compose.graph.yml)
+COMPOSE=(docker compose -f docker-compose.yml -f docker-compose.graph.yml --profile full)
 PROFILE=default   # the only profile that reads the lakehouse's own bronze and can be promoted
 HOST_ROOT="${GRAPH_HOST_ROOT:-data/graph}"   # the host side of /opt/data/graph (docker-compose.graph.yml)
 OPENLINEAGE_VERSION=1.53.0
@@ -36,7 +35,7 @@ fi
 spark_args=()
 if [[ "${OPENLINEAGE:-0}" == "1" ]]; then
   spark_args+=(
-    --packages "io.openlineage:openlineage-spark_2.12:${OPENLINEAGE_VERSION}"
+    --packages "io.openlineage:openlineage-spark_2.13:${OPENLINEAGE_VERSION}"
     --conf "spark.extraListeners=io.openlineage.spark.agent.OpenLineageSparkListener"
     --conf "spark.openlineage.transport.type=file"
     --conf "spark.openlineage.transport.location=${OL_DIR}/openlineage.jsonl"
@@ -69,8 +68,8 @@ echo "==> Graph E2E ($(date -u +%Y-%m-%dT%H:%MZ)), profile ${PROFILE}"
 for svc in spark graph; do
   state="$("${COMPOSE[@]}" ps "$svc" --format '{{.State}}' 2>/dev/null || true)"
   if [[ "$state" != "running" ]]; then
-    echo "Service '$svc' is not running (state: ${state:-absent}). Run: make up && make wait && make churn-e2e," >&2
-    echo "then: mkdir -p data/graph && ${COMPOSE[*]} up -d --build spark graph" >&2
+    echo "Service '$svc' is not running (state: ${state:-absent}). Run: make up-full && make churn-e2e," >&2
+    echo "then: mkdir -p data/graph && ${COMPOSE[*]} up -d --build --wait" >&2
     exit 1
   fi
 done
