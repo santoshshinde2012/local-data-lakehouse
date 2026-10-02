@@ -248,8 +248,12 @@ def test_many_random_incident_tables_pass_the_engine_check():
         table = tools.incident_problem(raw)
         got = metrics.protect(table)
         assert not metrics.recoverable(table, got.hidden, got.withheld), raw
-        assert not got.external, raw
-        withheld += got.withheld
+        # the only sensitive entries the public numbers fix on their own: a plan row made of current (public by
+        # design) renewals only. Never a cell, a route or a lapses count.
+        rows = {r["plan_tier"]: r for r in raw}
+        assert all(k[0] == "plan" and all(rows[k[1]][c] == 0 for c in ("model", "cancel_flow", "dunning"))
+                   for k in got.external), raw
+        withheld += bool(got.withheld)   # protect() returns the set of withheld groups ({""}: this table)
     assert withheld < 400           # most random tables keep a breakdown
 
 

@@ -116,18 +116,29 @@ def test_lapse_rate_by_plan_is_the_oracle_with_small_plans_suppressed(ctx, tiny_
 
 def test_lapse_rate_filters_and_groups(ctx):
     d = call(ctx, "metric_lapse_rate", group_by=["first_renewal_after_pricing_change"])
+    # 75 / 6 and 33 / 3 are null together: the first-after boxes share one publication with graph_exposure's pricing
+    # tables (33 = the model cells of the pricing changes), and the exact check cannot prove them safe to print
+    # within its budget, so they stay null (undecided is the safe side). The total is printed.
     assert {c["first_renewal_after_pricing_change"]: (c["n"], c["lapses"]) for c in d["cells"]} == \
-        {False: (75, 6), True: (33, 3)}
-    d = call(ctx, "metric_lapse_rate", plan_tier="pro", limit_hits_14d_min=1)
-    assert d["filters"] == {"plan_tier": "pro", "limit_hits_14d_min": 1} and d["cells"] == []
+        {False: (None, None), True: (None, None)}
+    assert all(c["suppressed"] for c in d["cells"]) and (d["total"]["n"], d["total"]["lapses"]) == (108, 9)
+    # a cap-hit filter selects one band at a time (min 1 alone would span several bands: a ToolArgumentError)
+    d = call(ctx, "metric_lapse_rate", plan_tier="pro", limit_hits_14d_min=1, limit_hits_14d_max=2)
+    assert d["filters"] == {"plan_tier": "pro", "limit_hits_14d_min": 1, "limit_hits_14d_max": 2}
+    assert len(d["cells"]) == 1                                        # one filtered cell, no group_by
+    c = d["cells"][0]
+    assert c["n"] is None or c["n"] == 0 or c["n"] >= 5               # a 1-4 count is never printed
     d = call(ctx, "metric_lapse_rate", group_by=["plan_tier", "limit_hits_14d_band"])
     assert d["bands"] == ["0", "1-2", "3-5", "6-9", "10+"]
     pro = [c["limit_hits_14d_band"] for c in d["cells"] if c["plan_tier"] == "pro"]
     assert pro == d["bands"]                                           # every band, in band order, 0 included
     assert len(d["cells"]) == 3 * 5                                    # the fixed shape: plans x bands
     assert all(c["n"] == 0 or c["n"] >= 5 for c in d["cells"] if not c["suppressed"])
-    empty = tools.call(ctx, "metric_lapse_rate", {"limit_hits_14d_min": 60})
-    assert empty["data"]["total"]["n"] == 0 and any("No model-routed renewal" in c for c in empty["caveats"])
+    # no ultra renewal hit the cap 10+ times on tiny: that 0 sits in a null line, so it stays null, and the "no
+    # renewal matches" caveat (said only of a printed 0) must not give it back
+    empty = tools.call(ctx, "metric_lapse_rate", {"plan_tier": "ultra", "limit_hits_14d_min": 10})
+    assert empty["data"]["total"]["n"] is None and empty["data"]["total"]["suppressed"]
+    assert not any("No model-routed renewal" in c for c in empty["caveats"])
 
 
 def test_route_counts_suppress_small_cells(ctx):
