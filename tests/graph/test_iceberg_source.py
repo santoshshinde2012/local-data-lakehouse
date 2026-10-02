@@ -112,9 +112,11 @@ def test_s3_warehouse_needs_a_local_endpoint_and_a_region(tmp_path, pyiceberg):
     assert cfg["s3.region"] == "us-east-1" and cfg["s3.endpoint"] == "http://silo:9000"
 
 
-def test_only_a_sql_catalog_is_accepted(tmp_path, pyiceberg):
+def test_only_a_rest_or_a_sql_catalog_is_accepted(tmp_path, pyiceberg):
     db = _v0_catalog(tmp_path / "c.db")
-    with pytest.raises(ice.ProvenanceUnavailable, match="type sql"):
+    with pytest.raises(ice.ProvenanceUnavailable, match="type rest.*type sql"):
+        ice.catalog_config(f"sqlite:///{db}", f"file://{tmp_path}", type="hive")
+    with pytest.raises(ice.ProvenanceUnavailable, match="REST catalog URI must be http"):
         ice.catalog_config(f"sqlite:///{db}", f"file://{tmp_path}", type="rest")
     with pytest.raises(ice.ProvenanceUnavailable, match="not configured"):
         ice.catalog_config(None, f"file://{tmp_path}")

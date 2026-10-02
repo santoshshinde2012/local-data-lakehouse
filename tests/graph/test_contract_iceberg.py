@@ -17,7 +17,7 @@ provenance, verify_build() re-reads the pins and rebuilds, and scripts/check_gra
     inconsistent, and when no catalog can be reached (a warning).
 
 At the bottom, one real local Iceberg build (PySpark 3.5 + JdbcCatalog(SQLite), the
-scripts/check_graph_parity.py harness), skipped without pyspark / a JDK 17 / the jars.
+scripts/check_graph_parity.py harness), skipped without pyspark / a JDK 17 or 21 / the jars.
 """
 from __future__ import annotations
 

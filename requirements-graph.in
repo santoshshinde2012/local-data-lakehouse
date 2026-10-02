@@ -16,7 +16,7 @@
 # Exact pin: pre-1.0 weekly releases, and the PyPI name was reused from an unrelated
 # 2014 package, so the version AND the wheel hashes below are part of the contract.
 # Rebuild the graph on every bump; never migrate a .lbdb file.
-ladybug==0.21.1
+ladybug==0.21.2
 
 # Canonical Parquet node/edge tables with explicit schemas. License: Apache-2.0.
 pyarrow==25.0.1
@@ -38,7 +38,7 @@ mcp>=2.2,<3
 pydantic>=2,<3
 
 # Tier-0 lineage extraction over sql/churn/*.sql (PR3). License: MIT.
-sqlglot==30.20.0
+sqlglot==30.21.0
 
 # Test runner for tests/graph. License: MIT.
 pytest>=8

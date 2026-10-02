@@ -17,7 +17,7 @@ same builds and results.
                                sweep over every renewal, hygiene, audit, small cells, lint, junk args, MCP smoke
   tools-bench-s42.json         the bench section of the s42 tools check (p50 / p95 per tool, server RSS)
   sandbox-check.md             scripts/graph_sandbox_check.py --control --log-check (macOS only)
-  graph-parity-<profile>.md    scripts/check_graph_parity.py parity --strict (needs .venv-graph-spark + JDK 17)
+  graph-parity-<profile>.md    scripts/check_graph_parity.py parity --strict (needs .venv-graph-spark + JDK 17 or 21)
   cohorts.md                   scripts/build_graph_cohorts.py list (leiden, louvain) + the hero's cohort
   bench.md / eval.md / leakage.md   when scripts/graph_bench.py, an eval report or scripts/graph_leakage_demo.py
                                exist; otherwise the file says "not available yet"
@@ -496,7 +496,7 @@ def main(argv: list[str] | None = None) -> int:
                 res = Result(f"graph-parity-{p}", f"Spark SQL twin parity ({p})", "graph-parity", p)
                 sample = spec.sample_dir(p, graph_root)
                 if not spark_py.is_file():
-                    absent(res, "Needs .venv-graph-spark (pyspark 3.5.3) and a JDK 17; see docs/graph/operations.md.",
+                    absent(res, "Needs .venv-graph-spark (pyspark 4.1.3) and a JDK 17 or 21; see docs/graph/operations.md.",
                            NOT_AVAILABLE)
                 elif any(not (sample / f).is_file() for f in spec.BRONZE_FILES):
                     absent(res, f"No bronze sample for profile {p} in this GRAPH_ROOT: run make graph-sample "

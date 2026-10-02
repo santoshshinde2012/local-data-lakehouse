@@ -1,4 +1,4 @@
-"""scripts/check_graph_parity.py end to end (local PySpark 3.5 + JDK 17, one JVM per subprocess).
+"""scripts/check_graph_parity.py end to end (local PySpark 4.1 + JDK 17 or 21, one JVM per subprocess).
 
 * tiny: the hard gate passes (every node / edge table equal, SIMILAR_TO bit-identical with the
   persisted scaler on the same pandas input), the SQL-fitted scaler and the Spark-gold input are
@@ -7,7 +7,7 @@
 * the real job file under spark-submit (slow): publishes into a local Iceberg lakehouse, a second
   run finds the publish complete and writes nothing.
 
-Skipped with the reason without pyspark / a JDK 17 (and the Iceberg jars for the lakehouse test);
+Skipped with the reason without pyspark / a JDK 17 or 21 (and the Iceberg jars for the lakehouse test);
 GRAPH_REQUIRE_SPARK=1 turns the skip into a failure.
 """
 from __future__ import annotations

@@ -8,6 +8,7 @@ None makes `import name` raise ModuleNotFoundError), so the spark venv checks th
 from __future__ import annotations
 
 import importlib.util
+import sqlite3
 import subprocess
 import sys
 from pathlib import Path
@@ -21,8 +22,13 @@ RUN_WITHOUT = ("import runpy, sys; sys.modules[{mod!r}] = None; sys.argv = {argv
 
 
 def _cli_without(module: str, graph_root: Path) -> subprocess.CompletedProcess:
+    # An existing (empty) SQLite catalog file: the missing-file check runs before the catalog import,
+    # so a nonexistent path would stop the build before it ever needs sqlalchemy.
+    graph_root.mkdir(parents=True, exist_ok=True)
+    db = graph_root.parent / "catalog.db"
+    sqlite3.connect(db).close()
     argv = [str(CLI), "build", "--profile", "tiny", "--graph-root", str(graph_root), "--source", "iceberg",
-            "--catalog-uri", "sqlite:////nonexistent/catalog.db"]
+            "--catalog-uri", f"sqlite:///{db}"]
     code = RUN_WITHOUT.format(mod=module, argv=argv, cli=str(CLI))
     return subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, check=False, cwd=REPO)
 

@@ -31,9 +31,9 @@ It also owns two helpers of the twin:
                scripts/build_graph_local.py build --source iceberg --catalog-uri sqlite:///<root>/catalog.db \\
                  --warehouse file://<root>/warehouse
 
-Needs .venv-graph-spark (requirements-graph-spark.txt: pyspark 3.5.3 + PyIceberg) and a JDK 17
+Needs .venv-graph-spark (requirements-graph-spark.txt: pyspark 4.1.3 + PyIceberg) and a JDK 17 or 21
 (GRAPH_JAVA_HOME / JAVA_HOME / the Zulu 17 path). The parity check needs no jar; `lakehouse` needs
-iceberg-spark-runtime-3.5_2.12-1.6.1.jar and sqlite-jdbc-3.46.1.3.jar from ~/.ivy2, ~/.m2 or
+iceberg-spark-runtime-4.1_2.13-1.12.0.jar and sqlite-jdbc-3.46.1.3.jar from ~/.ivy2, ~/.m2 or
 $GRAPH_SPARK_JARS_DIR (never downloaded here). One JVM per process (local[2], 2 GB driver).
 
 Usage:
@@ -81,9 +81,10 @@ JOB = ROOT / "src/jobs/graph/01_publish_gold_graph.py"
 SQL_DIR = ROOT / "sql/graph"
 SIMILAR_TO_SQL = SQL_DIR / "similar_to.sql"
 CATALOG = "lakehouse"
-ICEBERG = ("org.apache.iceberg", "iceberg-spark-runtime-3.5_2.12", "1.6.1")
+ICEBERG = ("org.apache.iceberg", "iceberg-spark-runtime-4.1_2.13", "1.12.0")
 SQLITE_JDBC = ("org.xerial", "sqlite-jdbc", "3.46.1.3")
 MAC_ZULU17 = "/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home"
+JAVA_MAJORS = (17, 21)                 # the JDKs Spark 4.1 supports
 # The exact DDL Iceberg 1.6.1 JdbcUtil emits for a V0 catalog (the shape of the Docker stack's
 # Postgres catalog). Pre-creating it + jdbc.init-catalog-tables=false avoids the Iceberg 1.6.1
 # SQLite lock leak (initializeCatalogTables() leaves a ResultSet open: SQLITE_BUSY on commit as
@@ -233,17 +234,20 @@ def _java_major(home: str) -> int | None:
 
 
 def find_java_home() -> str | None:
-    """JDK 17: $GRAPH_JAVA_HOME (strict when set), else $JAVA_HOME, the Zulu 17 path, java_home -v 17."""
+    """JDK 17 or 21 (what Spark 4.1 supports): $GRAPH_JAVA_HOME (strict when set), else $JAVA_HOME, the Zulu 17
+    path, java_home -v 17 / 21."""
     override = os.environ.get("GRAPH_JAVA_HOME")
     if override:
-        return override if _java_major(override) == 17 else None
+        return override if _java_major(override) in JAVA_MAJORS else None
     cands = [os.environ.get("JAVA_HOME"), MAC_ZULU17]
     if sys.platform == "darwin" and Path("/usr/libexec/java_home").exists():
         with contextlib.suppress(OSError, subprocess.TimeoutExpired):
-            r = subprocess.run(["/usr/libexec/java_home", "-v", "17"], capture_output=True, text=True, timeout=20)
-            if r.returncode == 0:
-                cands.append(r.stdout.strip())
-    return next((c for c in cands if c and _java_major(c) == 17), None)
+            for major in JAVA_MAJORS:
+                r = subprocess.run(["/usr/libexec/java_home", "-v", str(major)], capture_output=True, text=True,
+                                   timeout=20)
+                if r.returncode == 0:
+                    cands.append(r.stdout.strip())
+    return next((c for c in cands if c and _java_major(c) in JAVA_MAJORS), None)
 
 
 def find_jar(group: str, artifact: str, version: str) -> Path | None:
@@ -275,7 +279,7 @@ def skip_reason(iceberg: bool = True) -> str | None:
     if importlib.util.find_spec("pyspark") is None:
         return "pyspark is not installed in this interpreter (use .venv-graph-spark)"
     if find_java_home() is None:
-        return "no JDK 17 found (set GRAPH_JAVA_HOME or JAVA_HOME)"
+        return "no JDK 17 or 21 found (set GRAPH_JAVA_HOME or JAVA_HOME)"
     if iceberg:
         try:
             required_jars()
@@ -343,7 +347,7 @@ def prepare_env() -> None:
     """Environment for a deterministic local JVM; call before the first SparkSession."""
     jh = find_java_home()
     if jh is None:
-        raise HarnessUnavailable("no JDK 17 found (set GRAPH_JAVA_HOME or JAVA_HOME)")
+        raise HarnessUnavailable("no JDK 17 or 21 found (set GRAPH_JAVA_HOME or JAVA_HOME)")
     os.environ.update({"JAVA_HOME": jh, "SPARK_LOCAL_IP": "127.0.0.1", "PYSPARK_PYTHON": sys.executable,
                        "PYSPARK_DRIVER_PYTHON": sys.executable, "TZ": "UTC", "PYTHONDONTWRITEBYTECODE": "1"})
     os.environ.pop("SPARK_HOME", None)          # a stray SPARK_HOME would pick another Spark build

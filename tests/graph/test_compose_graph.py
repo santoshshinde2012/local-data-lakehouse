@@ -168,7 +168,8 @@ def test_dockerignore_sends_only_the_two_locks():
 @pytest.mark.parametrize(("lock", "must", "must_not"), [
     ("requirements-graph-spark-client.txt", {"pyiceberg": "0.12.0", "s3fs": None},
      {"pyspark", "setuptools", "sqlalchemy", "psycopg2-binary", "psycopg"}),
-    ("requirements-graph-spark.txt", {"pyiceberg": "0.12.0", "pyspark": "3.5.3", "setuptools": None}, set()),
+    ("requirements-graph-spark.txt", {"pyiceberg": "0.12.0", "pyspark": "4.1.3", "setuptools": None},
+     {"psycopg2-binary", "psycopg"}),
 ])
 def test_locks_agree_with_the_core_lock(lock, must, must_not):
     core = dict(PIN.findall((REPO / "requirements-graph.txt").read_text()))
