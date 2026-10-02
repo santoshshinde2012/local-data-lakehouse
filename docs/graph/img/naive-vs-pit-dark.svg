@@ -42,6 +42,6 @@
 </g>
 <line x1="165.28" y1="135" x2="165.28" y2="289" stroke="#383835" stroke-width="1"/>
 <text x="24" y="311" font-size="11" fill="#c3c2b7">Recomputed for every renewal by the pandas oracle and in Cypher by scripts/check_graph_contract.py (invariants #2 and #3). Source:</text>
-<text x="24" y="326" font-size="11" fill="#c3c2b7">graph build 28f3af496493 · profile s42 · seed 42, N_USERS 8000 (verified) · data_end 2026-09-30 · renewal-graph/v1 · commit d317368</text>
-<text x="24" y="341" font-size="11" fill="#c3c2b7">(dirty) · regenerate with scripts/graph_evidence.py.</text>
+<text x="24" y="326" font-size="11" fill="#c3c2b7">graph build a2598a28e164 · profile s42 · seed 42, N_USERS 8000 (verified) · data_end 2026-09-30 · renewal-graph/v1 · commit 013dd4e</text>
+<text x="24" y="341" font-size="11" fill="#c3c2b7">· regenerate with scripts/graph_evidence.py.</text>
 </svg>

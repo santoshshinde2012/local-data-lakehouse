@@ -7,13 +7,13 @@
 | Status | **pass** (exit 0) |
 | Profile | tiny |
 | Command | `.venv-graph-spark/bin/python scripts/check_graph_parity.py parity --profile tiny --strict` |
-| Commit | `d317368` (working tree dirty: yes) |
-| Date | 2026-10-01 (UTC) |
+| Commit | `6225473` (working tree dirty: no) |
+| Date | 2026-10-02 (UTC) |
 | Host | macOS-26.6.2 (macosx_arm64) |
-| Python | 3.12.9 · ladybug 0.21.1 · pandas 3.0.6 · numpy 2.5.3 · pyarrow 25.0.1 · networkx 3.7 · mcp 2.2.0 · pydantic 2.13.5 · sqlglot 30.20.0 |
-| Spark venv | pyiceberg 0.12.0 · pyspark 3.5.3 |
-| Duration | 27.6 s |
-| Summary | Graph parity OK (similar_to/renewal-v1): 21 tables equal and SIMILAR_TO 1,182 edges identical with the persisted scaler on the same input; reported configurations tie-only; 25.75 s |
+| Python | 3.12.9 · ladybug 0.21.2 · pandas 3.0.6 · numpy 2.5.3 · pyarrow 25.0.1 · networkx 3.7 · mcp 2.2.0 · pydantic 2.13.5 · sqlglot 30.21.0 |
+| Spark venv | pyiceberg 0.12.0 · pyspark 4.1.3 |
+| Duration | 26.0 s |
+| Summary | Graph parity OK (similar_to/renewal-v1): 21 tables equal and SIMILAR_TO 1,182 edges identical with the persisted scaler on the same input; reported configurations tie-only; 24.72 s |
 
 ## Output
 
@@ -23,12 +23,14 @@
   note  (a) SQL-fitted scaler: 15/20 means and 10/20 stds bit-equal (max |d std| 5.33e-15); SIMILAR_TO: 0 edges only numpy / 0 only Spark, 0 rank differences, 674 d2 differ (max |d| 5.68e-14), tie-only True
   note  (b) Spark gold vs pandas gold: 0 feature cells differ over 121 renewals, max |delta| 0 {}; labels equal
   note  (b) twin on Spark silver + Spark gold + SQL-fitted scaler: node/edge cells differ none; SIMILAR_TO 0 only numpy / 0 only Spark, 0 rank differences, tie-only True
-Graph parity OK (similar_to/renewal-v1): 21 tables equal and SIMILAR_TO 1,182 edges identical with the persisted scaler on the same input; reported configurations tie-only; 25.75 s
+Graph parity OK (similar_to/renewal-v1): 21 tables equal and SIMILAR_TO 1,182 edges identical with the persisted scaler on the same input; reported configurations tie-only; 24.72 s
 
+WARNING: Using incubator modules: jdk.incubator.vector
+Using Spark's default log4j profile: org/apache/spark/log4j2-defaults.properties
 Setting default log level to "WARN".
 To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
-26/10/01 12:15:09 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
-26/10/01 12:15:09 WARN SparkConf: Note that spark.local.dir will be overridden by the value set by the cluster manager (via SPARK_LOCAL_DIRS in mesos/standalone/kubernetes and LOCAL_DIRS in YARN).
+26/10/02 16:18:49 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/10/02 16:18:50 WARN SparkConf: Note that spark.local.dir will be overridden by the value set by the cluster manager (via SPARK_LOCAL_DIRS in standalone/kubernetes and LOCAL_DIRS in YARN).
 ```
 
 [Back to the results index](index.md)

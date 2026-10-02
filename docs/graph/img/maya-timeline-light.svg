@@ -90,6 +90,6 @@
 <text x="516.77" y="387" font-size="10.5" fill="#52514e" text-anchor="end">3 cap hits, 3 in window (weekly)</text>
 <line x1="221.45" y1="195" x2="221.45" y2="403" stroke="#c3c2b7" stroke-width="1"/>
 <line x1="221.45" y1="403" x2="728" y2="403" stroke="#c3c2b7" stroke-width="1"/>
-<text x="24" y="443" font-size="11" fill="#52514e">Rows as graph_renewal_evidence returns them (oracle.evidence). Source: graph build 28f3af496493 · profile s42 · seed 42, N_USERS</text>
-<text x="24" y="458" font-size="11" fill="#52514e">8000 (verified) · data_end 2026-09-30 · renewal-graph/v1 · commit d317368 (dirty) · regenerate with scripts/graph_evidence.py.</text>
+<text x="24" y="443" font-size="11" fill="#52514e">Rows as graph_renewal_evidence returns them (oracle.evidence). Source: graph build a2598a28e164 · profile s42 · seed 42, N_USERS</text>
+<text x="24" y="458" font-size="11" fill="#52514e">8000 (verified) · data_end 2026-09-30 · renewal-graph/v1 · commit 013dd4e · regenerate with scripts/graph_evidence.py.</text>
 </svg>

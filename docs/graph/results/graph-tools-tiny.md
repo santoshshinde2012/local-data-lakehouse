@@ -7,66 +7,69 @@
 | Status | **pass** (exit 0) |
 | Profile | tiny |
 | Command | `python scripts/check_graph_tools.py --profile tiny --graph-root $GRAPH_ROOT --json <tmp>` |
-| Commit | `d317368` (working tree dirty: yes) |
-| Date | 2026-10-01 (UTC) |
+| Commit | `6225473` (working tree dirty: no) |
+| Date | 2026-10-02 (UTC) |
 | Host | macOS-26.6.2 (macosx_arm64) |
-| Python | 3.12.9 · ladybug 0.21.1 · pandas 3.0.6 · numpy 2.5.3 · pyarrow 25.0.1 · networkx 3.7 · mcp 2.2.0 · pydantic 2.13.5 · sqlglot 30.20.0 |
-| Spark venv | pyiceberg 0.12.0 · pyspark 3.5.3 |
-| Duration | 13.2 s |
-| Summary | check_graph_tools: OK (58/58 checks, 0 warning(s), 12.5 s) |
+| Python | 3.12.9 · ladybug 0.21.2 · pandas 3.0.6 · numpy 2.5.3 · pyarrow 25.0.1 · networkx 3.7 · mcp 2.2.0 · pydantic 2.13.5 · sqlglot 30.21.0 |
+| Spark venv | pyiceberg 0.12.0 · pyspark 4.1.3 |
+| Duration | 19.5 s |
+| Summary | check_graph_tools: OK (61/61 checks, 0 warning(s), 18.8 s) |
 
 ## Output
 
 ```text
-check_graph_tools: build 10ea18b83bbc (profile tiny, seed 42, N 120), contract strict_pass, GRAPH_ROOT $GRAPH_ROOT
+check_graph_tools: build 6c8fea296d84 (profile tiny, seed 42, N 120), contract strict_pass, GRAPH_ROOT $GRAPH_ROOT
 == 1 goldens (tool answers vs the oracle of this build)
   ok    hero evidence: 8 rows equal the oracle, in order
   ok    hero top-10: rank, renewal, d2_q and outcome equal the oracle
   ok    hero summary: 0 lapsed of 10, Wilson [0.0, 0.278]
   ok    hero nearest known lapses equal the oracle (weighted shortest paths, observed by as_of)
   ok    rank-1 pair top-3 feature shares recomputed independently: [('cheap_model_share_28d', 0.345), ('cli_sessions_28d', 0.233), ('active_days_7d', 0.131)]
-  ok    inc-001: total 23, plan cells and the naive count (10) equal the oracle
-  ok    inc-002: total 14, plan cells and the naive count (2) equal the oracle
-  ok    inc-003: total 2, plan cells and the naive count (2) equal the oracle
-  ok    cap-cut-2026-08: total 37, 5 known_by_as_of=false, plan x route cells equal pandas
+  ok    inc-001: total 23, all 3 plans listed, every shown plan / route count (12) and the naive count (10) equal the oracle
+  ok    inc-002: total 14, all 3 plans listed, every shown plan / route count (14) and the naive count (2) equal the oracle
+  ok    inc-003: total 2, all 3 plans listed, every shown plan / route count (0) and the naive count (2) equal the oracle
+  ok    cap-cut-2026-08: total 37, known_by_as_of=false None (oracle 5), every shown plan x known_by_as_of x route count equals pandas
   ok    cap-cut-2026-08: hero membership = False
-  ok    cap-cut-2026-09: total 1, 0 known_by_as_of=false, plan x route cells equal pandas
+  ok    cap-cut-2026-09: total 1, known_by_as_of=false None (oracle 0), every shown plan x known_by_as_of x route count equals pandas
   ok    cap-cut-2026-09: hero membership = True
-  ok    lapse rate by plan equals the oracle: {'pro': (89, 9)}
-  ok    lapse rate by first-renewal-after flag equals the oracle: {False: (75, 6), True: (33, 3)}
-  ok    pro, 3-5 cap hits, first after a cut: None/None equals pandas
-  ok    route counts equal the oracle (cells under 5 suppressed): {'cancel_flow': None, 'dunning': 8, 'model': 108, 'score_today': None}
+  ok    lapse rate by plan equals the oracle: {}
+  ok    lapse rate by first-renewal-after flag equals the oracle where shown: {} (oracle {True: (33, 3), False: (75, 6)})
+  ok    pro, 3-5 cap hits, first after a cut: None/None vs pandas 0 (n >= 5 exact; under 5 null, or a printed 0)
+  ok    route counts equal the oracle (under 5 null, the public current routes exact, total 121): {'model': 108, 'cancel_flow': None, 'dunning': None, 'score_today': 1, 'pending': 0}
   ok    feature card limit_hits_14d: (as_of-14, as_of], compliant
   ok    feature card first_renewal_after_pricing_change: renewal_date-30 <= effective_date < renewal_date (gold rule; may be after as_of), declared_exception
   note  golden tiny.json (bronze sha256 match)
   ok    hero evidence equals the committed golden tiny.json
   ok    hero top-10 equals the committed golden tiny.json
-  ok    tiny inc-002: pro 12 / 12 / 1 shown; pro_plus 1 and ultra 1 suppressed; the naive 2 suppressed; total 14
-  ok    tiny cap-cut-2026-09: total 1, suppressed
+  ok    tiny inc-002: total 14 and 14 model renewals; every plan row null (pro 12 hides with pro_plus 1 and ultra 1, which it would otherwise pin); the naive 2 suppressed
+  ok    tiny inc-001: total 23, the cancel_flow 1 null in every plan and over all plans
+  ok    tiny cap-cut-2026-09: total 1, breakdown withheld
   ok    tiny lapse rate: ultra (n=4) suppressed
-== 6 small cells (n < 5 suppressed, complementary suppression)
-  ok    no published cell under 5 and no margin that gives a suppressed cell back
+== 6 small cells (n < 5 suppressed; no null computable, exact integer attack)
+  ok    graph_exposure, 5 answers (97 nulls): every plan and route listed, no printed count of 1-4, and an exact integer attack (rational simplex + branch and bound over the printed answer) pins none of the nulls
+  ok    metric_route_counts (all plans + every plan, against the Renewal count graph_describe prints): 14 nulls, none computable, no printed 1-4 beyond the public current renewals
+  ok    metric_lapse_rate (6 groupings, with their one-key answers as published sums): no printed n of 1-4 and no null computable
 == 4 hygiene and privacy
   ok    a planted string loses control / bidi / zero-width / tag characters and is cut to 200 (truncated set)
   ok    forced caps (3 rows, 4,000 chars), window all_before_as_of: the first 3 of 8 rows shown, summary.rows = 8 (counted before the cap), the caveat gives the true total
   ok    forced caps (3 rows, 4,000 chars), window feature_windows: the first 3 of 7 rows shown, summary.rows = 7 (counted before the cap), the caveat gives the true total
   ok    named_renewal_member under a 3-row cap equals the uncapped answer for every incident and pricing change (sub_maya:2026-10-07)
-  ok    forced 4,000-char cap on a long lineage trace: 3718 chars, truncated
-  ok    at the minimum cap (4,000 chars) all 16 largest everyday answers fit (max 4,000) and keep their answer and summary
-  ok    no string over 200 characters in 32 answers
+  ok    forced 4,000-char cap on a long lineage trace: 3753 chars, truncated
+  ok    at the minimum cap (4,000 chars) all 14 largest everyday answers fit (max 3,970) and keep their answer and summary
+  ok    no string over 200 characters in 42 answers
   ok    user_name appears only in graph_find and in the named renewal's own evidence
   ok    no city (6 values) and no 'city' key in any answer
   ok    graph_find never indexes a city: none of the 6 cities is a search token (except inside a user name)
 == 2 schema (every answer of this run)
-  ok    32 answers of 14 tools validate (envelope + data schema)
-  note  tools without an answer in this run: none
+  ok    42 answers of 12 tools validate (envelope + data schema)
+  note  tools without an answer in this run: ['cohort_list', 'cohort_summary']
 == 3 leak sweep (every renewal)
   ok    121 renewals: 0 Subscription->event / CUT_CAP rows after as_of
   ok    FIRST_RENEWAL_AFTER rows after as_of: exactly 5, every one known_by_as_of=false and declared_exception=true
   ok    0 BILLED outcome-evidence rows served
   ok    auto / source_as_of: 0 neighbour outcomes observed after a historical source's as_of (1116 visible outcomes checked; nearest lapses too)
   ok    'today' rejected for all 120 historical sources, accepted for 1 current
-  note  sweep took 1.5 s
+  note  sweep took 1.4 s
 == 5 audit log
   ok    one line per call: 7 lines for 7 calls (3 failed)
   ok    every line has exactly ('ts', 'session', 'pid', 'toolset', 'tool', 'args_hash', 'args_key', 'latency_ms', 'rows', 'chars', 'truncated', 'outcome', 'build_id')
@@ -79,18 +82,21 @@ check_graph_tools: build 10ea18b83bbc (profile tiny, seed 42, N 120), contract s
   ok    tool modules name no contract-only template, never the contract row limit, and only mcp_server imports mcp
 == 8 junk arguments
   ok    junk -> defaults for every optional argument of every tool; unknown and Cypher-shaped arguments rejected without echoing them
-  ok    7 unknown-but-well-formed ids (graph, lineage, cohorts): a repairable error that never repeats the id sent
+  ok    5 unknown-but-well-formed ids (graph, lineage, cohorts): a repairable error that never repeats the id sent
 == 9 MCP stdio smoke through scripts/graph_mcp.sh (GRAPH_PY=.venv-graph/bin/python)
   note  GRAPH_PY is the repo's .venv-graph interpreter
-  ok    graph/legacy: protocol 2025-11-25, 5 tools, read-only hints, call + resources ok, sandboxed=True (1163 ms)
-  ok    graph/2026-07-28: protocol 2026-07-28, 5 tools, read-only hints, call + resources ok, sandboxed=True (1135 ms)
-  ok    metrics/legacy: protocol 2025-11-25, 3 tools, read-only hints, call + resources ok, sandboxed=True (1108 ms)
-  ok    metrics/2026-07-28: protocol 2026-07-28, 3 tools, read-only hints, call + resources ok, sandboxed=True (1115 ms)
-  ok    lineage/legacy: protocol 2025-11-25, 4 tools, read-only hints, call + resources ok, sandboxed=True (1175 ms)
-  ok    lineage/2026-07-28: protocol 2026-07-28, 4 tools, read-only hints, call + resources ok, sandboxed=True (1226 ms)
-  ok    cohorts/legacy: protocol 2025-11-25, 2 tools, read-only hints, call + resources ok, sandboxed=True (1262 ms)
-  ok    cohorts/2026-07-28: protocol 2026-07-28, 2 tools, read-only hints, call + resources ok, sandboxed=True (1212 ms)
-check_graph_tools: OK (58/58 checks, 0 warning(s), 12.5 s)
+  ok    graph/legacy: protocol 2025-11-25, 5 tools, read-only hints, call + resources ok, sandboxed=True (1157 ms)
+  ok    graph/2026-07-28: protocol 2026-07-28, 5 tools, read-only hints, call + resources ok, sandboxed=True (1031 ms)
+  ok    metrics/legacy: protocol 2025-11-25, 3 tools, read-only hints, call + resources ok, sandboxed=True (2401 ms)
+  ok    metrics/2026-07-28: protocol 2026-07-28, 3 tools, read-only hints, call + resources ok, sandboxed=True (2392 ms)
+  ok    lineage/legacy: protocol 2025-11-25, 4 tools, read-only hints, call + resources ok, sandboxed=True (1148 ms)
+  ok    lineage/2026-07-28: protocol 2026-07-28, 4 tools, read-only hints, call + resources ok, sandboxed=True (1107 ms)
+== 9b MCP smoke of the optional toolsets this build lacks (cohorts)
+  ok    cohorts: the server starts, lists 2 tools and answers unavailable with the fix
+== 9c guarded raw Cypher (opt-in: graph_mcp.sh --enable-cypher, evidence graph only)
+  ok    graph_cypher is in no default toolset (the default servers never offer it)
+  note  skipped: needs macOS (its sandbox) and the build's evidence graph (scripts/build_evidence_graph.py)
+check_graph_tools: OK (61/61 checks, 0 warning(s), 18.8 s)
 ```
 
 [Back to the results index](index.md)

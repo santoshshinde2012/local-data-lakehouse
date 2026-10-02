@@ -134,27 +134,27 @@ A failed write never fails the call.
 <!-- graph-evidence:begin figure:tool-latency -->
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="img/tool-latency-dark.svg">
-  <img src="img/tool-latency-light.svg" alt="Paired bar chart of warm tool latency over MCP stdio (client round trip), p50 and p95 per tool: graph_describe p50 1.91 ms, p95 2.40 ms; graph_find p50 1.39 ms, p95 1.55 ms; graph_renewal_evidence p50 6.59 ms, p95 8.00 ms; graph_similar_renewals p50 16.58 ms, p95 25.48 ms; graph_exposure p50 4.56 ms, p95 5.47 ms; metric_lapse_rate p50 6.36 ms, p95 8.66 ms; metric_route_counts p50 3.11 ms, p95 3.43 ms; metric_feature_card p50 1.74 ms, p95 1.90 ms; lineage_trace p50 3.74 ms, p95 3.87 ms; lineage_pit p50 3.20 ms, p95 6.05 ms; lineage_guards p50 2.72 ms, p95 3.89 ms; lineage_unused p50 3.96 ms, p95 10.77 ms; cohort_summary p50 5.44 ms, p95 9.84 ms; cohort_list p50 25.58 ms, p95 30.48 ms." width="760">
+  <img src="img/tool-latency-light.svg" alt="Paired bar chart of warm tool latency over MCP stdio (client round trip), p50 and p95 per tool: graph_describe p50 2.06 ms, p95 2.54 ms; graph_find p50 1.44 ms, p95 1.79 ms; graph_renewal_evidence p50 6.53 ms, p95 7.45 ms; graph_similar_renewals p50 15.80 ms, p95 17.72 ms; graph_exposure p50 4.45 ms, p95 4.82 ms; metric_lapse_rate p50 1.59 ms, p95 2.13 ms; metric_route_counts p50 2.20 ms, p95 4.55 ms; metric_feature_card p50 1.51 ms, p95 2.11 ms; lineage_trace p50 4.30 ms, p95 4.77 ms; lineage_pit p50 3.75 ms, p95 4.76 ms; lineage_guards p50 3.57 ms, p95 4.69 ms; lineage_unused p50 3.50 ms, p95 4.95 ms; cohort_summary p50 4.94 ms, p95 5.39 ms; cohort_list p50 25.98 ms, p95 28.34 ms." width="760">
 </picture>
 
 | toolset | tool | p50 ms | p95 ms |
 |---|---|---:|---:|
-| graph | graph_describe | 1.91 | 2.40 |
-| graph | graph_find | 1.39 | 1.55 |
-| graph | graph_renewal_evidence | 6.59 | 8.00 |
-| graph | graph_similar_renewals | 16.58 | 25.48 |
-| graph | graph_exposure | 4.56 | 5.47 |
-| metrics | metric_lapse_rate | 6.36 | 8.66 |
-| metrics | metric_route_counts | 3.11 | 3.43 |
-| metrics | metric_feature_card | 1.74 | 1.90 |
-| lineage | lineage_trace | 3.74 | 3.87 |
-| lineage | lineage_pit | 3.20 | 6.05 |
-| lineage | lineage_guards | 2.72 | 3.89 |
-| lineage | lineage_unused | 3.96 | 10.77 |
-| cohorts | cohort_summary | 5.44 | 9.84 |
-| cohorts | cohort_list | 25.58 | 30.48 |
+| graph | graph_describe | 2.06 | 2.54 |
+| graph | graph_find | 1.44 | 1.79 |
+| graph | graph_renewal_evidence | 6.53 | 7.45 |
+| graph | graph_similar_renewals | 15.80 | 17.72 |
+| graph | graph_exposure | 4.45 | 4.82 |
+| metrics | metric_lapse_rate | 1.59 | 2.13 |
+| metrics | metric_route_counts | 2.20 | 4.55 |
+| metrics | metric_feature_card | 1.51 | 2.11 |
+| lineage | lineage_trace | 4.30 | 4.77 |
+| lineage | lineage_pit | 3.75 | 4.76 |
+| lineage | lineage_guards | 3.57 | 4.69 |
+| lineage | lineage_unused | 3.50 | 4.95 |
+| cohorts | cohort_summary | 4.94 | 5.39 |
+| cohorts | cohort_list | 25.98 | 28.34 |
 
-<sub>Source: scripts/check_graph_tools.py --bench on graph build 28f3af496493 (profile s42); macOS arm64, warm calls, sandboxed stdio servers. Regenerate with scripts/graph_evidence.py.</sub>
+<sub>Source: scripts/check_graph_tools.py --bench on graph build a2598a28e164 (profile s42); macOS arm64, warm calls, sandboxed stdio servers. Regenerate with scripts/graph_evidence.py.</sub>
 <!-- graph-evidence:end figure:tool-latency -->
 
 Server RSS after warm calls, measured once (p2a acceptance run, s42): graph 230 to 293 MB, metrics

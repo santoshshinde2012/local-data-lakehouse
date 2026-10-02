@@ -5,19 +5,19 @@
 | | |
 |---|---|
 | Status | **pass** (exit 0) |
-| Command | `python scripts/graph_sandbox_check.py --build $GRAPH_ROOT/s42/builds/28f3af496493 --graph-root $GRAPH_ROOT --control --log-check` |
-| Commit | `d317368` (working tree dirty: yes) |
-| Date | 2026-10-01 (UTC) |
+| Command | `python scripts/graph_sandbox_check.py --build $GRAPH_ROOT/s42/builds/a2598a28e164 --graph-root $GRAPH_ROOT --control --log-check` |
+| Commit | `6225473` (working tree dirty: no) |
+| Date | 2026-10-02 (UTC) |
 | Host | macOS-26.6.2 (macosx_arm64) |
-| Python | 3.12.9 · ladybug 0.21.1 · pandas 3.0.6 · numpy 2.5.3 · pyarrow 25.0.1 · networkx 3.7 · mcp 2.2.0 · pydantic 2.13.5 · sqlglot 30.20.0 |
-| Spark venv | pyiceberg 0.12.0 · pyspark 3.5.3 |
-| Duration | 23.4 s |
+| Python | 3.12.9 · ladybug 0.21.2 · pandas 3.0.6 · numpy 2.5.3 · pyarrow 25.0.1 · networkx 3.7 · mcp 2.2.0 · pydantic 2.13.5 · sqlglot 30.21.0 |
+| Spark venv | pyiceberg 0.12.0 · pyspark 4.1.3 |
+| Duration | 23.0 s |
 | Summary | graph_sandbox_check: OK (47/47 checks passed) |
 
 ## Output
 
 ```text
-macOS 26.6.2 (arm64); python 3.12.9; GRAPH_ROOT=$GRAPH_ROOT; build=28f3af496493
+macOS 26.6.2 (arm64); python 3.12.9; GRAPH_ROOT=$GRAPH_ROOT; build=a2598a28e164
 [1] static
   PASS  /usr/bin/sandbox-exec is present and executable
   PASS  profile present: config/graph/sandbox.sb
@@ -55,18 +55,18 @@ macOS 26.6.2 (arm64); python 3.12.9; GRAPH_ROOT=$GRAPH_ROOT; build=28f3af496493
   PASS  fake credentials denied: 17 probes {'denied': 17}
   PASS  network denied: 8 probes {'denied': 8}
 [5] MCP client -> scripts/graph_mcp.sh -> sandbox-exec -> server (legacy and 2026-07-28)
-  PASS  graph/legacy: 5 tools listed, 2 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2025-11-25, list 874.4 ms, total 1255.5 ms
-  PASS  graph/2026-07-28: 5 tools listed, 2 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2026-07-28, list 837.5 ms, total 1189.6 ms
-  PASS  metrics/legacy: 3 tools listed, 2 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2025-11-25, list 823.5 ms, total 960.2 ms
-  PASS  metrics/2026-07-28: 3 tools listed, 2 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2026-07-28, list 822.5 ms, total 962.7 ms
-  PASS  lineage/legacy: 4 tools listed, 2 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2025-11-25, list 906.7 ms, total 1179.4 ms
-  PASS  lineage/2026-07-28: 4 tools listed, 2 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2026-07-28, list 1066.3 ms, total 1304.6 ms
-  PASS  cohorts/legacy: 2 tools listed, 1 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2025-11-25, list 1072.7 ms, total 1455.8 ms
-  PASS  cohorts/2026-07-28: 2 tools listed, 1 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2026-07-28, list 1104.7 ms, total 1418.1 ms
+  PASS  graph/legacy: 5 tools listed, 3 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2025-11-25, list 857.4 ms, total 1478.3 ms
+  PASS  graph/2026-07-28: 5 tools listed, 3 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2026-07-28, list 846.9 ms, total 1432.9 ms
+  PASS  metrics/legacy: 3 tools listed, 2 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2025-11-25, list 830.3 ms, total 1120.3 ms
+  PASS  metrics/2026-07-28: 3 tools listed, 2 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2026-07-28, list 873.6 ms, total 1160.3 ms
+  PASS  lineage/legacy: 4 tools listed, 2 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2025-11-25, list 838.6 ms, total 1076.2 ms
+  PASS  lineage/2026-07-28: 4 tools listed, 2 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2026-07-28, list 860.2 ms, total 1094.1 ms
+  PASS  cohorts/legacy: 2 tools listed, 1 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2025-11-25, list 833.5 ms, total 1173.0 ms
+  PASS  cohorts/2026-07-28: 2 tools listed, 1 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2026-07-28, list 850.5 ms, total 1160.6 ms
   PASS  unified log: 0 reported sandbox denials during the normal MCP sessions
 [6] fail closed
-  PASS  sandbox-exec missing (simulated): exit 78, nothing on stdout, message on stderr  -- rc=78 in 9 ms; stderr=graph_mcp.sh: sandbox-exec not available at /usr/bin/sandbox-exec; refusing to start unsandboxed (fail closed)
-  PASS  an MCP client against a fail-closed launcher errors out instead of hanging  -- ExceptionGroup after 8 ms
+  PASS  sandbox-exec missing (simulated): exit 78, nothing on stdout, message on stderr  -- rc=78 in 11 ms; stderr=graph_mcp.sh: sandbox-exec not available at /usr/bin/sandbox-exec; refusing to start unsandboxed (fail closed)
+  PASS  an MCP client against a fail-closed launcher errors out instead of hanging  -- ExceptionGroup after 14 ms
   PASS  GRAPH_SANDBOX=0 is the only opt-out and prints the banner on stderr
 [7] control: the same probe UNSANDBOXED (safe subset) -- these must SUCCEED
   PASS  control probe ran  -- rc=0
@@ -75,7 +75,7 @@ macOS 26.6.2 (arm64); python 3.12.9; GRAPH_ROOT=$GRAPH_ROOT; build=28f3af496493
   PASS  unsandboxed: subprocess and fork succeed
   PASS  unsandboxed: a socket can listen (the sandboxed denial is real)
   PASS  unsandboxed control reaches for the internet only with --control-network  -- 0 external probes
-  info  unsandboxed network (local only): {'tcp loopback 127.0.0.1:11434 (ollama)': 'allowed', 'bind+listen 127.0.0.1:0': 'allowed', 'unix connect /var/run/mDNSResponder': 'allowed'}
+  info  unsandboxed network (local only): {'tcp loopback 127.0.0.1:11434 (ollama)': 'error', 'bind+listen 127.0.0.1:0': 'allowed', 'unix connect /var/run/mDNSResponder': 'allowed'}
 
 graph_sandbox_check: OK (47/47 checks passed)
 ```

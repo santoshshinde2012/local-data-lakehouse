@@ -75,7 +75,7 @@ flowchart LR
   n10 -->|"VALUE CAST(DATE)"| n2
 ```
 
-<sub>Generated from the lineage Parquet of build 28f3af496493 (lineage build 43a65a03df19, core profile) by the pure-Python oracle: 10 edges, 9 columns.</sub>
+<sub>Generated from the lineage Parquet of build a2598a28e164 (lineage build 1030de6ac5e1, core profile) by the pure-Python oracle: 10 edges, 9 columns.</sub>
 <!-- graph-evidence:end mermaid:lineage-limit_hits_14d -->
 
 The point-in-time window `(as_of-14, as_of]` sits on the gold read of `silver.churn_limit_events.hit_date`.
@@ -171,11 +171,10 @@ scripts/sync_lakehouse_exports.sh, which does not exist`, lost the retention-rad
 (`DownstreamRepo` 0 instead of 1) and failed the strict lineage contract, `pipelines/run_graph_e2e.sh`
 and the `lakehouse_graph` DAG at their lineage step.
 
-On this branch the clone stays in the CI step, the radar consumer is `scripts/radar_consume.sh` (it calls
+On this branch the clone stays in the CI step, the radar consumer is `pipelines/radar_consume.sh` (it calls
 retention-radar's own Python sync), and the bronze ingest reads literal paths, so the strict lineage
 contract passes again and the golden `core.json` matches. The record in
-[results/lineage-contract.md](results/lineage-contract.md) is the 2026-10-01 failing run and has not been
-regenerated. A `$VAR` / `${VAR}` resolver in `src/lakehouse_graph/lineage/extract.py` is still not built,
+[results/lineage-contract.md](results/lineage-contract.md) is the passing 2026-10-02 run. A `$VAR` / `${VAR}` resolver in `src/lakehouse_graph/lineage/extract.py` is still not built,
 so moving the URL back into a variable would break the contract again.
 
 ## Honesty notes

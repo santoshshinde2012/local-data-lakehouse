@@ -6,32 +6,32 @@ Every file here was written by `scripts/graph_evidence.py` from the checks it ra
 
 | | |
 |---|---|
-| Commit | `d317368` (working tree dirty: yes) |
-| Date | 2026-10-01 (UTC) |
+| Commit | `6225473` (working tree dirty: no) |
+| Date | 2026-10-02 (UTC) |
 | Host | macOS-26.6.2 (macosx_arm64) |
-| Python | 3.12.9 · ladybug 0.21.1 · pandas 3.0.6 · numpy 2.5.3 · pyarrow 25.0.1 · networkx 3.7 · mcp 2.2.0 · pydantic 2.13.5 · sqlglot 30.20.0 |
-| Spark venv | pyiceberg 0.12.0 · pyspark 3.5.3 |
-| Checks | 11 pass, 1 fail, 4 not run or not available |
+| Python | 3.12.9 · ladybug 0.21.2 · pandas 3.0.6 · numpy 2.5.3 · pyarrow 25.0.1 · networkx 3.7 · mcp 2.2.0 · pydantic 2.13.5 · sqlglot 30.21.0 |
+| Spark venv | pyiceberg 0.12.0 · pyspark 4.1.3 |
+| Checks | 15 pass, 0 fail, 2 not run or not available |
 | Charts | regenerated |
 
 | Check | Profile | Status | Result | Summary |
 |---|---|---|---|---|
-| Graph contract (tiny) | tiny | pass | [graph-contract-tiny.md](graph-contract-tiny.md) | Graph contract OK (renewal-graph/v1, profile tiny, build 10ea18b83bbc): 616 nodes / 1,949 edges; PIT parity 0 mismatches x 6 features in pandas and Cypher; naive wrong in 16 / 12 / 4 renewals; golden tiny; strict |
-| Graph contract (s42) | s42 | pass | [graph-contract-s42.md](graph-contract-s42.md) | Graph contract OK (renewal-graph/v1, profile s42, build 28f3af496493): 40,204 nodes / 130,366 edges; PIT parity 0 mismatches x 6 features in pandas and Cypher; naive wrong in 1,165 / 681 / 114 renewals; golden s42; strict |
-| Graph contract (default) | default | pass | [graph-contract-default.md](graph-contract-default.md) | Graph contract OK (renewal-graph/v1, profile default, build 28f3af496493): 40,204 nodes / 130,366 edges; PIT parity 0 mismatches x 6 features in pandas and Cypher; naive wrong in 1,165 / 681 / 114 renewals; golden s42; strict |
-| Graph contract (Iceberg-sourced build) | - | not available | [graph-contract-iceberg.md](graph-contract-iceberg.md) | No Iceberg-sourced build in this GRAPH_ROOT. The Docker path builds one (pipelines/run_graph_e2e.sh); its recorded result is in docker-e2e.md. |
-| Lineage contract (core profile) | default | **FAIL** | [lineage-contract.md](lineage-contract.md) | Lineage contract FAILED: unresolved name: .github/workflows/ci.yml:55: runs scripts/sync_lakehouse_exports.sh, which does not exist |
+| Graph contract (tiny) | tiny | pass | [graph-contract-tiny.md](graph-contract-tiny.md) | Graph contract OK (renewal-graph/v1, profile tiny, build 6c8fea296d84): 616 nodes / 1,949 edges; PIT parity 0 mismatches x 6 features in pandas and Cypher; naive wrong in 16 / 12 / 4 renewals; golden tiny; strict |
+| Graph contract (s42) | s42 | pass | [graph-contract-s42.md](graph-contract-s42.md) | Graph contract OK (renewal-graph/v1, profile s42, build a2598a28e164): 40,204 nodes / 130,366 edges; PIT parity 0 mismatches x 6 features in pandas and Cypher; naive wrong in 1,165 / 681 / 114 renewals; golden s42; strict |
+| Graph contract (default) | default | pass | [graph-contract-default.md](graph-contract-default.md) | Graph contract OK (renewal-graph/v1, profile default, build a2598a28e164): 40,204 nodes / 130,366 edges; PIT parity 0 mismatches x 6 features in pandas and Cypher; naive wrong in 1,165 / 681 / 114 renewals; golden s42; strict |
+| Graph contract (Iceberg-sourced build) | - | not run | [graph-contract-iceberg.md](graph-contract-iceberg.md) | The newest Iceberg-sourced build (e74f42fea9c6) was built on manylinux_aarch64, this host is macosx_arm64: the platform is part of its business_build_id, so a strict host re-check reports it stale. Its strict contract ran in ldl-graph; the recorded Docker run is in docker-e2e.md. |
+| Lineage contract (core profile) | default | pass | [lineage-contract.md](lineage-contract.md) | Lineage contract OK (metadata-graph/0.1, profile core, lineage build 1030de6ac5e1): 30 gold SQL columns resolve (137 DERIVED_FROM + 3 COUNTS_ROWS_OF); 20 of 22 features compliant, declared exceptions renewals_completed, first_renewal_after_pricing_change; Cypher = oracle; slowest question Q15_dow... |
 | Repo contracts (Tier-0 mini) | - | pass | [repo-contracts.md](repo-contracts.md) | Repo contracts OK: 0 errors, 2 warnings |
-| Agent tools check (tiny) | tiny | pass | [graph-tools-tiny.md](graph-tools-tiny.md) | check_graph_tools: OK (58/58 checks, 0 warning(s), 12.5 s) |
-| Agent tools check (s42) | s42 | pass | [graph-tools-s42.md](graph-tools-s42.md), [tools-bench-s42.json](tools-bench-s42.json) | check_graph_tools: OK (94/94 checks, 0 warning(s), 196.7 s) |
+| Agent tools check (tiny) | tiny | pass | [graph-tools-tiny.md](graph-tools-tiny.md) | check_graph_tools: OK (61/61 checks, 0 warning(s), 18.8 s) |
+| Agent tools check (s42) | s42 | pass | [graph-tools-s42.md](graph-tools-s42.md), [tools-bench-s42.json](tools-bench-s42.json) | check_graph_tools: OK (97/97 checks, 0 warning(s), 189.2 s) |
 | macOS sandbox check | - | pass | [sandbox-check.md](sandbox-check.md) | graph_sandbox_check: OK (47/47 checks passed) |
-| Spark SQL twin parity (tiny) | tiny | pass | [graph-parity-tiny.md](graph-parity-tiny.md) | Graph parity OK (similar_to/renewal-v1): 21 tables equal and SIMILAR_TO 1,182 edges identical with the persisted scaler on the same input; reported configurations tie-only; 25.75 s |
-| Spark SQL twin parity (s42) | s42 | pass | [graph-parity-s42.md](graph-parity-s42.md) | Graph parity OK (similar_to/renewal-v1): 21 tables equal and SIMILAR_TO 80,010 edges identical with the persisted scaler on the same input; reported configurations tie-only; 71.73 s |
+| Spark SQL twin parity (tiny) | tiny | pass | [graph-parity-tiny.md](graph-parity-tiny.md) | Graph parity OK (similar_to/renewal-v1): 21 tables equal and SIMILAR_TO 1,182 edges identical with the persisted scaler on the same input; reported configurations tie-only; 24.72 s |
+| Spark SQL twin parity (s42) | s42 | pass | [graph-parity-s42.md](graph-parity-s42.md) | Graph parity OK (similar_to/renewal-v1): 21 tables equal and SIMILAR_TO 80,010 edges identical with the persisted scaler on the same input; reported configurations tie-only; 68.23 s |
 | Feature cohorts (s42) | s42 | pass | [cohorts.md](cohorts.md) | outside the graph contract; 15 leiden cohorts (modularity 0.805592, seed 42, networkx 3.7); 15 louvain cohorts (modularity 0.806498, seed 42, networkx 3.7) |
-| Build and serve benchmark | - | not available | [bench.md](bench.md) | scripts/graph_bench.py (PHASE 3a) is not in this checkout yet. Measured figures today: the builder and loader RSS in each graph contract (Resources section) and the per-tool warm p50 / p95 in graph-tools-s42.md. |
-| Agent eval report | - | not available | [eval.md](eval.md) | No eval report yet: the eval harness (scripts/graph_eval.py, evals/graph_cases.yaml, PHASE 3a) is not in this checkout. LLM results gate article claims, never merges. |
-| Leakage demo (AUCs) | - | not available | [leakage.md](leakage.md) | scripts/graph_leakage_demo.py (PHASE 3a) is not in this checkout yet; the planning prototype's figures are quoted in docs/graph/evaluation.md and marked as such. |
-| Docker end-to-end run (recorded) | - | partial | [docker-e2e.md](docker-e2e.md) | recorded run; step(s) failed: A_graph_e2e_head |
+| Build and serve benchmark | - | pass | [bench.md](bench.md) | graph_bench: OK (profile s42, build a2598a28e164) |
+| Agent eval report | - | not available | [eval.md](eval.md) | No eval report given (--eval-json): run scripts/graph_eval.py on evals/graph_cases.yaml and pass its report. LLM results gate article claims, never merges. |
+| Leakage demo (AUCs) | - | pass | [leakage.md](leakage.md) | The data has no relationships between subscriptions: any lift from a neighbour feature is leakage (self-inclusive, as of today) or noise. Reported, never pinned. |
+| Docker end-to-end run (recorded) | - | pass | [docker-e2e.md](docker-e2e.md) | recorded run; every step exited as expected |
 | Tool catalogue | - | pass | [tool-catalogue.md](tool-catalogue.md) | 14 tools in 4 toolsets |
 
 Also here: [palette-validation.md](palette-validation.md) (the chart palette, validated light and dark) and [mermaid/](mermaid/) (the generated diagrams).

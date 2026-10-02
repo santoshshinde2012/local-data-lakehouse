@@ -74,8 +74,8 @@ An Iceberg-sourced build is checked like any other, plus:
 21, no Docker, no jars needed) on the same pandas input as the numpy builder. The hermetic harness
 (`requirements-graph-spark.txt`: pyspark 4.1.3, iceberg-spark-runtime-4.1_2.13 1.12.0, a SQLite JDBC
 catalog) is on the same Spark and Iceberg versions as the stack, and the Docker run below checks the
-same SQL there. On 2026-10-02 the tiny parity passed on 4.1.3 (21 tables equal, SIMILAR_TO 1,182 edges
-identical, 23 s); the table below is the generated 2026-10-01 record from pyspark 3.5.3. Latest run
+same SQL there. On 2026-10-02 both parities passed on 4.1.3 (tiny 24.7 s, s42 68.2 s) with the same numbers as the
+2026-10-01 pyspark 3.5.3 record in the table below. Latest run
 ([results/graph-parity-s42.md](results/graph-parity-s42.md), [tiny](results/graph-parity-tiny.md)):
 
 | | tiny | seed 42 |
