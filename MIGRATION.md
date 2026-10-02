@@ -97,7 +97,7 @@ commit (or to `main`).
 | `pipelines/run_graph_e2e.sh` | OK in 178 s; graph and lineage contracts pass |
 | `make airflow-up` + `make airflow-demo` | healthy in 65 s; both DAGs `success` |
 | `pipelines/radar_consume.sh` (Linux container) | radar v2 consumer scored 7,387 rows |
-| `make graph-test` | 1,368 passed, 23 failed: 18 fail identically on `origin/main` (privacy-suppression tests and `test_evidence`), see [docs/graph/README.md](docs/graph/README.md#status) |
+| `make graph-test` | 1,373 passed, 18 failed, 32 skipped in 11 min: the 18 fail identically on `origin/main` (privacy-suppression tests and `test_evidence`), see [docs/graph/README.md](docs/graph/README.md#status) |
 
 ## Changelog
 
