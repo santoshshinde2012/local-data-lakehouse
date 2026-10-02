@@ -1,12 +1,32 @@
-# Renewal features excerpt (verified 2026-10-02)
+# Churn E2E: sample, Spark renewal gold and the export
 
-## Spark path: `make churn-e2e` (full profile)
+Captured on 2026-10-02 (IST) on a MacBook Pro (Apple M1 Pro, 16 GB, macOS 26.6.2; Docker Desktop 29.8.1, Compose 5.5.1, VM 10 CPUs / 7.65 GiB), branch `feat/local-first-stack-2026` at `7f5fc43`, in one run from empty volumes (`make purge` first). Real console output; trimmed only for noise (Spark INFO/WARN logs, docker build and container progress lines, pip notices). `<repo>` is the checkout, `~` the home directory; lines longer than 200 characters end in `…`. Index: [README.md](README.md).
 
-Seed 42, `N_USERS=8000` sample (`make churn-sample`). Total 1 min 49 s on a running stack.
+## `make churn-sample`
+
+Exit 0, 2 s.
+
+```text
+$ make churn-sample
+N_USERS=${N_USERS:-8000} CHURN_SEED=${CHURN_SEED:-42} .venv/bin/python scripts/generate_churn_sample.py
+Wrote bronze to <repo>/data/sample/churn
+  subscriptions=8001 usage_rows=176217 limit_events=10602 invoices=50748 tickets=2134
+  cohort lapse rate=0.145 (voluntary 0.104, involuntary 0.041)
+```
+
+## `make churn-e2e` (Spark bronze → silver → gold → export)
+
+Exit 0, 83.1 s.
 
 ```text
 $ make churn-e2e
+./pipelines/wait_for_stack.sh
+==> Waiting for: postgres lakekeeper objectstore lakehouse-init spark
+Stack ready (postgres=healthy lakekeeper=healthy objectstore=healthy lakehouse-init=healthy spark=healthy )
+./pipelines/run_churn_e2e.sh
+==> Churn features E2E (2026-10-02T15:34Z)
 ======== churn/01_ingest_bronze.py ========
+==> spark-submit /opt/jobs/churn/01_ingest_bronze.py
 bronze.churn_subscription_snapshots_raw: 8001 rows
 bronze.churn_invoices_raw: 50748 rows
 bronze.churn_subscription_events_raw: 1996 rows
@@ -19,46 +39,57 @@ bronze.churn_support_tickets_raw: 2134 rows
 bronze.churn_pricing_changes_raw: 2 rows
 Churn bronze ingest OK.
 ======== churn/02_transform_silver.py ========
+==> spark-submit /opt/jobs/churn/02_transform_silver.py
 silver.churn_subscription_snapshots: 8001 rows
 silver.churn_usage_daily: 176217 rows
-… (10 silver tables)
+silver.churn_invoices: 50748 rows
+silver.churn_subscription_events: 1996 rows
+silver.churn_limit_events: 10602 rows
+silver.churn_overage_settings: 849 rows
+silver.churn_overage_charges: 470 rows
+silver.churn_incidents: 3 rows
+silver.churn_support_tickets: 2134 rows
+silver.churn_pricing_changes: 2 rows
 Churn silver OK.
 ======== churn/03_publish_gold_features.py ========
+==> spark-submit /opt/jobs/churn/03_publish_gold_features.py
 === gold.churn_renewal_features: routes ===
++-----------+-----------------+--------+----------+
 |route      |outcome          |renewals|lapse_rate|
++-----------+-----------------+--------+----------+
 |cancel_flow|voluntary_lapse  |287     |1.0       |
 |dunning    |involuntary_lapse|326     |0.0       |
 |model      |renewed          |6839    |0.0       |
 |model      |voluntary_lapse  |548     |1.0       |
 |score_today|pending          |1       |0.0       |
++-----------+-----------------+--------+----------+
 Churn gold features OK.
 ======== churn/04_export_features.py ========
+==> spark-submit /opt/jobs/churn/04_export_features.py
 Wrote /opt/data/export/churn_user_features.csv (7387 renewals routed to the model)
 Wrote /opt/data/export/churn_renewals_audit.csv (8001 renewals)
 Wrote /opt/data/export/hero_inference_record.json (sub_maya)
+==> Exports:
+-rw-r--r--@ 1 santosh  staff  1418788 Oct  2 21:06 churn_renewals_audit.csv
+-rw-r--r--@ 1 santosh  staff   831028 Oct  2 21:06 churn_user_features.csv
+-rw-r--r--@ 1 santosh  staff      723 Oct  2 21:06 hero_inference_record.json
 ==> Churn E2E complete.
-
-$ .venv/bin/python scripts/check_churn_export.py --strict
-Churn export contract OK (7387 renewals, 25 cols)
 ```
 
-## No-Docker path and the Spark-vs-pandas check
+## `make churn-gold-local` (the no-Docker pandas twin; run before the strict default graph contract)
+
+Exit 0, 3.7 s.
 
 ```text
-$ make churn-sample
-Wrote bronze to data/sample/churn
-  subscriptions=8001 usage_rows=176217 limit_events=10602 invoices=50748 tickets=2134
-
 $ make churn-gold-local
-Wrote data/export/churn_renewals_audit.csv (8001 renewals; routes {'model': 7387, 'dunning': 326, 'cancel_flow': 287, 'score_today': 1})
-Wrote data/export/churn_user_features.csv (7387 rows, voluntary-lapse rate 0.074)
-Wrote data/export/hero_inference_record.json (sub_maya, as of 2026-09-30)
-Churn export contract OK (7387 renewals, 25 cols)
-
-$ uv pip install --python .venv/bin/python pyspark==4.1.3   # once; Java 17 or 21
-$ make churn-parity
-Gold parity OK: 8001 renewals × 27 columns match (Spark SQL vs pandas)
+N_USERS=${N_USERS:-8000} CHURN_SEED=${CHURN_SEED:-42} .venv/bin/python scripts/generate_churn_sample.py
+Wrote bronze to <repo>/data/sample/churn
+  subscriptions=8001 usage_rows=176217 limit_events=10602 invoices=50748 tickets=2134
+  cohort lapse rate=0.145 (voluntary 0.104, involuntary 0.041)
+.venv/bin/python scripts/build_churn_gold_local.py
+Wrote <repo>/data/export/churn_renewals_audit.csv (8001 renewals; routes {'model': 7387, 'dunning': 326, 'cancel_flow': 287, 'score_today': 1})
+Wrote <repo>/data/export/churn_user_features.csv (7387 rows, voluntary-lapse rate 0.074)
+Wrote <repo>/data/export/hero_inference_record.json (sub_maya, as of 2026-09-30)
+.venv/bin/python scripts/check_churn_export.py
+Churn export contract OK (7387 renewals, 25 cols) → <repo>/data/export
 ```
-
-The parity check took 20.8 s on the full sample and 23.6 s on the tiny fixture
-(`CHURN_SAMPLE_DIR=data/sample/churn/fixtures/tiny`, 121 renewals) with pyspark 4.1.3 on Java 17.

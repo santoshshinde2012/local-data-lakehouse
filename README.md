@@ -71,6 +71,10 @@ flowchart LR
   style AF fill:#f5f5f5,stroke:#666,stroke-dasharray: 5 5
 ```
 
+End-to-end evidence of one run from empty volumes (every step with its time and console excerpt,
+memory per phase, the full architecture drawing and Airflow 3 screenshots):
+[docs/demo/README.md](docs/demo/README.md).
+
 Every engine asks Lakekeeper for a table; Lakekeeper answers with the metadata location **and**
 short-lived S3 credentials plus the endpoint `http://objectstore.localhost:9000`, which resolves to the
 store both inside `ldl-net` (a network alias) and on the host (loopback). No engine holds the store's
@@ -313,7 +317,7 @@ Gold (`sql/churn/gold_renewal_features.sql`) builds one row per renewal from the
 
 Seed 42, `make churn-sample` (8,000 subscriptions): 7,387 renewals routed to the model (7.4% voluntary lapse), 326 to dunning, 287 to the cancel flow, and one scored today.
 
-Excerpt: [docs/demo/churn-e2e.excerpt.md](docs/demo/churn-e2e.excerpt.md).
+Excerpts: [docs/demo/churn-e2e.excerpt.md](docs/demo/churn-e2e.excerpt.md), [churn-parity](docs/demo/churn-parity.excerpt.md), [Retention Radar consuming the export](docs/demo/radar-consume.excerpt.md), [test tiers T0 to T3](docs/demo/tests.excerpt.md).
 
 ### Without Docker, and checking Spark against pandas
 
