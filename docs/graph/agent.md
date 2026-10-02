@@ -43,8 +43,8 @@ The full catalogue, with every argument, type, range and default, is generated f
 | `lineage_*` | column lineage, PIT status, checks on a column, dead columns ([lineage.md](lineage.md#the-lineage-tools)) |
 | `cohort_summary`, `cohort_list` | one cohort or all: size, plan mix, lapse rate with n and interval, distinguishing features |
 
-There is no raw query tool, no write tool, no file tool and no network tool. Every Cypher query is one
-of 17 vetted templates in `src/lakehouse_graph/queries.py`; parameters are validated by strict Pydantic
+In the default servers there is no raw query tool, no write tool, no file tool and no network tool. Every
+Cypher query is one of 17 vetted templates in `src/lakehouse_graph/queries.py`; parameters are validated by strict Pydantic
 v2 models (`extra=forbid`, closed enums, id regexes, integer ranges, an 80-character free-text cap).
 Junk values small models send (`""`, `"null"`, `"None"`, JSON null) take the default; errors name the
 field and never echo the rejected value. The only free text, `graph_find.query`, is matched in Python
@@ -184,10 +184,15 @@ the eval keeps an unrouted arm to test it ([evaluation.md](evaluation.md#agent-e
 
 ## The open-source path
 
-Planned, **not built yet**: a Pydantic AI harness (`src/lakehouse_graph/agent.py`, `scripts/graph_chat.py`,
-a local UI) with Ollama and a 4B Qwen model, a router that picks one toolset per question, and the eval
-in [evaluation.md](evaluation.md#agent-eval). What the research measured on this Mac (installed
-`qwen3:4b`, Apache-2.0, 2026-10-01):
+Built, **experimental**, local only: a Pydantic AI 2.52 harness (`src/lakehouse_graph/agent.py`) with a
+terminal chat (`scripts/graph_chat.py`), Ollama and a 4B Qwen model. A structured-output router picks one
+toolset (graph, metrics, lineage, cohorts or refuse) and a sub-agent that sees only that toolset answers
+through `scripts/graph_mcp.sh` (sandboxed on macOS, 4,000-character answers); every episode can be written
+as a replayable trace. It has its own venv (`.venv-graph-eval`, `requirements-graph-eval.txt`) and is
+unit-tested without a model (`tests/graph/test_agent.py`). The eval is in
+[evaluation.md](evaluation.md#agent-eval). There is no chat UI and no `graph-chat` Make target (the
+script's docstring mentions one): run `.venv-graph-eval/bin/python scripts/graph_chat.py "question"`.
+What the research measured on this Mac (installed `qwen3:4b`, Apache-2.0, 2026-10-01):
 
 - Pydantic AI 2.52 talks to Ollama through its OpenAI-compatible `/v1`; `max_tokens` only works with a
   profile override, and `num_ctx` cannot be set there (a derived Ollama tag with `num_ctx 8192` is used).
@@ -228,7 +233,7 @@ a confused or over-eager model; a malicious or mistaken edit to repo code that t
 |---|---|---|---|---|
 | A normal Claude Code session in this repo | yes (tools + your files) | yes (tool output) | yes: Bash, WebFetch, file writes, every user-scope MCP server and claude.ai connector | **trifecta present**; do not use it with real data |
 | `scripts/graph_ask.sh` | yes | yes | none: only the four lakehouse servers and Read; servers sandboxed with network denied | broken at the client and at the server (macOS) |
-| OSS harness (planned) | yes | yes | none by construction (no tool but the lakehouse servers) | to be verified when built |
+| OSS harness (experimental) | yes | yes | none by construction (no tool but the lakehouse servers; the model is a local Ollama endpoint) | unit-tested without a model; no end-to-end exfiltration test |
 
 **Mitigations, mapped to tests.**
 
@@ -246,7 +251,7 @@ a confused or over-eager model; a malicious or mistaken edit to repo code that t
 
 **What `read_only` does not protect.** Opening Ladybug read-only only blocks graph mutations. The engine
 still runs `LOAD FROM <any file>`, `COPY TO <any file>`, `EXPORT DATABASE`, `ATTACH` and
-`LOAD <extension>`, and it has no external-access switch. That is why no tool accepts Cypher, why the
+`LOAD <extension>`, and it has no external-access switch. That is why no default tool accepts Cypher, why the
 templates are an allowlist, and why the OS sandbox exists.
 
 **What the sandbox does not do.** It is macOS only (`sandbox-exec`, deprecated by Apple but still
@@ -258,5 +263,8 @@ stderr banner and relies on the template-only surface.
 
 **Residual risks.** Approving `.mcp.json` runs repo code; a non-interactive session can skip that
 approval. Annotations (`readOnlyHint`, ...) are hints for well-behaved clients and are not counted as a
-safety layer. The guarded raw-Cypher tool (`--enable-cypher`) is refused by the server until it exists
-and has its own tests.
+safety layer. The guarded raw-Cypher tool (`scripts/graph_mcp.sh --enable-cypher`,
+`src/lakehouse_graph/cypher_guard.py`, tested in `tests/graph/test_cypher_guard.py`) is opt-in and never
+in the default `.mcp.json` (see `.mcp.cypher.json.example`). It is served alone, over the pruned,
+label-free evidence graph, and only under the macOS sandbox; on Linux it needs
+`GRAPH_ALLOW_UNSANDBOXED_CYPHER=1` and prints a banner.

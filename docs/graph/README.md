@@ -54,21 +54,19 @@ flowchart TB
   subgraph AGENTS["4 · agents"]
     direction LR
     CC["Claude Code<br/>.mcp.json + skill<br/><b>scripts/graph_ask.sh</b>"]
-    OSS["open-source agent<br/>Pydantic AI + Ollama qwen3:4b<br/><b>scripts/graph_chat.py</b>"]
-    UI["local chat UI<br/>Streamlit on 127.0.0.1"]
+    OSS["open-source agent, experimental<br/>Pydantic AI + Ollama qwen3:4b<br/><b>scripts/graph_chat.py</b>"]
   end
 
-  TWIN["Docker overlay + Airflow DAG<br/>Spark writes gold.graph_* and tags every input<br/><b>pipelines/run_graph_e2e.sh</b>"]
+  TWIN["Docker overlay + Airflow DAG<br/>Spark writes gold.graph_* and tags every input<br/><b>make graph-e2e</b>"]
 
   GD --> GB
   GD -.-> TWIN
-  TWIN -.->|PyIceberg read pinned by tag + snapshot| GB
+  TWIN -.->|PyIceberg REST read pinned by tag + snapshot| GB
   CK -->|pass, then promote| MCP
   LX --> MCP
   CO --> MCP
   MCP --> CC
   MCP --> OSS
-  MCP -.-> UI
 
   style BR fill:#d6eaf8,stroke:#333
   style GD fill:#fdebd0,stroke:#333
@@ -80,12 +78,11 @@ flowchart TB
   style CO fill:#d6eaf8,stroke:#333
   style MCP fill:#1a1a1a,color:#7CFC98,stroke:#1a1a1a
   style CC fill:#f5f5f5,stroke:#333
-  style OSS fill:#f5f5f5,stroke:#333
-  style UI fill:#f5f5f5,stroke:#666,stroke-dasharray: 5 5
+  style OSS fill:#f5f5f5,stroke:#666,stroke-dasharray: 5 5
   style TWIN fill:#f5f5f5,stroke:#666,stroke-dasharray: 5 5
 ```
 
-Dashed boxes are optional paths (Docker) or still being finished (the local UI).
+Dashed boxes are optional (Docker) or experimental (the local-model agent). There is no chat UI.
 
 ## Quickstart (no Docker)
 
@@ -119,32 +116,40 @@ Then start Claude Code in the repo root and approve the project servers in `.mcp
 
 ## Status
 
-What exists and passes, what exists and fails, and what is not built yet (2026-10-01).
+What exists and passes, what exists and fails, and what is not built (updated 2026-10-02, branch
+`feat/local-first-stack-2026`). The generated results under [results/](results/index.md) are the
+2026-10-01 record on the earlier stack (JDBC catalog, Spark 3.5.3); they have not been regenerated.
 
 | Part | State | Evidence |
 |---|---|---|
 | Business graph, contract, goldens, profiles (`make graph-*`) | **built, passing**: strict contract on tiny, s42 and default | [results](results/index.md) |
 | Repo contracts (constants, columns, appName, LEAKY) | **built, passing** (0 errors, 2 known warnings) | [repo-contracts.md](results/repo-contracts.md) |
-| Agent surface: 4 MCP servers, 14 tools, envelope, audit log, `.mcp.json`, skill, `graph_ask.sh` | **built, passing** (tools check on tiny and s42, MCP smoke in both protocols) | [graph-tools-s42.md](results/graph-tools-s42.md) |
+| Agent surface: 4 MCP servers, 14 tools, envelope, audit log, `.mcp.json`, skill, `graph_ask.sh` | **built**; the 2026-10-01 tools check passed on tiny and s42, but on 2026-10-02 the privacy-suppression tests fail (see below) | [graph-tools-s42.md](results/graph-tools-s42.md) |
 | macOS sandbox around the servers | **built, passing** when run alone; its unified-log step can fail while other sandboxed processes run | [sandbox-check.md](results/sandbox-check.md) |
-| Tier-0 lineage graph and tools | **built; strict contract failing** on `d317368` (the CI clone line) | [lineage.md](lineage.md#known-issue-the-ci-clone-line) |
+| Tier-0 lineage graph and tools | **built, passing**: the lineage contract passes again (the CI clone line is resolved) | [lineage.md](lineage.md#known-issue-the-ci-clone-line) |
+| Tier-1 Iceberg lineage facts (`build_lineage_local.py --iceberg`) | **built**; reads snapshots and refs through the REST catalog (2026-10-02) | [lineage.md](lineage.md#tiers) |
 | Feature cohorts, Cytoscape.js evidence views | **built, passing** (outside the contract) | [cohorts.md](results/cohorts.md) |
-| Spark SQL twin, Iceberg tags, PyIceberg reader, source-aware contract | **built, passing** (parity exact on tiny and s42) | [graph-parity-s42.md](results/graph-parity-s42.md) |
-| Docker overlay, `run_graph_e2e.sh`, Airflow DAG | **built; recorded run partial**: every step passes except the lineage contract on `d317368` | [docker-e2e.md](results/docker-e2e.md) |
-| Export fix in `src/jobs/churn/04_export_features.py` | **applied** (a user file: review) | [lakehouse-twin.md](lakehouse-twin.md#the-export-fix-04_export_featurespy) |
+| Spark SQL twin, Iceberg tags, PyIceberg REST reader, source-aware contract | **built, passing** (local parity exact on tiny and s42 in the 3.5 harness) | [graph-parity-s42.md](results/graph-parity-s42.md) |
+| Docker overlay, `make graph-e2e` / `run_graph_e2e.sh` | **built, passing** on the REST stack: every step in 178 s (2026-10-02) | [lakehouse-twin.md](lakehouse-twin.md#the-docker-run) |
+| Airflow DAG `lakehouse_graph` | **built** on Airflow 3.3.2 (chain unit-tested); not triggered on Airflow 3 yet | [lakehouse-twin.md](lakehouse-twin.md#airflow) |
+| Export fix in `src/jobs/churn/04_export_features.py` | **applied** | [lakehouse-twin.md](lakehouse-twin.md#the-export-fix-04_export_featurespy) |
 | These docs, charts and the evidence runner | **built** | `scripts/graph_evidence.py`, `scripts/graph_charts.py` |
-| Agent eval (40 cases, R / M / SE / H arms), replay test, leakage demo, bench script | **not built** | [evaluation.md](evaluation.md#agent-eval) |
-| Open-source agent (Pydantic AI + Ollama), chat CLI, local UI, `graph-demo` | **not built** (researched) | [agent.md](agent.md#the-open-source-path) |
-| Guarded raw Cypher (`--enable-cypher`) | **not built** (the server refuses the flag) | |
-| Tier-1 Iceberg lineage facts, OpenLineage loader | **not built** (schema placeholders) | [lineage.md](lineage.md#tiers) |
-| Make targets beyond the Phase 1 set, CI `graph` job, `pytest.ini` | **not added** | [operations.md](operations.md#make-targets) |
-| Repo README section + banner, `config/CATALOG.md` refresh, `docs/demo/README.md` entry | **not done** (files outside this docs folder) | |
-| Linux validation of ladybug 0.21.1 | **not run** (no CI job yet) | |
+| Open-source agent: Pydantic AI harness (`src/lakehouse_graph/agent.py`), chat CLI (`scripts/graph_chat.py`) | **built, experimental**: local model `qwen3:4b` through Ollama; own venv (`requirements-graph-eval.txt`); unit-tested without a model (`tests/graph/test_agent.py`) | [agent.md](agent.md#the-open-source-path) |
+| Agent eval (`scripts/graph_eval.py`, 40 cases in `evals/graph_cases.yaml`), replay test, leakage demo, bench script | **built**; CI runs only the deterministic replay test; no model-graded report is published | [evaluation.md](evaluation.md#agent-eval) |
+| Local chat UI | **not built** (no Streamlit or other UI in the repo) | |
+| Guarded raw Cypher (`scripts/graph_mcp.sh --enable-cypher`, `cypher_guard.py`) | **built, opt-in**: served alone and only under the macOS sandbox | [agent.md](agent.md) |
+| OpenLineage loader (Tier 2) | **not built** | [lineage.md](lineage.md#tiers) |
+| CI `graph` job | **added** (graph tests + tiny build and strict contract) | `.github/workflows/ci.yml` |
+| Linux validation of ladybug 0.21.1 | **not run locally**; the CI `graph` job runs on Linux once pushed | |
 
-Open findings worth fixing first: the lineage extractor and the CI clone line; one population-template
-encoding the leak lint does not catch (the served templates are safe, [data-model.md](data-model.md#point-in-time-rules));
-the sandbox check's unified-log step is not filtered by process; two minor `iceberg_source.py` review
-findings ([lakehouse-twin.md](lakehouse-twin.md#not-done-yet)).
+`make graph-test` on 2026-10-02 (macOS arm64): 1,368 passed, 23 failed, 32 skipped in 13 min. 18 of the
+failures fail identically on unmodified `origin/main` with the same venv and are not caused by the
+stack upgrade: the disclosure / small-cell suppression tests (`test_tools_disclosure.py`,
+`test_metrics.py`, `test_tools.py`, `test_tools_s42.py`) and `test_evidence.py`. The other 5 were the
+upgrade's own and are fixed. Open findings worth fixing first: those suppression failures; one
+population-template encoding the leak lint does not catch (the served templates are safe,
+[data-model.md](data-model.md#point-in-time-rules)); the sandbox check's unified-log step is not
+filtered by process.
 
 ## Regenerating these docs
 

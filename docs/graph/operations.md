@@ -28,8 +28,8 @@ GRAPH_ROOT=/path/to/scratch`. Then start Claude Code in the repo root and approv
 
 ## Make targets
 
-The Makefile has the Phase 1 graph targets today. The rest are planned; until they land, run the command
-in the last column directly (from the repo root, with `GRAPH_PY=.venv-graph/bin/python`).
+The Makefile has the Phase 1 graph targets plus `graph-test` and `graph-e2e`. For the rest, run the
+command in the last column directly (from the repo root, with `GRAPH_PY=.venv-graph/bin/python`).
 
 | Target | In the Makefile | What it runs |
 |---|---|---|
@@ -41,17 +41,21 @@ in the last column directly (from the repo root, with `GRAPH_PY=.venv-graph/bin/
 | `graph-promote [BUILD=<id>]` | yes | `scripts/build_graph_local.py promote` |
 | `graph-clean` | yes | `scripts/build_graph_local.py gc --keep 3` |
 | `graph-golden [CONFIRM=1] [ONLY=tiny\|s42]` | yes | `scripts/build_graph_local.py golden` |
-| `graph-evidence` | planned | `$GRAPH_PY scripts/graph_evidence.py [--graph-root DIR]` |
-| `lineage-local` | planned | `$GRAPH_PY scripts/build_lineage_local.py --graph-profile default && $GRAPH_PY scripts/check_lineage_contract.py --graph-profile default --strict` |
-| `graph-cohorts` | planned | `$GRAPH_PY scripts/build_graph_cohorts.py --profile default` |
-| `graph-viz RENEWAL=<id>` | planned | `$GRAPH_PY scripts/graph_viz.py --renewal sub_maya:2026-10-07` (writes `$GRAPH_ROOT/viz/<build>/...html`) |
-| `graph-tools-check` | planned | `$GRAPH_PY scripts/check_graph_tools.py --profile s42 [--bench 20]` |
-| `graph-serve` | planned | `scripts/graph_mcp.sh --toolset graph` (debug; stdio) |
-| `graph-ask` | planned | `scripts/graph_ask.sh` |
-| `graph-sandbox-check` | planned | `$GRAPH_PY scripts/graph_sandbox_check.py --control --log-check` (macOS) |
-| `graph-parity` | planned | `.venv-graph-spark/bin/python scripts/check_graph_parity.py parity --profile tiny --strict` |
-| `graph-up` / `graph-down` / `graph-e2e` / `airflow-trigger-graph` / `graph-pg-readonly` | planned | see [lakehouse-twin.md](lakehouse-twin.md#docker-overlay) |
-| `graph-chat`, `graph-ui`, `graph-eval`, `graph-bench`, `graph-demo` | planned | the scripts do not exist yet ([README.md](README.md#status)) |
+| `graph-test` | yes | `.venv-graph/bin/python -m pytest -q tests/graph` (about 13 min on an M1 Pro) |
+| `graph-e2e` | yes | `make up-full`, then `docker-compose.graph.yml` up `--build --wait`, then `pipelines/run_graph_e2e.sh` ([lakehouse-twin.md](lakehouse-twin.md#docker-overlay)) |
+| `graph-evidence` | no | `$GRAPH_PY scripts/graph_evidence.py [--graph-root DIR]` |
+| `lineage-local` | no | `$GRAPH_PY scripts/build_lineage_local.py --graph-profile default && $GRAPH_PY scripts/check_lineage_contract.py --graph-profile default --strict` |
+| `graph-cohorts` | no | `$GRAPH_PY scripts/build_graph_cohorts.py --profile default` |
+| `graph-viz RENEWAL=<id>` | no | `$GRAPH_PY scripts/graph_viz.py --renewal sub_maya:2026-10-07` (writes `$GRAPH_ROOT/viz/<build>/...html`) |
+| `graph-tools-check` | no | `$GRAPH_PY scripts/check_graph_tools.py --profile s42 [--bench 20]` |
+| `graph-serve` | no | `scripts/graph_mcp.sh --toolset graph` (debug; stdio) |
+| `graph-ask` | no | `scripts/graph_ask.sh` |
+| `graph-sandbox-check` | no | `$GRAPH_PY scripts/graph_sandbox_check.py --control --log-check` (macOS) |
+| `graph-parity` | no | `.venv-graph-spark/bin/python scripts/check_graph_parity.py parity --profile tiny --strict` |
+| `graph-up` / `graph-down` / `airflow-trigger-graph` | no | see [lakehouse-twin.md](lakehouse-twin.md#docker-overlay) |
+| `graph-chat` | no (the script's docstring mentions it) | `.venv-graph-eval/bin/python scripts/graph_chat.py "question"` (experimental) |
+| `graph-eval`, `graph-bench` | no | `scripts/graph_eval.py` (eval venv), `scripts/graph_bench.py`; the leakage demo is `scripts/graph_leakage_demo.py` ([evaluation.md](evaluation.md#agent-eval)) |
+| `graph-ui`, `graph-demo` | no | there is no UI and no demo script |
 
 The spark venv: `uv venv --python 3.12 .venv-graph-spark && uv pip sync --python
 .venv-graph-spark/bin/python --require-hashes requirements-graph-spark.txt`. The parity check finds a JDK
@@ -69,8 +73,8 @@ as indicative. Unmeasured rows say "estimate".
 | BUILD (local) | pandas gold twin, builder, Ladybug loader, lineage, cohorts | builder 309 MiB max RSS at seed 42 (`ru_maxrss`), loader 208 to 226 MiB (256 MB pool); measured in each contract run |
 | BUILD (parity) | Spark local mode (2 GB driver) + numpy | about 2.5 GB, estimate; 61 s at seed 42 |
 | SERVE (Claude) | up to 4 stdio servers (128 MB pool each) | graph 283 MiB, lineage 292 MiB, metrics 171 MiB, cohorts 181 MiB after warm calls (latest bench, [tools-bench-s42.json](results/tools-bench-s42.json)) |
-| SERVE (open-source agent, planned) | + Ollama `qwen3:4b` at `num_ctx` 8192 | about 3.9 GB for the model + 0.2 GB harness; Docker must be stopped |
-| LAKEHOUSE | Postgres + Silo + Spark (+ `ldl-graph`, + Airflow) | the stack's own budget; `ldl-graph` builder 576 to 582 MiB, `mem_limit` 1,536 MiB |
+| SERVE (open-source agent, experimental) | + Ollama `qwen3:4b` at `num_ctx` 8192 | about 3.9 GB for the model + 0.2 GB harness; Docker must be stopped |
+| LAKEHOUSE | Postgres + Lakekeeper + RustFS (or SILO) + Spark (+ `ldl-graph`, + Airflow) | measured 2026-10-02: light stack idle about 190 MiB; Spark about 1.2 GiB while a job runs; Airflow overlay about 1.16 GiB; `ldl-graph` builder 576 to 582 MiB (2026-10-01), `mem_limit` 1,536 MiB ([README](../../README.md#prerequisites)) |
 
 Rule: never run the lakehouse stack, Spark parity and a local LLM at the same time. A preflight that
 refuses `graph-parity` / `graph-eval` when Docker is up, memory pressure is critical or free swap is under
@@ -136,9 +140,9 @@ them only with a written reason.
 | `graph_ask.sh: the Claude Code CLI ('claude') is not on PATH` | install Claude Code, sign in, rerun; older than 2.1.248 is refused |
 | Claude Code does not show the lakehouse tools | start it in the repo root (relative command in `.mcp.json`), approve the project servers, restart after a promote |
 | sandbox check fails on "reported sandbox denials" while other sandboxed Python processes run | the unified-log check is not filtered by pid: rerun it alone |
-| Docker: `port 5432 already allocated` (a native PostgreSQL 18 on this Mac) | set `POSTGRES_PORT=5433` in `.env` |
-| Docker: port 8080 taken | `AIRFLOW_WEBSERVER_PORT=8081` in `.env` **and** exported in the shell |
-| `run_graph_e2e.sh` stops at `check_lineage_contract` | the CI clone line issue on `d317368` ([lineage.md](lineage.md#known-issue-the-ci-clone-line)) |
+| Docker: port 8181 taken | Postgres publishes no host port any more; the catalog is Lakekeeper on `LAKEKEEPER_PORT` (default 8181): change it in `.env` |
+| Docker: port 8080 taken | `AIRFLOW_API_PORT=8081` in `.env` |
+| `run_graph_e2e.sh` stops at `check_lineage_contract` | an unresolved name in the lineage extractor, e.g. a clone URL moved into a shell variable ([lineage.md](lineage.md#known-issue-the-ci-clone-line)) |
 | `make churn-e2e` crashed on `Decimal is not JSON serializable` | the export fix in this branch ([lakehouse-twin.md](lakehouse-twin.md#the-export-fix-04_export_featurespy)) |
 | Ollama answers ignore the system prompt | context overflow is silent in Ollama; use the derived tag with `num_ctx 8192` ([agent.md](agent.md#the-open-source-path)) |
 

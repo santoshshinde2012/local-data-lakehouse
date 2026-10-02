@@ -32,17 +32,18 @@ flowchart LR
     L --> LI["lakehouse-lineage<br/>4 tools"]
     L --> CO["lakehouse-cohorts<br/>2 tools"]
     G & M & LI & CO --> CC["Claude Code<br/>.mcp.json + SKILL.md<br/>graph_ask.sh allowlist"]
-    G & M & LI & CO -.-> OSS["Pydantic AI + Ollama qwen3:4b<br/>planned, not built"]
+    G & M & LI & CO -.-> OSS["Pydantic AI + Ollama qwen3:4b<br/>experimental"]
   end
   subgraph LAKE["LAKEHOUSE mode: Docker overlay"]
     ICE[("Iceberg silver + gold")] --> SPK["Spark job 01_publish_gold_graph<br/>gold.graph_* + CREATE TAG"]
-    SPK --> PYI["PyIceberg SqlCatalog<br/>pinned by tag + snapshot id"]
+    SPK --> PYI["PyIceberg REST catalog (Lakekeeper)<br/>pinned by tag + snapshot id"]
     PYI --> BLD
   end
 ```
 
-Solid arrows exist and are tested. The dashed arrow is the fully open-source agent path, which is
-designed and researched but not built yet ([agent.md](agent.md#the-open-source-path)).
+Solid arrows exist and are tested. The dashed arrow is the fully open-source agent path: built
+(`src/lakehouse_graph/agent.py`, `scripts/graph_chat.py`) but experimental, local only, and slow on a
+thinking-only 4B model ([agent.md](agent.md#the-open-source-path)). There is no chat UI.
 
 ## Three modes
 
