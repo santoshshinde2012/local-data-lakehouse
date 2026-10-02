@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  UV_VERSION: "0.12.4"
+  UV_VERSION: "0.12.22"
 
 jobs:
   t0-unit:
@@ -23,8 +23,8 @@ jobs:
     # Spark SQL vs pandas gold in local pyspark 4.1.3, Retention Radar consuming the export.
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - name: Install uv
@@ -48,7 +48,7 @@ jobs:
         run: |
           make churn-gold-local
           .venv/bin/python scripts/check_churn_export.py --strict
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: "21"
@@ -73,8 +73,8 @@ jobs:
     # Graph on gold: Tier-0 graph tests + the tiny-profile build and strict contract (no Docker).
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - name: Install uv
@@ -91,14 +91,14 @@ jobs:
     # T1 (testcontainers) + T2 (compose light profile smoke + light demo) on every PR.
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - name: Install uv
         run: pip install "uv==${UV_VERSION}"
       - run: make venv
-      - name: objectstore.localhost -> loopback (glibc already does this; belt and braces)
+      - name: objectstore.localhost -> loopback (required: plain glibc does not resolve *.localhost; only systemd-resolved / nss-myhostname do)
         run: echo "127.0.0.1 objectstore.localhost" | sudo tee -a /etc/hosts
       - name: Validate Compose files and profiles
         run: |
@@ -107,7 +107,7 @@ jobs:
           docker compose --profile full --profile trino config -q
           docker compose -f docker-compose.yml -f docker-compose.silo.yml --profile light config -q
           docker compose -f docker-compose.yml -f docker-compose.graph.yml --profile full config -q
-          cp .env.example /tmp/airflow.env && printf 'AIRFLOW_FERNET_KEY=x\n_AIRFLOW_WWW_USER_PASSWORD=x\nAIRFLOW_JWT_SECRET=x\nAIRFLOW_API_SECRET_KEY=x\n' >> /tmp/airflow.env
+          cp .env.example /tmp/airflow.env && printf 'AIRFLOW_DB_PASSWORD=x\nAIRFLOW_FERNET_KEY=x\n_AIRFLOW_WWW_USER_PASSWORD=x\nAIRFLOW_JWT_SECRET=x\nAIRFLOW_API_SECRET_KEY=x\n' >> /tmp/airflow.env
           docker compose --env-file /tmp/airflow.env -f docker-compose.yml -f docker-compose.airflow.yml --profile full config -q
       - name: T1 contract (testcontainers)
         run: make test-t1
@@ -128,8 +128,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - name: Install uv
