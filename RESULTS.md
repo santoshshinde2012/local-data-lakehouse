@@ -121,10 +121,11 @@ Headless Playwright screenshots of the runs above ([airflow-e2e.excerpt.md](docs
 
 ## CI
 
-All jobs succeeded on both runs below. The most recent runs are on [PR #13's checks](https://github.com/santoshshinde2012/local-data-lakehouse/pull/13/checks).
+All jobs succeeded on every run below. PR #13 was squash-merged into `main` as `08bb274`.
 
 | Head | Run | t0-unit | t2-light | t3-full | graph |
 |---|---|---|---|---|---|
+| `main` `08bb274` (PR #13 merged) | [37046795038](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37046795038) | [2 min 30 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37046795038/job/110970109891): radar ref `main`, commit `7e3bec8`, 7,387 rows scored | [52 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37046795038/job/110970110165) | [5 min 24 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37046795038/job/110970110261) | [18 min 36 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37046795038/job/110970110148): 1,386 passed, 37 skipped |
 | `2e1d075` (radar consumer on radar `main`) | [37045405169](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37045405169) | [2 min 31 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37045405169/job/110965485307): radar ref `main`, commit `7e3bec8`, 7,387 rows scored | [53 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37045405169/job/110965485753) | [5 min 38 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37045405169/job/110965485808) | [18 min 20 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37045405169/job/110965485794): 1,386 passed, 37 skipped |
 | `526f856` (evidence) | [37033594208](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37033594208) | [1 min 59 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37033594208/job/110926629366) | [2 min 2 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37033594208/job/110926629309) | [5 min 22 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37033594208/job/110926629393) | [20 min 1 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37033594208/job/110926629107) |
 
