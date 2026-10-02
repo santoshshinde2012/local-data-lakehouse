@@ -48,12 +48,11 @@ OPTIONAL = {
     "eval-pass3": ("The agent eval (pass^3 by arm and question shape) has not run yet: the eval harness "
                    "(scripts/graph_eval.py, PHASE 3a) is not in this checkout.",
                    "When it exists, `scripts/graph_evidence.py` records it and fills this chart."),
-    "leakage-aucs": ("The leakage demo AUCs have not been reproduced by a repo script yet: "
-                     "scripts/graph_leakage_demo.py (PHASE 3a) is not in this checkout.",
+    "leakage-aucs": ("No leakage demo record yet: run scripts/graph_leakage_demo.py on an s42 build "
+                     "(scripts/graph_evidence.py records it).",
                      "The planning prototype's figures are quoted in the text above, marked as such."),
     "cohort-lapse-rates": ("This build has no cohorts.parquet.",
-                           "Run `scripts/build_graph_cohorts.py --profile s42` (a `make graph-cohorts` target is "
-                           "planned)."),
+                           "Run `make graph-cohorts PROFILE=s42`."),
 }
 
 
@@ -187,8 +186,7 @@ def collect(a) -> tuple[list[charts.Figure], dict[str, str], dict[str, str], dic
     if not any(k.startswith("lineage-") for k in mermaid):
         col = a.lineage_target.rsplit(".", 1)[-1]
         regions[f"mermaid:lineage-{col}"] = charts.pending("This build has no lineage graph.",
-                                                           "Run `scripts/build_lineage_local.py --graph-profile s42` "
-                                                           "(a `make lineage-local` target is planned).")
+                                                           "Run `make lineage-local PROFILE=s42`.")
     return figs, mermaid, regions, man
 
 

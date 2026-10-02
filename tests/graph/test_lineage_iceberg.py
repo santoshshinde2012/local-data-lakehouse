@@ -19,7 +19,7 @@ catalog's metadata and the lineage build adds the Tier-1 facts:
   * the safety rules refuse a schema_version, a missing catalog file (nothing created);
   * a new tag re-keys lineage_build_id.
 
-Skipped (with the reason) without pyspark, a JDK 17 or the two jars; GRAPH_REQUIRE_SPARK=1 turns the
+Skipped (with the reason) without pyspark, a JDK 17 or 21 or the two jars; GRAPH_REQUIRE_SPARK=1 turns the
 skip into a failure. Run under the heavy lock (one JVM, local[2], 1 GB driver).
 """
 from __future__ import annotations

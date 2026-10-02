@@ -1,106 +1,204 @@
-# Local data lakehouse — Silo (S3-compatible) + Postgres (Iceberg JDBC) + Spark 3.5
-# Usage: cp .env.example .env && make up && make wait && make demo
+# Local data lakehouse (Oct 2026): Iceberg REST catalog (Lakekeeper on Postgres 18) + S3 object
+# store (RustFS; SILO via docker-compose.silo.yml) + optional Spark 4.1 / Trino engines.
 #
-# Object store: SILO (pgsty fork of the archived MinIO community line).
-# See docs/object-store.md. Pin immutable tags — never :latest for server/client.
+# Profiles (nothing starts without one):
+#   light   postgres + lakekeeper (migrate -> serve) + objectstore + lakehouse-init. No JVM.
+#           Engines run on the host: DuckDB / PyIceberg / Polars (requirements.txt).
+#   full    light + spark (Spark 4.1.3, Iceberg 1.12). Add --profile trino for Trino 483.
+# Usage:
+#   cp .env.example .env
+#   docker compose --profile light up -d --wait          # make up-light
+#   docker compose --profile full up -d --wait --build   # make up-full   (TRINO=1 adds Trino)
+#   docker compose --profile '*' down                    # make down
+#
+# One S3 endpoint for everyone: the warehouse records S3_ENDPOINT (default
+# http://objectstore.localhost:9000). Inside ldl-net that name is a network alias of the
+# objectstore service; on the host *.localhost resolves to loopback (macOS, systemd-resolved,
+# curl), where the same port is published. So the credentials Lakekeeper vends work unchanged in
+# Spark/Trino containers and in host DuckDB/PyIceberg: no S3 keys in any engine config.
+#
+# TEACHING-ONLY / NOT PRODUCTION: Lakekeeper runs with authentication disabled (any bearer token
+# is accepted) and the sample secrets live in .env. Bind to a closed laptop; see README.
+#
+# Every image: exact version tag + multi-arch index digest (amd64 + arm64). Refresh together:
+#   docker buildx imagetools inspect <image>:<tag> --format '{{.Manifest.Digest}}'
+
+x-lakekeeper-env: &lakekeeper-env
+  LAKEKEEPER__PG_DATABASE_URL_READ: postgresql://${POSTGRES_USER:?set in .env}:${POSTGRES_PASSWORD:?set in .env}@postgres:5432/${POSTGRES_DB:-lakekeeper}
+  LAKEKEEPER__PG_DATABASE_URL_WRITE: postgresql://${POSTGRES_USER:?set in .env}:${POSTGRES_PASSWORD:?set in .env}@postgres:5432/${POSTGRES_DB:-lakekeeper}
+  # Encrypts the storage credential (S3 keys) Lakekeeper keeps in Postgres.
+  LAKEKEEPER__PG_ENCRYPTION_KEY: ${LAKEKEEPER_ENCRYPTION_KEY:?set in .env}
+  RUST_LOG: ${LAKEKEEPER_LOG:-info}
 
 services:
   postgres:
-    image: postgres:16-alpine
+    image: postgres:18.6-alpine@sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873
     container_name: ldl-postgres
+    profiles: [light, full]
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-iceberg}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-iceberg}
-      POSTGRES_DB: ${POSTGRES_DB:-iceberg}
-    ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      POSTGRES_USER: ${POSTGRES_USER:?set in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-lakekeeper}
+    # No host port: only Lakekeeper talks to its database (engines use the REST API).
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      # Postgres 18 images keep PGDATA under /var/lib/postgresql/18/docker: mount the parent.
+      - postgres-data:/var/lib/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-iceberg} -d ${POSTGRES_DB:-iceberg}"]
-      interval: 5s
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 2s
       timeout: 5s
-      retries: 12
-    networks:
-      - lakehouse
+      retries: 30
+    networks: [lakehouse]
 
-  silo:
-    image: docker.io/pgsty/silo:RELEASE.2026-09-03T13-18-01Z
-    container_name: ldl-silo
-    command: server /data --console-address ":9001"
-    environment:
-      # SILO preserves the MinIO env contract (MINIO_ROOT_*).
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
-    ports:
-      - "${MINIO_API_PORT:-9000}:9000"
-      - "${MINIO_CONSOLE_PORT:-9001}:9001"
-    volumes:
-      # One-time note: existing MinIO volume users can
-      #   docker volume ls | grep minio
-      # then rename (docker volume create + copy) or re-init with make reset.
-      - silo-data:/data
-    healthcheck:
-      # Classic image ships the silo binary; same probe as distroless.
-      test: ["CMD", "silo", "healthcheck", "ready"]
-      interval: 5s
-      timeout: 10s
-      retries: 12
-      start_period: 15s
-    networks:
-      - lakehouse
-
-  silo-init:
-    image: docker.io/pgsty/mc:RELEASE.2026-09-03T07-13-05Z
-    container_name: ldl-silo-init
+  lakekeeper-migrate:
+    image: &lakekeeper-image quay.io/lakekeeper/catalog:v0.13.6@sha256:d6829722cac0d00dfc5665b0955766387b93ccadd8b1e70e679b49619bc30ea5
+    container_name: ldl-lakekeeper-migrate
+    profiles: [light, full]
+    command: ["migrate"]
+    environment: *lakekeeper-env
     depends_on:
-      silo:
+      postgres:
         condition: service_healthy
-    entrypoint: >
-      /bin/sh -c "
-      mc alias set local http://silo:9000 $${MINIO_ROOT_USER:-minioadmin} $${MINIO_ROOT_PASSWORD:-minioadmin};
-      mc mb --ignore-existing local/lake;
-      mc anonymous set none local/lake;
-      echo 'Bucket lake ready';
-      "
-    environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
-    networks:
-      - lakehouse
     restart: "no"
+    networks: [lakehouse]
+
+  lakekeeper:
+    image: *lakekeeper-image
+    container_name: ldl-lakekeeper
+    profiles: [light, full]
+    command: ["serve"]
+    environment: *lakekeeper-env
+    depends_on:
+      lakekeeper-migrate:
+        condition: service_completed_successfully
+    ports:
+      - "${LAKEKEEPER_PORT:-8181}:8181"
+    healthcheck:
+      test: ["CMD", "/home/nonroot/lakekeeper", "healthcheck"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 2s
+    networks: [lakehouse]
+
+  objectstore:
+    # RustFS 1.0 (Apache-2.0): S3 API + STS AssumeRole, which Lakekeeper uses to vend credentials.
+    # Alternative: SILO (MinIO fork), docker compose -f docker-compose.yml -f docker-compose.silo.yml
+    image: rustfs/rustfs:1.0.0@sha256:8cc9801755448b71a786705ce76692c77e14936cccd87cf2fc31842e58f4d1ff
+    container_name: ldl-objectstore
+    profiles: [light, full]
+    environment:
+      RUSTFS_ACCESS_KEY: ${S3_ACCESS_KEY:?set in .env}
+      RUSTFS_SECRET_KEY: ${S3_SECRET_KEY:?set in .env}
+      # Same port inside and outside: S3_ENDPOINT must mean the same thing in both places.
+      RUSTFS_ADDRESS: ":${S3_API_PORT:-9000}"
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_CONSOLE_ADDRESS: ":9001"
+      RUSTFS_REGION: ${S3_REGION:-us-east-1}
+      RUSTFS_OBS_LOG_DIRECTORY: ""
+    ports:
+      - "${S3_API_PORT:-9000}:${S3_API_PORT:-9000}"
+      - "${S3_CONSOLE_PORT:-9001}:9001"
+    volumes:
+      - objectstore-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -o /dev/null http://127.0.0.1:${S3_API_PORT:-9000}/health || exit 1"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 2s
+    networks:
+      lakehouse:
+        aliases: [objectstore.localhost]
+
+  lakehouse-init:
+    # Idempotent: bucket (SigV4 PUT) -> Lakekeeper bootstrap -> warehouse with STS (vended
+    # credentials). Re-running it on a populated stack changes nothing. Stays up (idle) and turns
+    # healthy when setup is done: the signal `up --wait`, spark and trino wait for.
+    image: curlimages/curl:8.22.0@sha256:58adaa4e8dca9c988bae2aba4ab3434a0bb2da16bbe3f92dec39ec7785166777
+    container_name: ldl-lakehouse-init
+    profiles: [light, full]
+    entrypoint: ["/bin/sh", "/init/bootstrap.sh"]
+    environment:
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:?set in .env}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:?set in .env}
+      S3_BUCKET: ${S3_BUCKET:-lake}
+      S3_REGION: ${S3_REGION:-us-east-1}
+      S3_ENDPOINT: ${S3_ENDPOINT:-http://objectstore.localhost:9000}
+      S3_INTERNAL_ENDPOINT: http://objectstore:${S3_API_PORT:-9000}
+      LAKEKEEPER_URL: http://lakekeeper:8181
+      LAKEKEEPER_WAREHOUSE: ${LAKEKEEPER_WAREHOUSE:-lakehouse}
+    volumes:
+      - ./docker/init:/init:ro
+    depends_on:
+      lakekeeper:
+        condition: service_healthy
+      objectstore:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "test", "-f", "/tmp/ready"]
+      interval: 1s
+      timeout: 3s
+      retries: 60
+    restart: "no"
+    networks: [lakehouse]
 
   spark:
     build:
       context: ./docker/spark
+    image: ldl-spark:4.1.3-iceberg1.12.0
     container_name: ldl-spark
+    profiles: [full]
     depends_on:
-      postgres:
+      lakehouse-init:
         condition: service_healthy
-      silo:
-        condition: service_healthy
-      silo-init:
-        condition: service_completed_successfully
     environment:
-      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-minioadmin}
-      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
-      AWS_REGION: us-east-1
-      WAREHOUSE: ${WAREHOUSE:-s3a://lake/warehouse}
       SAMPLE_DATA_DIR: /opt/data/sample
+      # The catalog vends S3 credentials per table: no S3 keys in Spark.
+      LAKEKEEPER_WAREHOUSE: ${LAKEKEEPER_WAREHOUSE:-lakehouse}
     ports:
       - "${SPARK_UI_PORT:-4040}:4040"
     volumes:
       - ./config/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf:ro
+      - ./config/log4j2.properties:/opt/spark/conf/log4j2.properties:ro
       - ./src/jobs:/opt/jobs:ro
       - ./data/sample:/opt/data/sample:ro
       - ./data/export:/opt/data/export
       - ./sql:/opt/sql:ro
-    networks:
-      - lakehouse
+    healthcheck:
+      test: ["CMD-SHELL", "test -f /opt/spark/jars/iceberg-spark-runtime-4.1_2.13-1.12.0.jar && curl -fsS -o /dev/null http://lakekeeper:8181/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    networks: [lakehouse]
+
+  trino:
+    # Optional second engine: --profile trino (with light or full). -Xmx1G (config/trino/jvm.config).
+    image: trinodb/trino:483@sha256:db58cc93e593a2706553745f276bb119c9810e69918be56ecde088ba7ccb0534
+    container_name: ldl-trino
+    profiles: [trino]
+    depends_on:
+      lakehouse-init:
+        condition: service_healthy
+    ports:
+      - "${TRINO_PORT:-8088}:8080"
+    volumes:
+      - ./config/trino/catalog/lakehouse.properties:/etc/trino/catalog/lakehouse.properties:ro
+      - ./config/trino/jvm.config:/etc/trino/jvm.config:ro
+    environment:
+      LAKEKEEPER_WAREHOUSE: ${LAKEKEEPER_WAREHOUSE:-lakehouse}
+      S3_REGION: ${S3_REGION:-us-east-1}
+    healthcheck:
+      test: ["CMD", "/usr/lib/trino/bin/health-check"]
+      interval: 5s
+      timeout: 5s
+      retries: 36
+      start_period: 10s
+    networks: [lakehouse]
 
 volumes:
   postgres-data:
-  silo-data:
+  objectstore-data:
 
 networks:
   lakehouse:

@@ -17,7 +17,7 @@ gold.graph_* and tags every table graph_<build_id>. The tests then read it back 
     as info, the golden derived and the pins re-read byte-identically (the CLI, real catalog);
   * a missing tag and a moved tag fail loudly ("provenance unavailable"), never a fallback.
 
-Skipped (with the reason) without pyspark, a JDK 17 or the two jars; GRAPH_REQUIRE_SPARK=1 turns
+Skipped (with the reason) without pyspark, a JDK 17 or 21 or the two jars; GRAPH_REQUIRE_SPARK=1 turns
 the skip into a failure. One JVM (local[2], 1 GB driver); do not run these under -W error (py4j).
 """
 from __future__ import annotations

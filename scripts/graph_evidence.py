@@ -17,7 +17,7 @@ same builds and results.
                                sweep over every renewal, hygiene, audit, small cells, lint, junk args, MCP smoke
   tools-bench-s42.json         the bench section of the s42 tools check (p50 / p95 per tool, server RSS)
   sandbox-check.md             scripts/graph_sandbox_check.py --control --log-check (macOS only)
-  graph-parity-<profile>.md    scripts/check_graph_parity.py parity --strict (needs .venv-graph-spark + JDK 17)
+  graph-parity-<profile>.md    scripts/check_graph_parity.py parity --strict (needs .venv-graph-spark + JDK 17 or 21)
   cohorts.md                   scripts/build_graph_cohorts.py list (leiden, louvain) + the hero's cohort
   bench.md / eval.md / leakage.md   when scripts/graph_bench.py, an eval report or scripts/graph_leakage_demo.py
                                exist; otherwise the file says "not available yet"
@@ -34,7 +34,7 @@ an AWS key id) <redacted>. Nothing here writes outside --out, --img-dir and the 
 
 Exit code: 0 when every check that ran passed (pieces that are absent are "not run", not failures;
 so is a chart build that does not exist: the index then says "charts not regenerated"), 1 when one failed.
-There is no `make graph-evidence` target yet; run the script directly.
+`make graph-evidence` runs it with the defaults (GRAPH_ROOT from the Makefile).
 
 Usage (Python 3.12 venv; `make graph-venv`):
   python scripts/graph_evidence.py [--graph-root DIR] [--profiles tiny,s42,default] [--bench 20]
@@ -70,6 +70,7 @@ CHECKS = ("graph-contract", "iceberg-contract", "lineage-contract", "repo-contra
 MAX_LINES = 400
 NOT_AVAILABLE = "not available"
 NOT_RUN = "not run"
+EXIT_NO_BUILD = 3   # scripts/graph_bench.py, graph_leakage_demo.py, graph_charts.py: "no build", not a failed measurement
 SUMMARY_RE = re.compile(r"^(Graph contract|Lineage contract|Repo contracts|check_graph_tools|graph_sandbox_check|"
                         r"Graph parity|Graph cohorts|Spark SQL twin|Parity|graph_bench|SKIP|.*\b(OK|FAILED|FAIL)\b)")
 
@@ -413,6 +414,14 @@ def main(argv: list[str] | None = None) -> int:
         res.status, res.summary, res.note = status, why, why
         return res
 
+    def no_build_is_not_run(res: Result) -> Result:
+        """A measurement script that found no build (exit EXIT_NO_BUILD and a SKIP line) did not run: 'not run',
+        never FAIL. A real failure (any other non-zero exit) stays FAIL."""
+        if res.rc == EXIT_NO_BUILD and "SKIP" in res.output:
+            line = next((ln.strip() for ln in res.output.splitlines() if "SKIP" in ln), "SKIP: no build")
+            res.status, res.summary, res.note = NOT_RUN, line[:300], line
+        return res
+
     try:
         if "graph-contract" in only:
             for p in profiles:
@@ -429,6 +438,15 @@ def main(argv: list[str] | None = None) -> int:
             if ib is None:
                 absent(res, "No Iceberg-sourced build in this GRAPH_ROOT. The Docker path builds one "
                             "(pipelines/run_graph_e2e.sh); its recorded result is in docker-e2e.md.", NOT_AVAILABLE)
+            elif (built_on := json.loads((ib / "manifest.json").read_text(encoding="utf-8")).get("platform")) \
+                    != env["platform_tag"]:
+                # The Docker path builds in ldl-graph (manylinux): the platform is part of business_build_id,
+                # so a host re-check under --strict always reports a stale build. Its strict check ran in the
+                # container and is in the recorded run (docker-e2e.md).
+                absent(res, f"The newest Iceberg-sourced build ({ib.name}) was built on {built_on}, this host is "
+                            f"{env['platform_tag']}: the platform is part of its business_build_id, so a strict host "
+                            "re-check reports it stale. Its strict contract ran in ldl-graph; the recorded Docker run "
+                            "is in docker-e2e.md.", NOT_RUN)
             elif not spark_py.is_file():
                 absent(res, "An Iceberg-sourced build exists, but re-reading its pins needs .venv-graph-spark "
                             "(PyIceberg).", NOT_AVAILABLE)
@@ -441,8 +459,7 @@ def main(argv: list[str] | None = None) -> int:
             target = next((p for p in ("default", "s42", "tiny") if (b := latest_build(graph_root, p)) is not None
                            and (b / "lineage.lbdb").exists()), None)
             if target is None:
-                absent(res, "No build with a lineage graph: run scripts/build_lineage_local.py --graph-profile default "
-                            "(a make lineage-local target is planned).")
+                absent(res, "No build with a lineage graph: run make lineage-local (PROFILE=default).")
             else:
                 res.profile = target
                 run(res, [py, "scripts/check_lineage_contract.py", "--graph-profile", target, "--graph-root", gr,
@@ -496,7 +513,7 @@ def main(argv: list[str] | None = None) -> int:
                 res = Result(f"graph-parity-{p}", f"Spark SQL twin parity ({p})", "graph-parity", p)
                 sample = spec.sample_dir(p, graph_root)
                 if not spark_py.is_file():
-                    absent(res, "Needs .venv-graph-spark (pyspark 3.5.3) and a JDK 17; see docs/graph/operations.md.",
+                    absent(res, "Needs .venv-graph-spark (pyspark 4.1.3) and a JDK 17 or 21; see docs/graph/operations.md.",
                            NOT_AVAILABLE)
                 elif any(not (sample / f).is_file() for f in spec.BRONZE_FILES):
                     absent(res, f"No bronze sample for profile {p} in this GRAPH_ROOT: run make graph-sample "
@@ -512,8 +529,8 @@ def main(argv: list[str] | None = None) -> int:
             res = Result("cohorts", f"Feature cohorts ({a.chart_profile})", "cohorts", a.chart_profile)
             b = latest_build(graph_root, a.chart_profile)
             if b is None or not (b / "cohorts.parquet").is_file():
-                absent(res, f"No cohorts.parquet for profile {a.chart_profile}: run scripts/build_graph_cohorts.py "
-                            f"--profile {a.chart_profile} (a make graph-cohorts target is planned).")
+                absent(res, f"No cohorts.parquet for profile {a.chart_profile}: run make graph-cohorts "
+                            f"PROFILE={a.chart_profile}.")
             else:
                 parts, rcs, secs = [], [], 0.0
                 for extra in (["list", "--algorithm", "leiden"], ["list", "--algorithm", "louvain"],
@@ -535,7 +552,7 @@ def main(argv: list[str] | None = None) -> int:
         if "bench" in only:
             res = Result("bench", "Build and serve benchmark", "bench")
             if (ROOT / "scripts/graph_bench.py").is_file():
-                run(res, [py, "scripts/graph_bench.py", "--graph-root", gr], red, a.timeout)
+                no_build_is_not_run(run(res, [py, "scripts/graph_bench.py", "--graph-root", gr], red, a.timeout))
             else:
                 absent(res, "scripts/graph_bench.py (PHASE 3a) is not in this checkout yet. Measured figures "
                             "today: the builder and loader RSS in each graph contract (Resources section) and the "
@@ -549,8 +566,8 @@ def main(argv: list[str] | None = None) -> int:
                 res.extra_md = "```json\n" + red(json.dumps(rep, indent=1, sort_keys=True))[:20000] + "\n```"
                 res.summary = f"eval report {Path(a.eval_json).name} recorded"
             else:
-                absent(res, "No eval report yet: the eval harness (scripts/graph_eval.py, evals/graph_cases.yaml, "
-                            "PHASE 3a) is not in this checkout. LLM results gate article claims, never merges.",
+                absent(res, "No eval report given (--eval-json): run scripts/graph_eval.py on evals/graph_cases.yaml "
+                            "and pass its report. LLM results gate article claims, never merges.",
                        NOT_AVAILABLE)
             results.append(res)
         leak_json = None
@@ -558,8 +575,8 @@ def main(argv: list[str] | None = None) -> int:
             res = Result("leakage", "Leakage demo (AUCs)", "leakage")
             if (ROOT / "scripts/graph_leakage_demo.py").is_file():
                 leak_json = scratch / "leakage.json"
-                run(res, [py, "scripts/graph_leakage_demo.py", "--graph-root", gr, "--json", str(leak_json)], red,
-                    a.timeout)
+                no_build_is_not_run(run(res, [py, "scripts/graph_leakage_demo.py", "--graph-root", gr, "--json",
+                                              str(leak_json)], red, a.timeout))
             else:
                 absent(res, "scripts/graph_leakage_demo.py (PHASE 3a) is not in this checkout yet; the planning "
                             "prototype's figures are quoted in docs/graph/evaluation.md and marked as such.",

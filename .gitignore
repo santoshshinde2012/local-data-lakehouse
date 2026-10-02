@@ -24,3 +24,8 @@ data/graph/
 
 # Test caches
 .pytest_cache/
+
+# Host venv (make venv) and Airflow generated auth file (make airflow-up)
+.venv/
+airflow/auth/
+.ruff_cache/

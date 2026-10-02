@@ -1,31 +1,56 @@
-COMPOSE_AIRFLOW := docker compose -f docker-compose.yml -f docker-compose.airflow.yml
+# local-data-lakehouse: one Iceberg REST catalog (Lakekeeper) on one S3 store (RustFS), two profiles.
+#   light = Postgres 18 + Lakekeeper + RustFS + init; engines on the host (DuckDB, PyIceberg, Polars). No JVM.
+#   full  = light + Spark 4.1.3 (+ Trino 483 with TRINO=1). Airflow 3 is an optional overlay on full.
+# STORE=silo swaps RustFS for SILO (docker-compose.silo.yml) in every target.
+STORE ?= rustfs
+TRINO ?= 0
+COMPOSE_FILES := -f docker-compose.yml $(if $(filter silo,$(STORE)),-f docker-compose.silo.yml,)
+COMPOSE := docker compose $(COMPOSE_FILES)
+FULL_PROFILES := --profile full $(if $(filter 1,$(TRINO)),--profile trino,)
+COMPOSE_AIRFLOW := $(COMPOSE) -f docker-compose.airflow.yml --profile full
+PY ?= .venv/bin/python
+PY_CHECK = @command -v "$(PY)" >/dev/null 2>&1 || { echo "PY=$(PY) not found: run 'make venv' (or pass PY=python)"; exit 2; }
+PYTEST = $(PY) -m pytest
 
-.PHONY: help up down wait e2e churn-e2e churn-sample churn-gold-local churn-check churn-parity demo reset ps \
+.PHONY: help env venv up up-light up-full wait down purge ps logs reset demo-light e2e churn-e2e churn-sample churn-gold-local \
+	churn-check churn-parity demo test test-t0 test-t1 test-t2 test-t3 stats \
 	airflow-up airflow-down airflow-wait airflow-trigger-retail airflow-trigger-churn airflow-demo
-.PHONY: graph-venv graph-sample graph-build graph-check graph-local graph-promote graph-clean graph-golden
+.PHONY: graph-test graph-venv graph-sample graph-build graph-check graph-local graph-promote graph-clean graph-golden graph-e2e \
+        lineage-local graph-cohorts graph-evidence
 
 help:
-	@echo "local-data-lakehouse"
-	@echo "  make up                  Start Silo + Postgres + Spark"
-	@echo "  make wait                Wait until lakehouse healthy"
-	@echo "  make e2e                 Retail medallion (shell)"
-	@echo "  make churn-e2e           Renewal gold (T-7 features) + export via Spark"
-	@echo "  make churn-sample        Generate bronze billing + usage events (N_USERS=8000 default)"
-	@echo "  make churn-gold-local    Same gold export in pandas, without Docker"
+	@echo "local-data-lakehouse (Iceberg 1.12 REST catalog: Lakekeeper + RustFS; see README)"
+	@echo "  make venv                .venv (Python 3.12) from the hash-locked requirements.txt (uv)"
+	@echo "  make up-light            light profile: Postgres 18 + Lakekeeper + RustFS + init, waits for health"
+	@echo "  make up-full [TRINO=1]   full profile: light + Spark 4.1.3 (+ Trino 483), waits for health"
+	@echo "  (STORE=silo on any up/down/test target swaps RustFS for SILO)"
+	@echo "  make demo-light          Retail + churn twin with DuckDB / PyIceberg / Polars on the host (light)"
+	@echo "  make e2e                 Retail medallion in Spark (full)"
+	@echo "  make churn-e2e           Renewal gold (T-7 features) + export via Spark (full)"
+	@echo "  make demo                e2e + churn-e2e (full)"
+	@echo "  make churn-sample        Generate bronze billing + usage events (N_USERS=8000, CHURN_SEED=42)"
+	@echo "  make churn-gold-local    Same gold export in pandas, no Docker"
 	@echo "  make churn-check         Validate data/export/ against the retention-radar contract"
-	@echo "  make churn-parity        Spark SQL (local mode) vs pandas gold, row by row (needs pyspark + Java 17)"
-	@echo "  make demo                Full shell demo (retail then churn)"
-	@echo "  make airflow-up          Start Airflow (needs make up first)"
-	@echo "  make airflow-wait        Wait for Airflow UI"
-	@echo "  make airflow-trigger-retail   Run retail DAG via Airflow"
-	@echo "  make airflow-trigger-churn    Run churn DAG via Airflow"
-	@echo "  make airflow-demo        Retail + churn DAGs via Airflow"
-	@echo "  make airflow-down        Stop Airflow only"
-	@echo "  make reset               Wipe lakehouse volumes, up, retail e2e"
-	@echo "  make down | ps           Stop all / status"
+	@echo "  make churn-parity        Spark SQL (local pyspark 4.1.3, Java 17+) vs pandas gold, row by row"
+	@echo "  make test-t0             T0 unit + static checks, no containers"
+	@echo "  make graph-test          graph-layer tests in .venv-graph (no containers)"
+	@echo "  make test-t1             T1 contract: throwaway Postgres + Lakekeeper + RustFS (testcontainers)"
+	@echo "  make test-t2             T2 smoke: brings up light, runs the host engines against it"
+	@echo "  make test-t3             T3 parity: brings up full + Trino, Spark vs DuckDB / PyIceberg / Polars / Trino"
+	@echo "  make test                T0 + T1 + T2 + T3"
+	@echo "  make stats               docker stats snapshot of this project's containers"
+	@echo "  make airflow-up          Airflow 3.3 overlay on full (generates .env secrets on first run)"
+	@echo "  make airflow-wait | airflow-trigger-retail | airflow-trigger-churn | airflow-demo | airflow-down"
+	@echo "  make ps | logs           Status / follow logs"
+	@echo "  make down                Stop every profile (volumes kept)"
+	@echo "  make purge               Stop everything and delete THIS project's volumes (catalog, objects, Airflow DB)"
+	@echo "  make reset               purge, then up-light"
+	@echo ""
+	@echo "Ports: 8181 Lakekeeper, 9000 S3 API, 9001 store console, 4040 Spark UI, 8088 Trino, 8080 Airflow."
 	@echo ""
 	@echo "Graph on gold (Python 3.12 venv; never writes data/sample or data/export):"
 	@echo "  make graph-venv          Create (or re-sync) .venv-graph from requirements-graph.txt (uv, hash-checked)"
+	@echo "  make graph-e2e           Spark graph tables -> Iceberg -> graph container build + contract (full)"
 	@echo "  make graph-sample PROFILE=<s<seed>|tiny|inject> [N_USERS=8000]"
 	@echo "                           Fill a profile's inputs under \$$GRAPH_ROOT/<profile>/ (the seed comes from the name):"
 	@echo "                             PROFILE=s42     generator (seed 42, N_USERS) + gold script -> sample/ and export/"
@@ -45,16 +70,61 @@ help:
 	@echo "  make graph-golden        Diff the committed goldens against fresh tiny + s42 builds in a scratch GRAPH_ROOT;"
 	@echo "                           writes nothing unless CONFIRM=1 (ONLY=tiny or ONLY=s42 limits it to one)"
 
-up:
-	cp -n .env.example .env 2>/dev/null || true
-	docker compose up -d --build
+env:
+	@test -f .env || { cp .env.example .env; echo "==> created .env from .env.example (local-only secrets; edit before sharing a machine)"; }
 
-down:
-	-$(COMPOSE_AIRFLOW) down
-	docker compose down
+venv:
+	@command -v uv >/dev/null 2>&1 || { echo "uv not found: https://docs.astral.sh/uv/ (curl -LsSf https://astral.sh/uv/install.sh | sh)"; exit 2; }
+	@if [ ! -x .venv/bin/python ]; then uv venv --python 3.12 .venv; fi
+	uv pip sync --python .venv/bin/python --require-hashes requirements.txt
+
+up: up-light
+
+up-light: env
+	$(COMPOSE) --profile light up -d --wait
+	@echo "==> light up: catalog http://localhost:8181/catalog  S3 http://objectstore.localhost:9000  console http://localhost:9001"
+
+up-full: env
+	$(COMPOSE) $(FULL_PROFILES) up -d --build --wait
+	@echo "==> full up: Spark UI http://localhost:4040 (while a job runs)$(if $(filter 1,$(TRINO)),  Trino http://localhost:8088,)"
 
 wait:
 	./pipelines/wait_for_stack.sh
+
+# down / reset load every overlay so nothing of this project is left behind. The Airflow overlay
+# requires its secrets even to be parsed: placeholders are fine for tearing down.
+OVERLAY_ENV := AIRFLOW_FERNET_KEY=$${AIRFLOW_FERNET_KEY:-unused} AIRFLOW_JWT_SECRET=$${AIRFLOW_JWT_SECRET:-unused} \
+	AIRFLOW_API_SECRET_KEY=$${AIRFLOW_API_SECRET_KEY:-unused} AIRFLOW_DB_PASSWORD=$${AIRFLOW_DB_PASSWORD:-unused}
+COMPOSE_EVERYTHING := $(OVERLAY_ENV) docker compose -f docker-compose.yml -f docker-compose.silo.yml \
+	-f docker-compose.airflow.yml -f docker-compose.graph.yml --profile '*'
+
+down: env
+	$(COMPOSE_EVERYTHING) down --remove-orphans
+
+ps:
+	$(COMPOSE) --profile '*' ps -a
+
+logs:
+	$(COMPOSE) --profile '*' logs -f --tail 100
+
+stats:
+	@docker stats --no-stream --format 'table {{.Name}}\t{{.MemUsage}}\t{{.CPUPerc}}' \
+	  $$($(COMPOSE) --profile '*' ps -q) 2>/dev/null || echo "nothing running"
+
+# Deletes THIS Compose project's volumes only (postgres-data, objectstore-data, silo-data, Airflow's).
+# Volumes: `down -v` only removes the volumes that a service of the loaded model mounts, and the SILO
+# overlay replaces RustFS's volume, so a second pass without it removes objectstore-data too.
+purge: env
+	$(COMPOSE_EVERYTHING) down -v --remove-orphans
+	$(OVERLAY_ENV) docker compose -f docker-compose.yml --profile '*' down -v
+
+reset: purge
+	$(MAKE) up-light
+
+demo-light: up-light
+	$(PY_CHECK)
+	@test -s data/sample/churn/subscription_snapshots.csv || $(MAKE) churn-sample
+	$(PY) scripts/light_demo.py all
 
 e2e: wait
 	./pipelines/run_retail_e2e.sh
@@ -68,33 +138,61 @@ churn-e2e: wait
 	./pipelines/run_churn_e2e.sh
 
 churn-sample:
-	N_USERS=$${N_USERS:-8000} CHURN_SEED=$${CHURN_SEED:-42} python3 scripts/generate_churn_sample.py
+	$(PY_CHECK)
+	N_USERS=$${N_USERS:-8000} CHURN_SEED=$${CHURN_SEED:-42} $(PY) scripts/generate_churn_sample.py
 
 churn-gold-local: churn-sample
-	python3 scripts/build_churn_gold_local.py
-	python3 scripts/check_churn_export.py
+	$(PY) scripts/build_churn_gold_local.py
+	$(PY) scripts/check_churn_export.py
 
 churn-check:
-	python3 scripts/check_churn_export.py
+	$(PY_CHECK)
+	$(PY) scripts/check_churn_export.py
 
+# Needs pyspark 4.1.3 (+ Java 17/21): the graph Spark venv has it; else install it into .venv:
+#   uv pip install --python .venv/bin/python pyspark==4.1.3   (what CI does)
+PARITY_PY ?= $(if $(wildcard .venv-graph-spark/bin/python),.venv-graph-spark/bin/python,$(PY))
 churn-parity:
-	python3 scripts/check_gold_parity.py
+	@$(PARITY_PY) -c 'import pyspark' 2>/dev/null || { echo "$(PARITY_PY) has no pyspark: uv pip install --python $(PARITY_PY) pyspark==4.1.3 (or make the graph Spark venv, docs/graph/operations.md)"; exit 2; }
+	$(PARITY_PY) scripts/check_gold_parity.py
 
 demo: e2e churn-e2e
 	@echo ""
 	@echo "==> Full demo complete."
-	@echo "    Silo console: http://localhost:9001  (minioadmin / minioadmin)"
+	@echo "    Store console: http://localhost:9001  (S3_ACCESS_KEY / S3_SECRET_KEY from .env)"
 	@echo "    Exports:       data/export/"
 
-airflow-up: wait
-	@echo "==> Starting Airflow (separate metadata DB + webserver + scheduler)"
-	$(COMPOSE_AIRFLOW) up -d --build airflow-postgres
-	$(COMPOSE_AIRFLOW) up -d --build airflow-init
-	$(COMPOSE_AIRFLOW) up -d --build airflow-webserver airflow-scheduler
+test: test-t0 test-t1 test-t2 test-t3
 
-airflow-down:
-	$(COMPOSE_AIRFLOW) stop airflow-webserver airflow-scheduler airflow-postgres || true
-	$(COMPOSE_AIRFLOW) rm -f airflow-webserver airflow-scheduler airflow-init airflow-postgres || true
+test-t0:
+	$(PY_CHECK)
+	$(PYTEST) -q tests/unit
+
+# The graph layer's own tests run in its own venv (make graph-venv).
+graph-test: graph-venv
+	.venv-graph/bin/python -m pytest -q tests/graph
+
+test-t1:
+	$(PY_CHECK)
+	$(PYTEST) -q -s tests/contract
+
+test-t2: up-light
+	$(PY_CHECK)
+	LDL_REQUIRE_STACK=1 $(PYTEST) -q -s tests/smoke
+
+test-t3:
+	$(MAKE) up-full TRINO=1
+	$(PY_CHECK)
+	LDL_REQUIRE_STACK=1 $(PYTEST) -q -s tests/parity
+
+airflow-up: env
+	./pipelines/airflow_env.sh
+	$(COMPOSE_AIRFLOW) up -d --build --wait
+
+# Stops and removes only the Airflow overlay's containers; the full stack keeps running (make down stops all).
+AIRFLOW_SERVICES := docker-proxy airflow-postgres airflow-init airflow-apiserver airflow-scheduler airflow-dag-processor
+airflow-down: env
+	$(OVERLAY_ENV) $(COMPOSE_AIRFLOW) rm -sf $(AIRFLOW_SERVICES)
 
 airflow-wait:
 	./pipelines/airflow_wait.sh
@@ -108,18 +206,13 @@ airflow-trigger-churn: airflow-wait
 airflow-demo: airflow-trigger-retail airflow-trigger-churn
 	@echo ""
 	@echo "==> Airflow demo complete."
-	@echo "    Airflow UI: http://localhost:$${AIRFLOW_WEBSERVER_PORT:-8080}  (admin / admin)"
-	@echo "    Silo:      http://localhost:9001  (minioadmin / minioadmin)"
+	@echo "    Airflow UI: http://localhost:$${AIRFLOW_API_PORT:-8080}  (user and generated password in .env)"
 	@echo "    Exports:    data/export/"
 
-reset:
-	docker compose down -v
-	$(MAKE) up
-	$(MAKE) e2e
-
-ps:
-	docker compose ps
-	-$(COMPOSE_AIRFLOW) ps
+graph-e2e: up-full
+	mkdir -p data/graph
+	$(COMPOSE) -f docker-compose.graph.yml $(FULL_PROFILES) up -d --build --wait
+	./pipelines/run_graph_e2e.sh
 
 # ---------------------------------------------------------------------------
 # Graph on gold: renewal graph data product + contract (how it works: the module
@@ -198,3 +291,18 @@ graph-golden:
 	$(GRAPH_PY_CHECK)
 	$(GRAPH_PY) scripts/build_graph_local.py golden $(if $(filter 1,$(CONFIRM)),--write,) \
 	  $(if $(ONLY),--only "$(ONLY)",) $(if $(GOLDEN_SCRATCH),--scratch "$(GOLDEN_SCRATCH)",)
+
+# The lineage graph and the cohort build the MCP toolsets name in their "unavailable" errors, and the
+# generated evidence record (docs/graph/results). GRAPH_PROFILE / PROFILE default to default.
+lineage-local:
+	$(GRAPH_PY_CHECK)
+	$(GRAPH_PY) scripts/build_lineage_local.py --graph-profile "$(PROFILE)" --graph-root "$(GRAPH_ROOT)"
+	$(GRAPH_PY) scripts/check_lineage_contract.py --graph-profile "$(PROFILE)" --graph-root "$(GRAPH_ROOT)" --strict
+
+graph-cohorts:
+	$(GRAPH_PY_CHECK)
+	$(GRAPH_PY) scripts/build_graph_cohorts.py build --profile "$(PROFILE)" --graph-root "$(GRAPH_ROOT)"
+
+graph-evidence:
+	$(GRAPH_PY_CHECK)
+	$(GRAPH_PY) scripts/graph_evidence.py --graph-root "$(GRAPH_ROOT)"

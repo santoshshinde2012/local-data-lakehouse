@@ -1,95 +1,122 @@
-# Apache Airflow overlay — join the lakehouse network and schedule Spark jobs.
-# Usage: make up && make wait && make airflow-up && make airflow-wait
-# Requires core stack (ldl-net) already running.
-#
-# TEACHING-ONLY / NOT PRODUCTION:
-# - Default UI login admin/admin (override via .env).
-# - Mounts host Docker socket + runs as root so DAGs can `docker exec` into ldl-spark.
-#   That is full host-docker privilege. Use only on a closed laptop demo.
+# Apache Airflow 3.3 overlay on the full profile: schedules the same Spark jobs (docker exec into ldl-spark).
+#   make up-full && make airflow-up && make airflow-demo        (make airflow-down stops it)
+# Local teaching overlay, not a production deployment. What is hardened compared with the Airflow 2 overlay:
+# - No Docker socket in Airflow. Airflow talks to docker-proxy (wollomatic/socket-proxy, MIT) over TCP, and
+#   the proxy only allows `docker exec` into ldl-spark / ldl-graph (+ the reads the CLI needs), only from
+#   the scheduler (LocalExecutor runs tasks there). Creating containers, images, volumes, networks: denied.
+# - Airflow runs non-root (uid 50000, or AIRFLOW_UID on Linux, gid 0 as the image expects).
+# - No committed secrets: the Fernet key, JWT secret, API secret and UI password are generated into .env
+#   by pipelines/airflow_env.sh (make airflow-up); compose refuses to start without them.
+# - EXPOSE_CONFIG off, no example DAGs, DAGs paused at creation, UI bound to 127.0.0.1.
+# Still TEACHING-ONLY: the proxy itself mounts the Docker socket (read-only) and runs as root to read it.
 
 x-airflow-common: &airflow-common
   build:
     context: ./docker/airflow
+  image: ldl-airflow:3.3.2
+  profiles: [full]
   environment: &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
-    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-postgres/airflow
-    AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY:-dGVzdC1mZXJuZXQta2V5LWZvci1sb2NhbC1kZW1vLXVzZS1vbmx5LTE=}
+    AIRFLOW__CORE__AUTH_MANAGER: airflow.api_fastapi.auth.managers.simple.simple_auth_manager.SimpleAuthManager
+    AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_USERS: "${_AIRFLOW_WWW_USER_USERNAME:-admin}:admin"
+    AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_PASSWORDS_FILE: /opt/airflow/auth/passwords.json
+    AIRFLOW__CORE__EXECUTION_API_SERVER_URL: http://airflow-apiserver:8080/execution/
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:${AIRFLOW_DB_PASSWORD:?run make airflow-up (pipelines/airflow_env.sh)}@airflow-postgres/airflow
+    AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY:?run make airflow-up (pipelines/airflow_env.sh)}
+    AIRFLOW__API_AUTH__JWT_SECRET: ${AIRFLOW_JWT_SECRET:?run make airflow-up (pipelines/airflow_env.sh)}
+    AIRFLOW__API__SECRET_KEY: ${AIRFLOW_API_SECRET_KEY:?run make airflow-up (pipelines/airflow_env.sh)}
     AIRFLOW__CORE__LOAD_EXAMPLES: "false"
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
-    AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "true"
-    AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session
+    AIRFLOW__API__EXPOSE_CONFIG: "false"
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: "true"
-    _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-admin}
-    _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-admin}
-    # Used by DAGs
+    AIRFLOW__DAG_PROCESSOR__REFRESH_INTERVAL: "30"
+    DOCKER_HOST: tcp://docker-proxy:2375
     LDL_SPARK_CONTAINER: ${LDL_SPARK_CONTAINER:-ldl-spark}
+    LDL_GRAPH_CONTAINER: ${LDL_GRAPH_CONTAINER:-ldl-graph}
   volumes:
-    - ./airflow/dags:/opt/airflow/dags
-    - ./airflow/logs:/opt/airflow/logs
-    - ./airflow/plugins:/opt/airflow/plugins
-    # TEACHING-ONLY: host Docker socket (never copy to production)
-    - /var/run/docker.sock:/var/run/docker.sock
-  user: "0:0"  # TEACHING-ONLY: root so socket + docker exec work locally
-  networks:
-    - lakehouse
-  depends_on:
-    airflow-postgres:
-      condition: service_healthy
+    - ./airflow/dags:/opt/airflow/dags:ro
+    - ./airflow/plugins:/opt/airflow/plugins:ro
+    - airflow-logs:/opt/airflow/logs
+  # Linux hosts: AIRFLOW_UID=$(id -u) (pipelines/airflow_env.sh writes it) so the bind mounts stay yours.
+  user: "${AIRFLOW_UID:-50000}:0"
+  security_opt: ["no-new-privileges:true"]
+  networks: [lakehouse]
 
 services:
+  docker-proxy:
+    image: wollomatic/socket-proxy:1.13.1@sha256:3935b709275e4ec35d6ed5a5c4a1f0d01ed31eec5e7234efc3357ecd47689002
+    container_name: ldl-docker-proxy
+    profiles: [full]
+    user: "0:0"   # reads /var/run/docker.sock (root:root on Docker Desktop and most Linux hosts)
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    command:
+      - -loglevel=info
+      - -listenip=0.0.0.0
+      - -allowfrom=airflow-scheduler
+      - -allowhealthcheck
+      - -shutdowngracetime=5
+      - -allowHEAD=^/_ping$
+      - -allowGET=^(/v[0-9.]+)?/(_ping|version|containers/(ldl-spark|ldl-graph)/json|exec/[0-9a-f]+/json)$
+      - -allowPOST=^(/v[0-9.]+)?/(containers/(ldl-spark|ldl-graph)/exec|exec/[0-9a-f]+/(start|resize))$
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    healthcheck:
+      test: ["CMD", "./healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    networks: [lakehouse]
+
   airflow-postgres:
-    image: postgres:16-alpine
+    image: postgres:18.6-alpine@sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873
     container_name: ldl-airflow-postgres
+    profiles: [full]
     environment:
       POSTGRES_USER: airflow
-      POSTGRES_PASSWORD: airflow
+      POSTGRES_PASSWORD: ${AIRFLOW_DB_PASSWORD:?run make airflow-up (pipelines/airflow_env.sh)}
       POSTGRES_DB: airflow
     volumes:
-      - airflow-postgres-data:/var/lib/postgresql/data
+      - airflow-postgres-data:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U airflow -d airflow"]
       interval: 5s
       timeout: 5s
       retries: 12
-    networks:
-      - lakehouse
-    # No host port — avoid colliding with Iceberg catalog Postgres on 5432
+    networks: [lakehouse]
+    # No host port.
 
   airflow-init:
     <<: *airflow-common
     container_name: ldl-airflow-init
-    entrypoint: /bin/bash
-    command:
-      - -c
-      - |
-        set -e
-        airflow db migrate
-        airflow users create \
-          --username "$${_AIRFLOW_WWW_USER_USERNAME}" \
-          --password "$${_AIRFLOW_WWW_USER_PASSWORD}" \
-          --firstname Lake \
-          --lastname House \
-          --role Admin \
-          --email admin@example.com || true
-        echo "Airflow init complete"
+    command: ["db", "migrate"]
     restart: "no"
-
-  airflow-webserver:
-    <<: *airflow-common
-    container_name: ldl-airflow-webserver
-    command: webserver
-    ports:
-      - "${AIRFLOW_WEBSERVER_PORT:-8080}:8080"
-    healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
-      interval: 15s
-      timeout: 10s
-      retries: 12
-      start_period: 40s
-    restart: unless-stopped
     depends_on:
       airflow-postgres:
         condition: service_healthy
+
+  airflow-apiserver:
+    <<: *airflow-common
+    container_name: ldl-airflow-apiserver
+    command: api-server
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags:ro
+      - ./airflow/plugins:/opt/airflow/plugins:ro
+      - airflow-logs:/opt/airflow/logs
+      # The simple auth manager opens its passwords file read-write (it appends users it generates);
+      # only the API server reads it. Gitignored, mode 0600, written by pipelines/airflow_env.sh.
+      - ./airflow/auth:/opt/airflow/auth
+    ports:
+      - "127.0.0.1:${AIRFLOW_API_PORT:-8080}:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "-s", "http://localhost:8080/api/v2/monitor/health"]
+      interval: 10s
+      timeout: 10s
+      retries: 18
+      start_period: 30s
+    restart: unless-stopped
+    depends_on:
       airflow-init:
         condition: service_completed_successfully
 
@@ -98,22 +125,37 @@ services:
     container_name: ldl-airflow-scheduler
     command: scheduler
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
-      interval: 15s
+      test: ["CMD", "curl", "--fail", "-s", "http://localhost:8974/health"]
+      interval: 10s
       timeout: 10s
-      retries: 12
-      start_period: 40s
+      retries: 18
+      start_period: 30s
     restart: unless-stopped
     depends_on:
-      airflow-postgres:
+      airflow-init:
+        condition: service_completed_successfully
+      docker-proxy:
         condition: service_healthy
+
+  airflow-dag-processor:
+    <<: *airflow-common
+    container_name: ldl-airflow-dag-processor
+    command: dag-processor
+    healthcheck:
+      test: ["CMD-SHELL", "airflow jobs check --job-type DagProcessorJob --hostname \"$${HOSTNAME}\""]
+      interval: 30s
+      timeout: 20s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+    depends_on:
       airflow-init:
         condition: service_completed_successfully
 
 volumes:
   airflow-postgres-data:
+  airflow-logs:
 
 networks:
   lakehouse:
-    external: true
     name: ldl-net

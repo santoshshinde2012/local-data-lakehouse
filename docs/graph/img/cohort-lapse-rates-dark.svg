@@ -150,6 +150,6 @@
 </g>
 <text x="653.56" y="399.5" font-size="11" fill="#c3c2b7" font-variant-numeric="tabular-nums">3.5%  11/314</text>
 <text x="24" y="439" font-size="11" fill="#c3c2b7">cohort_list (cohorts/renewal-v1, seed 42); outside the graph contract; cells under 5 and their complements are withheld. Source: graph</text>
-<text x="24" y="454" font-size="11" fill="#c3c2b7">build 28f3af496493 · profile s42 · seed 42, N_USERS 8000 (verified) · data_end 2026-09-30 · renewal-graph/v1 · commit d317368 (dirty) ·</text>
+<text x="24" y="454" font-size="11" fill="#c3c2b7">build a2598a28e164 · profile s42 · seed 42, N_USERS 8000 (verified) · data_end 2026-09-30 · renewal-graph/v1 · commit 013dd4e ·</text>
 <text x="24" y="469" font-size="11" fill="#c3c2b7">regenerate with scripts/graph_evidence.py.</text>
 </svg>

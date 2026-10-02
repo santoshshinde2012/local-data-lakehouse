@@ -112,9 +112,11 @@ def test_s3_warehouse_needs_a_local_endpoint_and_a_region(tmp_path, pyiceberg):
     assert cfg["s3.region"] == "us-east-1" and cfg["s3.endpoint"] == "http://silo:9000"
 
 
-def test_only_a_sql_catalog_is_accepted(tmp_path, pyiceberg):
+def test_only_a_rest_or_a_sql_catalog_is_accepted(tmp_path, pyiceberg):
     db = _v0_catalog(tmp_path / "c.db")
-    with pytest.raises(ice.ProvenanceUnavailable, match="type sql"):
+    with pytest.raises(ice.ProvenanceUnavailable, match="type rest.*type sql"):
+        ice.catalog_config(f"sqlite:///{db}", f"file://{tmp_path}", type="hive")
+    with pytest.raises(ice.ProvenanceUnavailable, match="REST catalog URI must be http"):
         ice.catalog_config(f"sqlite:///{db}", f"file://{tmp_path}", type="rest")
     with pytest.raises(ice.ProvenanceUnavailable, match="not configured"):
         ice.catalog_config(None, f"file://{tmp_path}")
@@ -205,25 +207,6 @@ def test_redaction_never_prints_a_fragment_of_a_secret():
         printed += got.endswith(authority)
         redacted += got.endswith(ice.REDACTED_URI)
     assert printed > 2000 and redacted > 200, (printed, redacted)          # measured: 2,731 and 269 of 3,000
-
-
-def test_the_role_script_says_what_its_default_privilege_reaches():
-    """config/graph/postgres_graph_ro.sql (p2c round 2 minor): ALTER DEFAULT PRIVILEGES cannot name tables,
-    so the header says it reaches every later table of the catalog owner in schema public of that
-    database, why that is the two catalog tables in this stack, and how to drop it elsewhere (in a
-    comment: the script itself revokes nothing)."""
-    text = (REPO / "config/graph/postgres_graph_ro.sql").read_text()
-    head = text.split(r"\set ON_ERROR_STOP on")[0]
-    for phrase in ("ALTER DEFAULT PRIVILEGES cannot name tables", "EVERY table the role running this script",
-                   "holds the Iceberg JDBC catalog alone", "airflow-postgres",
-                   "ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE SELECT ON TABLES FROM graph_ro;"):
-        assert phrase in " ".join(line.lstrip("- ") for line in head.splitlines()), phrase
-    code = [line for line in text.splitlines() if line.strip() and not line.lstrip().startswith("--")]
-    assert [line for line in code if "DEFAULT PRIVILEGES" in line] == [
-        "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO graph_ro;"]
-    assert not [line for line in code if "REVOKE" in line]
-    spark = (REPO / "config/spark-defaults.conf").read_text()
-    assert "spark.sql.catalog.lakehouse.uri                       jdbc:postgresql://postgres:5432/iceberg" in spark
 
 
 # --------------------------------------------------------------------------- identity: pins, never the local CSVs

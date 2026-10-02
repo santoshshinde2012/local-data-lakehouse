@@ -15,8 +15,8 @@ def main() -> None:
 
     orders_raw = spark.table("lakehouse.bronze.orders_raw")
     w = Window.partitionBy("order_id").orderBy(
-        F.col("order_ts").desc(), F.col("_ingested_at").desc()
-    )
+        F.col("order_ts").desc(), F.col("_ingested_at").desc(), F.col("_source_file").desc()
+    )  # _source_file last: a deterministic tie-break (orders_day2 > orders_day1)
     orders_silver = (
         orders_raw.withColumn("status", F.lower(F.trim(F.col("status"))))
         .withColumn("amount", F.col("amount").cast("double"))
@@ -41,7 +41,7 @@ def main() -> None:
     )
 
     customers_raw = spark.table("lakehouse.bronze.customers_raw")
-    cw = Window.partitionBy("customer_id").orderBy(F.col("_ingested_at").desc())
+    cw = Window.partitionBy("customer_id").orderBy(F.col("_ingested_at").desc(), F.col("_source_file").desc())
     customers_silver = (
         customers_raw.withColumn("name", F.trim(F.col("name")))
         .withColumn("email", F.lower(F.trim(F.col("email"))))

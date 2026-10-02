@@ -231,7 +231,9 @@ if [ "${ENABLE_CYPHER}" = 1 ]; then
   SB_BUILD_DIR="${SRC_REAL}"
   if [ "${PRINT_TOOLS}" = 0 ]; then
     for F in evidence.lbdb evidence.json; do
-      [ -f "${BUILD_REAL}/${F}" ] && [ ! -L "${BUILD_REAL}/${F}" ] || die "no evidence graph in ${BUILD_REAL} (${F}): run scripts/build_evidence_graph.py --build ${BUILD_REAL}" 66
+      if [ ! -f "${BUILD_REAL}/${F}" ] || [ -L "${BUILD_REAL}/${F}" ]; then
+        die "no evidence graph in ${BUILD_REAL} (${F}): run scripts/build_evidence_graph.py --build ${BUILD_REAL}" 66
+      fi
     done
     EVIDENCE_DB_REAL="${BUILD_REAL}/evidence.lbdb"
     EVIDENCE_META_REAL="${BUILD_REAL}/evidence.json"

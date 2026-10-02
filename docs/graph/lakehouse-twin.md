@@ -6,10 +6,10 @@ container reads it back pinned by tag and snapshot id, runs the unchanged builde
 Both paths share one spec (`src/lakehouse_graph/spec.py`); a Docker-free parity check proves the Spark
 SQL gives the same tables.
 
-> **TEACHING-ONLY.** The overlay reuses the base stack's sample credentials (Postgres `iceberg`, the Silo
-> root key). The Postgres side can be narrowed to a SELECT-only role; the S3 side cannot without a second
-> Silo user. No published ports, no Docker socket, non-root, read-only root filesystem, all capabilities
-> dropped.
+> **TEACHING-ONLY.** The graph container holds **no credentials**: no database URI and no S3 keys. It
+> talks only to the Lakekeeper REST catalog, which runs without authentication in this stack, and gets
+> short-lived per-table S3 credentials from it (vended credentials). No published ports, no Docker
+> socket, non-root, read-only root filesystem, all capabilities dropped.
 
 ## The pieces
 
@@ -17,26 +17,29 @@ SQL gives the same tables.
 |---|---|
 | `sql/graph/nodes.sql`, `edges.sql`, `similar_to.sql` | Spark SQL for all 21 node and edge tables with `$silver` / `$gold` placeholders. `similar_to.sql` is generated from the spec (`scripts/check_graph_parity.py sql --write`); a test checks it is current. Same quantised key, explicit left-to-right d2 sum, `ROW_NUMBER` over `(d2_q, dst)`. |
 | `src/jobs/graph/01_publish_gold_graph.py` | pins all 11 inputs (gold + 10 silver) to one snapshot each, writes `lakehouse.gold.graph_nodes` (PARTITIONED BY label), `graph_edges` (PARTITIONED BY rel_type), `graph_similar_to_scaler` (fitted in SQL, persisted, read back for the kNN) and appends `graph_build_manifest`; then `CREATE TAG graph_<build_id>` on every input and output table. The build id is a hash of the input snapshot ids, the code and the spec, so a re-run with the same inputs writes nothing and never moves a tag. |
-| `src/lakehouse_graph/iceberg_source.py` | PyIceberg 0.12 `SqlCatalog` reader under every safety rule below; `scripts/build_graph_local.py build --source iceberg` |
+| `src/lakehouse_graph/iceberg_source.py` | PyIceberg 0.12 reader of the Lakekeeper **REST** catalog (`type rest`; `SqlCatalog` only for the local SQLite harness) under every safety rule below; `scripts/build_graph_local.py build --source iceberg` |
 | `scripts/check_graph_parity.py` | the Docker-free parity gate (`parity`), the SQL generator (`sql`), and a local Iceberg lakehouse on a SQLite JDBC catalog (`lakehouse`) |
-| `docker-compose.graph.yml`, `docker/graph/Dockerfile` | the `ldl-graph` container (Python 3.12, hash-locked graph deps + the PyIceberg client, no JVM) and one extra mount on `ldl-spark` |
+| `docker-compose.graph.yml`, `docker/graph/Dockerfile` | the `ldl-graph` container (Python 3.12, hash-locked graph deps + the PyIceberg client `pyiceberg[pyarrow,s3fs]==0.12.0`, no JVM, part of the `full` profile, waits for `lakehouse-init`) and one extra mount on `ldl-spark` |
 | `pipelines/run_graph_e2e.sh` | publish (Spark) → build from Iceberg → strict contract → lineage → lineage contract → cohorts → promote; every step required |
 | `airflow/dags/lakehouse_graph.py` + `lakehouse_graph_operators.py` | the same chain as 7 Airflow tasks, manual trigger only, `max_active_runs=1` |
-| `config/graph/postgres_graph_ro.sql` | an idempotent SELECT-only Postgres role for the catalog |
 
 ## Reading Iceberg safely
 
-PyIceberg reads the same Postgres JDBC catalog Spark writes. These rules come from probes on this repo's
-Iceberg 1.6.1 catalog (V0 schema) and are enforced in code:
+PyIceberg reads the same Lakekeeper REST catalog Spark writes (`http://lakekeeper:8181/catalog`, warehouse
+`lakehouse`; `tests/graph/test_compose_graph.py` checks the overlay against `config/spark-defaults.conf`).
+These rules are enforced in code (`iceberg_source.catalog_config` / `open_catalog`):
 
-- the catalog name must be `lakehouse` (it is the `catalog_name` column of `iceberg_tables`);
-- `init_catalog_tables=false` is passed in code (PyIceberg ignores the environment variable);
-- `schema_version` is never set: v1 would `ALTER` the catalog Spark owns; a configuration that sets it is
-  refused;
-- an S3 warehouse needs a local `s3.endpoint` (never `*.amazonaws.com`) and `s3.region`, or PyIceberg
+- the catalog name must be `lakehouse`; the type must be `rest` (the stack) or `sql` (the local SQLite
+  harness of `scripts/check_graph_parity.py`), anything else is refused;
+- a REST catalog needs an `http(s)://` URI and the warehouse name; `X-Iceberg-Access-Delegation:
+  vended-credentials` is set by default, so S3 access comes only from the credentials Lakekeeper vends;
+- an `s3.endpoint` on `*.amazonaws.com` is refused, and `s3.region` is set (`us-east-1`), or PyIceberg
   asks real AWS for the bucket's region;
-- both catalog tables are probed before use, so a dead host or a missing grant is an error, not an empty
-  catalog; a SQLite catalog opens read-only after an existence check;
+- inside the container PyIceberg uses the fsspec/s3fs FileIO (`py-io-impl`), because pyarrow's bundled
+  AWS SDK resolves `objectstore.localhost` (the vended endpoint) to the container itself;
+- the catalog is probed before use (`list_namespaces` for REST), so a dead host is an error, not an empty
+  catalog. For the SQLite harness, `init_catalog_tables=false` is passed in code, `schema_version` is
+  never set (v1 would `ALTER` the catalog), and the file opens read-only after an existence check;
 - reads are by tag only, never by timestamp: `createOrReplace` cuts the snapshot ancestry and
   `expire_snapshots` trims history, while tags survive both. Each read checks that the tag exists and is a
   tag, points at the recorded snapshot, that the snapshot still exists, and that its row count equals the
@@ -67,8 +70,12 @@ An Iceberg-sourced build is checked like any other, plus:
 
 ## Parity: Spark SQL vs numpy
 
-`scripts/check_graph_parity.py parity --strict` runs the twin's SQL in local PySpark 3.5.3 (JDK 17, no
-Docker, no jars needed) on the same pandas input as the numpy builder. Latest run
+`scripts/check_graph_parity.py parity --strict` runs the twin's SQL in local PySpark 4.1.3 (JDK 17 or
+21, no Docker, no jars needed) on the same pandas input as the numpy builder. The hermetic harness
+(`requirements-graph-spark.txt`: pyspark 4.1.3, iceberg-spark-runtime-4.1_2.13 1.12.0, a SQLite JDBC
+catalog) is on the same Spark and Iceberg versions as the stack, and the Docker run below checks the
+same SQL there. On 2026-10-02 both parities passed on 4.1.3 (tiny 24.7 s, s42 68.2 s) with the same numbers as the
+2026-10-01 pyspark 3.5.3 record in the table below. Latest run
 ([results/graph-parity-s42.md](results/graph-parity-s42.md), [tiny](results/graph-parity-tiny.md)):
 
 | | tiny | seed 42 |
@@ -120,49 +127,62 @@ overlapping export runs could collide; the churn DAG does not set `max_active_ru
 ## Docker overlay
 
 ```bash
-make up && make wait && make churn-e2e          # the lakehouse with churn gold (POSTGRES_PORT=5433 if 5432 is taken)
-mkdir -p data/graph
-docker compose -f docker-compose.yml -f docker-compose.graph.yml up -d --build spark graph
-./pipelines/run_graph_e2e.sh                     # publish -> build from Iceberg -> contract -> lineage -> cohorts -> promote
-docker compose -f docker-compose.yml -f docker-compose.graph.yml stop graph && make down
+make up-full && make churn-sample && make churn-e2e   # the lakehouse with churn gold
+make graph-e2e        # mkdir data/graph; base + docker-compose.graph.yml up --build --wait; run_graph_e2e.sh
+make down             # loads every overlay, so it stops ldl-graph too
 ```
 
-- Always pass both compose files, base first; the overlay is not a project on its own. Stop `ldl-graph`
-  before `make down` (the base file does not know it).
-- `ldl-graph`: `python:3.12.14-slim-trixie` pinned by digest, `pip install --require-hashes
+By hand: `docker compose -f docker-compose.yml -f docker-compose.graph.yml --profile full up -d --build --wait`,
+then `./pipelines/run_graph_e2e.sh`.
+
+- Always pass both compose files, base first; the overlay is not a project on its own. Switching between
+  plain `make up-full` and the overlay recreates `ldl-spark` (its config hash changes).
+- `ldl-graph`: `python:3.12.15-slim-trixie` pinned by digest, `pip install --require-hashes
   --only-binary=:all:` of the core lock plus the PyIceberg client lock, uid 10001, `read_only: true`, a
   256 MB tmpfs `/tmp`, `cap_drop: ALL`, `no-new-privileges`, `mem_limit: 1536m`, `pids_limit: 256`, no
   ports. The image measured 629 MB.
 - `GRAPH_HOST_ROOT` points `/opt/data/graph` at another host directory; `GRAPH_E2E_SAMPLE_DIR` /
   `GRAPH_E2E_EXPORT_DIR` point the default profile at other bronze and exports inside the container.
-- SELECT-only catalog role: run `config/graph/postgres_graph_ro.sql` once against the stack's Postgres
-  (its header shows how), then start the overlay with `GRAPH_PG_USER=graph_ro GRAPH_PG_PASSWORD=...`. The
-  password goes verbatim into a SQLAlchemy URI, so it must be URL-safe (the script refuses anything else).
-  Default privileges cover any future table the catalog owner creates in schema `public` of that
-  database. Under this role PyIceberg's writes were refused (three probes).
-- `OPENLINEAGE=1 ./pipelines/run_graph_e2e.sh` adds the OpenLineage Spark listener (downloaded from Maven
-  Central on first use) with a file transport to `data/graph/lineage/openlineage.jsonl`: runs, parents
-  and timing only; on a JDBC catalog it sees no Iceberg datasets.
+- The SELECT-only Postgres role of the JDBC-catalog era (`config/graph/postgres_graph_ro.sql`,
+  `GRAPH_PG_USER`) is gone: the graph container no longer connects to Postgres at all.
+- `OPENLINEAGE=1 ./pipelines/run_graph_e2e.sh` adds the OpenLineage Spark listener
+  (`io.openlineage:openlineage-spark_2.13:1.53.0`, downloaded from Maven Central on first use) with a file
+  transport to `data/graph/lineage/openlineage.jsonl`. Not re-run on the REST catalog yet; on the earlier
+  JDBC catalog it recorded runs, parents and timing but no Iceberg datasets.
 
 ## Airflow
 
 DAG `lakehouse_graph` (`airflow/dags/lakehouse_graph.py`): `publish_gold_graph >> build_graph >>
 check_graph_contract >> build_lineage >> check_lineage_contract >> build_cohorts >> promote`, manual
 trigger, one run at a time. Run `lakehouse_churn_features` first. Trigger with
-`./pipelines/airflow_trigger.sh lakehouse_graph` after `make airflow-up`; with the webserver on another
-port, export `AIRFLOW_WEBSERVER_PORT` in the shell too. Optional OpenLineage:
-`--conf '{"openlineage": true}'`.
+`./pipelines/airflow_trigger.sh lakehouse_graph` after `make airflow-up`, with `ldl-graph` running (the
+socket proxy allows `docker exec` into `ldl-spark` and `ldl-graph` only). With the API server on another
+port, set `AIRFLOW_API_PORT` in `.env`. Optional OpenLineage: `--conf '{"openlineage": true}'`.
 
-**This repo pins Airflow 2.10.4, and Airflow 2.x reached end of life on 2026-04-22.** The DAG uses only
-`airflow.DAG` and the Bash operator, so an Airflow 3 port changes two imports and the overlay's services,
-not the task chain. The DAG module shares its name with the `lakehouse_graph` package; Airflow loads DAG
-files by path, so this is harmless there.
+The DAG now runs on **Airflow 3.3.2** (`airflow.sdk.DAG`, the standard provider's `BashOperator`; the task
+chain is unchanged). `tests/graph/test_dag_graph.py` checks the chain with stubbed Airflow modules; the
+`lakehouse_graph` DAG itself has not been triggered on Airflow 3 yet (the retail and churn DAGs have, see
+[the Airflow excerpt](../demo/airflow-e2e.excerpt.md)). The DAG module shares its name with the
+`lakehouse_graph` package; Airflow loads DAG files by path, so this is harmless there.
 
 ## The Docker run
 
-Docker is not started by the docs tooling; these are recorded runs on this Mac (Docker Desktop, seed 42,
-2026-10-01). The latest record, with step timings and summary lines, is
-[results/docker-e2e.md](results/docker-e2e.md).
+Docker is not started by the docs tooling; these are recorded runs on this Mac (Docker Desktop, seed 42).
+
+**2026-10-02, after the Iceberg 1.12.0 bump** (`ldl-graph` on python 3.12.15, ladybug 0.21.2): `make
+graph-e2e` passed again, 161 s including the overlay build (`run_graph_e2e.sh` itself 97 s), with the same
+40,204 nodes / 130,366 edges and both contracts passing.
+
+**2026-10-02, REST catalog stack** (Spark 4.1.3 / Iceberg 1.11.0 / Lakekeeper v0.13.6 / RustFS 1.0.0,
+`pipelines/run_graph_e2e.sh` on branch `feat/local-first-stack-2026`): every step passed in **178 s**
+end to end: Spark publish, PyIceberg build from the REST catalog (40,204 nodes / 130,366 edges), strict
+source-aware contract (PIT parity 0 mismatches; golden s42 derived; gold drift 2 cells, info), lineage
+build and lineage contract (golden `core.json`), cohorts (15 Leiden / 15 Louvain) and promote. Excerpt:
+[graph-e2e.excerpt.md](../demo/graph-e2e.excerpt.md). The Tier-1 overlay
+(`build_lineage_local.py --iceberg`) also reads snapshots and refs through the REST catalog.
+
+**2026-10-01, JDBC catalog stack** (Spark 3.5.3 / Iceberg 1.6.1 / SILO / Airflow 2.10.4). The record,
+with step timings and summary lines, is [results/docker-e2e.md](results/docker-e2e.md):
 
 | Step | Seconds | Result |
 |---|---:|---|
@@ -175,7 +195,7 @@ Docker is not started by the docs tooling; these are recorded runs on this Mac (
 | negative test: build pinned to a tag that does not exist (`graph_000000000000`) | 1.5 | refused as expected (exit 1, "provenance unavailable") |
 | lineage build / lineage contract | 3.5 / 1.8 | **FAIL** on HEAD `d317368` (the CI clone line, [lineage.md](lineage.md#known-issue-the-ci-clone-line)) |
 | the same chain with the pre-`d317368` `ci.yml` shown to the container | 55.7 to 78 | complete: lineage contract OK, cohorts, promote |
-| read-only role: build, strict contract, cohorts, promote as `graph_ro`; write probe | 15.8 / 20.2 / 3.8 / 0.8; 1.3 | ok; 3 writes refused |
+| read-only role (removed since): build, strict contract, cohorts, promote as `graph_ro`; write probe | 15.8 / 20.2 / 3.8 / 0.8; 1.3 | ok; 3 writes refused |
 | Airflow `lakehouse_graph` (real Airflow 2.10.4) | 73.5 | all 7 tasks `success` with the pre-`d317368` `ci.yml` (task states in the record); on HEAD its `check_lineage_contract` task runs the same failing contract as step A |
 
 The builder's max RSS inside the container was 576 to 582 MiB: above the 512 MiB soft limit (reported,
@@ -184,14 +204,8 @@ afterwards, because `make churn-e2e` rewrites it.
 
 ## Not done yet
 
-- Tier-1 lineage facts from Iceberg (Snapshot / Ref nodes) and an OpenLineage loader: placeholders only.
+- OpenLineage (Tier 2) has not been re-run on the REST catalog, and there is no OpenLineage loader yet.
 - No packet capture shows that PyIceberg makes no AWS DNS lookup; it is enforced by configuration.
-- The Iceberg identity also hashes the local bronze CSVs, so the same pins give a different build id with
-  or without them, and without local bronze the drift comparison is skipped silently (a minor review
-  finding, not fixed).
-- `iceberg_source._redact` hides a password in the URI's user-info part, but a password passed as a
-  query parameter that contains `@` can leak its tail into the manifest (the compose overlay uses
-  user-info only; a minor review finding, not fixed).
-- The Make targets `graph-up`, `graph-down`, `graph-e2e`, `airflow-trigger-graph`, `graph-parity` and
-  `graph-pg-readonly` are not in the Makefile yet; the commands above work today
-  ([operations.md](operations.md#make-targets)).
+- The `lakehouse_graph` DAG has not been triggered on Airflow 3.3.2 (its chain is unit-tested).
+- The Make targets `graph-up`, `graph-down`, `airflow-trigger-graph` and `graph-parity` are not in the
+  Makefile; `make graph-e2e` and the commands above work today ([operations.md](operations.md#make-targets)).

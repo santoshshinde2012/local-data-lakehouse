@@ -1,7 +1,7 @@
 """Structure test for airflow/dags/lakehouse_graph.py that needs NO Airflow install.
 
-The DAG files import exactly two Airflow names: ``airflow.DAG`` and
-``airflow.operators.bash.BashOperator``. When Airflow is not importable (the graph venvs, CI) this
+The DAG files import exactly two Airflow 3 names: ``airflow.sdk.DAG`` and
+``airflow.providers.standard.operators.bash.BashOperator``. When Airflow is not importable (the graph venvs, CI) this
 test registers two small stand-ins, imports the DAG files from airflow/dags and checks the task
 graph and every command; with a real Airflow importable the same assertions run on the real
 objects. The repo's own ./airflow directory is a namespace package, so "importable" means a spec
@@ -81,13 +81,15 @@ class _StubOperator:
 
 
 def _install_stubs(monkeypatch) -> None:
-    airflow = types.ModuleType("airflow")
-    airflow.DAG = _StubDAG
-    operators = types.ModuleType("airflow.operators")
-    bash = types.ModuleType("airflow.operators.bash")
-    bash.BashOperator = _StubOperator
-    airflow.operators, operators.bash = operators, bash
-    for name, mod in (("airflow", airflow), ("airflow.operators", operators), ("airflow.operators.bash", bash)):
+    names = ("airflow", "airflow.sdk", "airflow.providers", "airflow.providers.standard",
+             "airflow.providers.standard.operators", "airflow.providers.standard.operators.bash")
+    mods = {n: types.ModuleType(n) for n in names}
+    mods["airflow.sdk"].DAG = _StubDAG
+    mods["airflow.providers.standard.operators.bash"].BashOperator = _StubOperator
+    for name in names[1:]:
+        parent, _, leaf = name.rpartition(".")
+        setattr(mods[parent], leaf, mods[name])
+    for name, mod in mods.items():
         monkeypatch.setitem(sys.modules, name, mod)
 
 
@@ -169,7 +171,7 @@ def test_graph_dag_commands(load_dag):
     assert "docker exec ldl-spark /opt/spark/bin/spark-submit --master 'local[*]' " + guarded in publish
     assert publish.endswith("/opt/jobs/graph/01_publish_gold_graph.py")
     assert publish.count("{%") == 4 and "{{" not in publish, "only the two fixed boolean-guarded blocks"
-    assert "--packages io.openlineage:openlineage-spark_2.12:1.53.0" in publish
+    assert "--packages io.openlineage:openlineage-spark_2.13:1.53.0" in publish
     assert "spark.openlineage.transport.location=/opt/data/graph/lineage/openlineage.jsonl" in publish
     for tid in EXPECTED_CHAIN[1:]:
         argv = _argv(tasks[tid]["cmd"])

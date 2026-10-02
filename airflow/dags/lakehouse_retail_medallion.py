@@ -3,13 +3,13 @@ Retail medallion DAG — mirrors the article chain:
 
     land/smoke >> bronze >> silver >> gold >> query
 
-Airflow schedules; Silo + Iceberg + Spark remain the lakehouse foundation.
+Airflow 3 schedules; Lakekeeper (Iceberg REST) + RustFS + Spark 4.1 remain the lakehouse foundation.
 """
 from __future__ import annotations
 
 from datetime import datetime
 
-from airflow import DAG
+from airflow.sdk import DAG
 
 from lakehouse_operators import spark_submit_task
 

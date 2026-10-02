@@ -7,25 +7,25 @@
 | Status | **pass** (exit 0) |
 | Profile | tiny |
 | Command | `python scripts/check_graph_contract.py --profile tiny --graph-root $GRAPH_ROOT --strict` |
-| Commit | `d317368` (working tree dirty: yes) |
-| Date | 2026-10-01 (UTC) |
+| Commit | `6225473` (working tree dirty: no) |
+| Date | 2026-10-02 (UTC) |
 | Host | macOS-26.6.2 (macosx_arm64) |
-| Python | 3.12.9 · ladybug 0.21.1 · pandas 3.0.6 · numpy 2.5.3 · pyarrow 25.0.1 · networkx 3.7 · mcp 2.2.0 · pydantic 2.13.5 · sqlglot 30.20.0 |
-| Spark venv | pyiceberg 0.12.0 · pyspark 3.5.3 |
-| Duration | 2.3 s |
-| Summary | Graph contract OK (renewal-graph/v1, profile tiny, build 10ea18b83bbc): 616 nodes / 1,949 edges; PIT parity 0 mismatches x 6 features in pandas and Cypher; naive wrong in 16 / 12 / 4 renewals; golden tiny; strict |
+| Python | 3.12.9 · ladybug 0.21.2 · pandas 3.0.6 · numpy 2.5.3 · pyarrow 25.0.1 · networkx 3.7 · mcp 2.2.0 · pydantic 2.13.5 · sqlglot 30.21.0 |
+| Spark venv | pyiceberg 0.12.0 · pyspark 4.1.3 |
+| Duration | 2.2 s |
+| Summary | Graph contract OK (renewal-graph/v1, profile tiny, build 6c8fea296d84): 616 nodes / 1,949 edges; PIT parity 0 mismatches x 6 features in pandas and Cypher; naive wrong in 16 / 12 / 4 renewals; golden tiny; strict |
 
 ## Output
 
 ```text
-Graph contract renewal-graph/v1: profile tiny, build 10ea18b83bbc ($GRAPH_ROOT/tiny/builds/10ea18b83bbc) [strict]
+Graph contract renewal-graph/v1: profile tiny, build 6c8fea296d84 ($GRAPH_ROOT/tiny/builds/6c8fea296d84) [strict]
 
 == Integrity and identity
   ok    23 Parquet files match the manifest sha256
   ok    manifest: synthetic = true
   ok    spec versions = {"graph": "renewal-graph/v1", "similar_to": "similar_to/renewal-v1"}
-  ok    business_build_id 10ea18b83bbc = sha256(inputs, code, spec, versions, platform)
-  note  seed 42, N_USERS 120 (verified: regenerated with scripts/generate_churn_sample.py (seed 42, N_USERS 120): sha256 match); commit d317368 +dirty; data_end 2026-09-30; platform macosx_arm64; ladybug 0.21.1, numpy 2.5.3, pandas 3.0.6, pyarrow 25.0.1, python 3.12.9
+  ok    business_build_id 6c8fea296d84 = sha256(inputs, code, spec, versions, platform)
+  note  seed 42, N_USERS 120 (verified: regenerated with scripts/generate_churn_sample.py (seed 42, N_USERS 120): sha256 match); commit 013dd4e; data_end 2026-09-30; platform macosx_arm64; ladybug 0.21.2, numpy 2.5.3, pandas 3.0.6, pyarrow 25.0.1, python 3.12.9
 
 == Counts (Parquet)
   ok    manifest counts = {"edges": {"BILLED": 165, "CHANGED_OVERAGE": 12, "CHARGED_OVERAGE": 6, "CUT_CAP": 6, "EXPOSED_TO": 115, "FIRST_RENEWA... (oracle recount)
@@ -133,20 +133,20 @@ Graph contract renewal-graph/v1: profile tiny, build 10ea18b83bbc ($GRAPH_ROOT/t
   ok    export sha256 pinned in the manifest (3 files)
 
 == Determinism
-  ok    rebuild from the same inputs + code: same business_build_id 10ea18b83bbc and byte-identical Parquet (23 files, sha256 equal) on macosx_arm64
+  ok    rebuild from the same inputs + code: same business_build_id 6c8fea296d84 and byte-identical Parquet (23 files, sha256 equal) on macosx_arm64
 
 == Non-interference
   ok    data/sample/churn/* and data/export/* unchanged by this check (24 files)
-  ok    ... and unchanged since the build (manifest guarded sha256 equal)
+  note  user files changed since the build: ['data/export/churn_renewals_audit.csv', 'data/export/churn_user_features.csv']. No graph target writes them (the builder, graph-sample and this check each assert it); a churn-* target ran in between
 
 == Template lint
   ok    #10 all 32 Cypher templates have ORDER BY and LIMIT
   ok    #10 leak lint: 17 tool templates bound source events by as_of, never return BILLED outcome evidence, read neighbour outcomes only under the visibility rule and describe their source only (no second renewal pinned by a parameter, literal or selection, or anchoring another renewal through a hub or by value), return named properties only (no .*), give every name one meaning, cut the calendar (CUT_CAP, pricing changes, incidents) at a named renewal's as_of and return population outcomes as cohort aggregates only (every grouping, every parameter and literal), and each is a vetted shape (fingerprint in queries.VETTED_TOOL_TEMPLATES); 15 templates are contract-only
 
 == Resources (reported, not gated)
-  note  builder 0.18 s, max RSS 128.3 MiB (ru_maxrss of the process that ran the build: the builder's own via the CLI, the host's peak for an in-process build; soft limit 512 MiB); Ladybug 0.21.1 load 0.57 s, 7.0 MB, loader max RSS 176 MiB, pool 256 MB, 2 threads
+  note  builder 0.2 s, max RSS 129.8 MiB (ru_maxrss of the process that ran the build: the builder's own via the CLI, the host's peak for an in-process build; soft limit 512 MiB); Ladybug 0.21.2 load 0.64 s, 7.0 MB, loader max RSS 177 MiB, pool 256 MB, 2 threads
 
-Graph contract OK (renewal-graph/v1, profile tiny, build 10ea18b83bbc): 616 nodes / 1,949 edges; PIT parity 0 mismatches x 6 features in pandas and Cypher; naive wrong in 16 / 12 / 4 renewals; golden tiny; strict
+Graph contract OK (renewal-graph/v1, profile tiny, build 6c8fea296d84): 616 nodes / 1,949 edges; PIT parity 0 mismatches x 6 features in pandas and Cypher; naive wrong in 16 / 12 / 4 renewals; golden tiny; strict
 ```
 
 [Back to the results index](index.md)

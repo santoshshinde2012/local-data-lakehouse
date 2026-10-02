@@ -26,18 +26,22 @@ RW = "/opt/data/graph"
 PIN = re.compile(r"^([A-Za-z0-9_.\-]+)==([^\s;\\]+)", re.M)
 URI = "PYICEBERG_CATALOG__LAKEHOUSE__URI"
 # Shell variables that would override .env.example in the rendered model.
-CALLER_VARS = ("GRAPH_PG_USER", "GRAPH_PG_PASSWORD", "POSTGRES_USER", "POSTGRES_PASSWORD", "POSTGRES_DB")
+CALLER_VARS = ("LAKEKEEPER_WAREHOUSE", "S3_REGION", "S3_ACCESS_KEY", "S3_SECRET_KEY", "POSTGRES_USER",
+               "POSTGRES_PASSWORD", "POSTGRES_DB")
+# The Airflow overlay refuses to render without its generated secrets (pipelines/airflow_env.sh);
+# placeholders are enough for `config`.
+AIRFLOW_PLACEHOLDERS = {k: "unused" for k in ("AIRFLOW_DB_PASSWORD", "AIRFLOW_FERNET_KEY", "AIRFLOW_JWT_SECRET",
+                                             "AIRFLOW_API_SECRET_KEY")}
 
 
 def _compose(*files: str, fmt: str | None = "json", env: dict[str, str] | None = None) -> subprocess.CompletedProcess:
     args = ["docker", "compose", "--env-file", ".env.example"]
     for f in files:
         args += ["-f", f]
-    args += ["config"] + (["--format", fmt] if fmt else ["-q"])
-    run_env = None
-    if env is not None:
-        run_env = {k: v for k, v in os.environ.items() if k not in CALLER_VARS}
-        run_env.update(env)
+    args += ["--profile", "*", "config"] + (["--format", fmt] if fmt else ["-q"])
+    run_env = {k: v for k, v in os.environ.items() if k not in CALLER_VARS}
+    run_env.update(AIRFLOW_PLACEHOLDERS)
+    run_env.update(env or {})
     return subprocess.run(args, cwd=REPO, capture_output=True, text=True, check=False, env=run_env)
 
 
@@ -71,6 +75,8 @@ def test_config_is_valid_with_and_without_the_airflow_overlay(models):
 def test_overlay_only_adds_to_the_spark_service(models):
     b, m = models["base"]["services"], models["merged"]["services"]
     assert set(m) - set(b) == {"graph"}
+    assert m["graph"]["profiles"] == ["full"], "the graph container is part of the full profile"
+    assert m["graph"]["depends_on"]["lakehouse-init"]["condition"] == "service_healthy"
     for name in b:
         if name != "spark":
             assert b[name] == m[name], f"overlay changed base service {name}"
@@ -106,65 +112,38 @@ def test_graph_service_is_locked_down(models):
 
 
 def test_pyiceberg_settings_match_spark(models):
+    """ldl-graph opens the SAME Lakekeeper REST catalog and warehouse Spark uses, with vended credentials."""
     env = models["merged"]["services"]["graph"]["environment"]
     conf = dict(line.split(None, 1) for line in (REPO / "config/spark-defaults.conf").read_text().splitlines()
                 if line.strip() and not line.startswith("#"))
     p = "PYICEBERG_CATALOG__LAKEHOUSE__"
     assert conf["spark.sql.defaultCatalog"].strip() == "lakehouse"
-    assert env[p + "TYPE"] == "sql"
-    assert env[p + "URI"].startswith("postgresql+psycopg2://")
-    assert env[p + "URI"].rsplit("@", 1)[-1] == conf["spark.sql.catalog.lakehouse.uri"].strip().replace(
-        "jdbc:postgresql://", "")
+    assert env[p + "TYPE"] == "rest" == conf["spark.sql.catalog.lakehouse.type"].strip()
+    assert env[p + "URI"] == conf["spark.sql.catalog.lakehouse.uri"].strip() == "http://lakekeeper:8181/catalog"
     assert env[p + "WAREHOUSE"] == conf["spark.sql.catalog.lakehouse.warehouse"].strip()
-    assert env[p + "S3__ENDPOINT"] == conf["spark.hadoop.fs.s3a.endpoint"].strip()
+    assert env[p + "HEADER__X_ICEBERG_ACCESS_DELEGATION"] == "vended-credentials" == \
+        conf["spark.sql.catalog.lakehouse.header.X-Iceberg-Access-Delegation"].strip()
+    assert env[p + "PY_IO_IMPL"] == "pyiceberg.io.fsspec.FsspecFileIO", \
+        "pyarrow's S3 client resolves objectstore.localhost (the vended endpoint) to the container itself"
     assert env[p + "S3__REGION"] == "us-east-1", "without a region PyIceberg asks real AWS"
-    assert not any("INIT_CATALOG_TABLES" in k or "SCHEMA_VERSION" in k for k in env), \
-        "init_catalog_tables is passed in code (the env var is ignored); schema_version is never set"
 
 
-def _graph_env(env: dict[str, str]) -> dict:
-    p = _compose(BASE, GRAPH, env=env)
-    assert p.returncode == 0, p.stderr
-    return json.loads(p.stdout)["services"]
+def test_graph_holds_no_catalog_or_store_secret(models):
+    """No database URI, no S3 keys, no password: S3 access comes only from Lakekeeper's vended credentials."""
+    env = models["merged"]["services"]["graph"]["environment"]
+    secrets = {models["base"]["services"]["objectstore"]["environment"].get(k) for k in
+               ("RUSTFS_ACCESS_KEY", "RUSTFS_SECRET_KEY")} - {None}
+    assert secrets, "the base objectstore must name its keys (the check below needs them)"
+    for k, v in env.items():
+        assert not re.search(r"KEY|SECRET|PASSWORD|TOKEN|CREDENTIAL", k.replace("ACCESS_DELEGATION", "")), k
+        assert "postgresql" not in str(v) and str(v) not in secrets, k
 
 
-def test_a_select_only_role_renders_into_the_pyiceberg_uri(models):
-    """GRAPH_PG_USER / GRAPH_PG_PASSWORD (config/graph/postgres_graph_ro.sql) replace only the catalog
-    login of ldl-graph; unset, the catalog owner from .env is used. Spark keeps the owner."""
-    default = _graph_env({})
-    assert default["graph"]["environment"][URI] == "postgresql+psycopg2://iceberg:iceberg@postgres:5432/iceberg"
-    password = "Ro-pass_1.x~"     # URL-safe: the role script accepts it and the URI needs no encoding
-    ro = _graph_env({"GRAPH_PG_USER": "graph_ro", "GRAPH_PG_PASSWORD": password})
-    uri = ro["graph"]["environment"][URI]
-    assert uri == f"postgresql+psycopg2://graph_ro:{password}@postgres:5432/iceberg"
-    assert ro["spark"] == default["spark"], "the read-only role is for ldl-graph only; Spark owns the catalog"
-    assert {k: v for k, v in ro["graph"]["environment"].items() if k != URI} == \
-        {k: v for k, v in default["graph"]["environment"].items() if k != URI}
-    # The provenance a build records (manifest iceberg.catalog_uri) and every error message carry no
-    # credentials, whatever the password holds (the owner's is not restricted like the role's).
-    for pw in (password, "pw/secret-rest", "a:b?c#d%41e", "p@ss@word", "x y"):
-        assert iceberg_source._redact(uri.replace(password, pw) + "?sslmode=disable") == \
-            "postgresql+psycopg2://postgres:5432/iceberg", pw
-    # Why the role script refuses other passwords: Compose interpolates them verbatim into the URI.
-    try:
-        from sqlalchemy.engine import make_url
-    except ImportError:
-        return   # the core venv has no SQLAlchemy; the spark venv and ldl-graph do
-    url = make_url(uri)
-    assert (url.username, url.password, url.host, url.port, url.database) == \
-        ("graph_ro", password, "postgres", 5432, "iceberg")
-    # SQLAlchemy itself silently means something else: another host, or another (decoded) password.
-    for bad_password, why in (("p@ss", "an unencoded @ moves the host"), ("ab%41cd", "%41 is decoded to A")):
-        bad = _graph_env({"GRAPH_PG_USER": "graph_ro", "GRAPH_PG_PASSWORD": bad_password})["graph"]["environment"][URI]
-        u = make_url(bad)
-        assert (u.username, u.password, u.host) != ("graph_ro", bad_password, "postgres"), why
-
-
-def test_the_overlay_names_the_role_script():
-    text = (REPO / GRAPH).read_text()
-    assert "config/graph/postgres_graph_ro.sql" in text and "GRAPH_PG_USER=graph_ro" in text
-    assert "URL-safe" in text and "ROOT key" in text
-    assert (REPO / "config/graph/postgres_graph_ro.sql").is_file()
+def test_iceberg_source_redacts_rest_uris():
+    """A REST catalog URI prints as scheme://host[:port]/path, never with a userinfo or query."""
+    assert iceberg_source._redact("http://lakekeeper:8181/catalog") == "http://lakekeeper:8181/catalog"
+    assert iceberg_source._redact("http://u:p%40ss@lakekeeper:8181/catalog?token=x") == \
+        "http://lakekeeper:8181/catalog"
 
 
 def test_dockerfile_is_pinned_nonroot_and_wheels_only():
@@ -187,8 +166,10 @@ def test_dockerignore_sends_only_the_two_locks():
 
 
 @pytest.mark.parametrize(("lock", "must", "must_not"), [
-    ("requirements-graph-spark-client.txt", {"pyiceberg": "0.12.0", "sqlalchemy": None}, {"pyspark", "setuptools"}),
-    ("requirements-graph-spark.txt", {"pyiceberg": "0.12.0", "pyspark": "3.5.3", "setuptools": None}, set()),
+    ("requirements-graph-spark-client.txt", {"pyiceberg": "0.12.0", "s3fs": None},
+     {"pyspark", "setuptools", "sqlalchemy", "psycopg2-binary", "psycopg"}),
+    ("requirements-graph-spark.txt", {"pyiceberg": "0.12.0", "pyspark": "4.1.3", "setuptools": None},
+     {"psycopg2-binary", "psycopg"}),
 ])
 def test_locks_agree_with_the_core_lock(lock, must, must_not):
     core = dict(PIN.findall((REPO / "requirements-graph.txt").read_text()))

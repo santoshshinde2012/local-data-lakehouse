@@ -43,8 +43,8 @@ The full catalogue, with every argument, type, range and default, is generated f
 | `lineage_*` | column lineage, PIT status, checks on a column, dead columns ([lineage.md](lineage.md#the-lineage-tools)) |
 | `cohort_summary`, `cohort_list` | one cohort or all: size, plan mix, lapse rate with n and interval, distinguishing features |
 
-There is no raw query tool, no write tool, no file tool and no network tool. Every Cypher query is one
-of 17 vetted templates in `src/lakehouse_graph/queries.py`; parameters are validated by strict Pydantic
+In the default servers there is no raw query tool, no write tool, no file tool and no network tool. Every
+Cypher query is one of 17 vetted templates in `src/lakehouse_graph/queries.py`; parameters are validated by strict Pydantic
 v2 models (`extra=forbid`, closed enums, id regexes, integer ranges, an 80-character free-text cap).
 Junk values small models send (`""`, `"null"`, `"None"`, JSON null) take the default; errors name the
 field and never echo the rejected value. The only free text, `graph_find.query`, is matched in Python
@@ -98,6 +98,23 @@ own verdict: `strict_pass`, `pass`, `fail`, `stale` or `absent`. An Iceberg-sour
 - Cells with fewer than 5 renewals are suppressed (null), and so is any published cell that would give
   one back by subtraction (complementary suppression over the margins the answer publishes). Limit: this
   does not stop differencing across overlapping `limit_hits_14d` ranges in separate calls.
+- Suppression rules as the code applies them (`src/lakehouse_graph/metrics.py`, `protect()`; decided
+  2026-10-02 when the 18 failing disclosure tests were fixed, none by loosening the rule):
+  - The threshold is 5 (`MIN_CELL`) everywhere: a count of 1-4 is null. A 0 is printed unless it sits in
+    a null line.
+  - The current renewals (route `score_today` / `pending`) are public by design (`graph_find` names any
+    renewal with its route). They are printed even when small. So is a plan row or pricing side made only
+    of them.
+  - A null must never be computable from the printed numbers. The exact check now also proves pins that
+    follow from the published equations alone (linear span), which bounds propagation missed. A pinned
+    non-sensitive null is printed. A pinned head whose line still holds a null 0 is sensitive, because
+    printing it would raise that 0's lower bound, so it gets a complement instead. So does a numerator
+    pinned beside a null model count. A numerator goes back with its model count only when the exact check
+    allows it.
+  - When the search budget cannot decide a null, it stays null (the safe side). Example: on tiny, the
+    first-renewal-after split of `metric_lapse_rate` (75 / 33) and the `cap-cut-2026-08` known_by_as_of
+    sides (32 / 5) share one publication with the exposure tables and stay null.
+  - "No model-routed renewal matches these filters" is said only of a printed 0, never of a null total.
 
 Measured answer sizes at seed 42 (default cap): `graph_describe` 3,959 characters (detailed 9,103),
 `graph_find` 3,196, evidence (detailed) 4,226, similar 5,427, exposure 4,105, lapse rate 3,703, a large
@@ -117,27 +134,27 @@ A failed write never fails the call.
 <!-- graph-evidence:begin figure:tool-latency -->
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="img/tool-latency-dark.svg">
-  <img src="img/tool-latency-light.svg" alt="Paired bar chart of warm tool latency over MCP stdio (client round trip), p50 and p95 per tool: graph_describe p50 1.91 ms, p95 2.40 ms; graph_find p50 1.39 ms, p95 1.55 ms; graph_renewal_evidence p50 6.59 ms, p95 8.00 ms; graph_similar_renewals p50 16.58 ms, p95 25.48 ms; graph_exposure p50 4.56 ms, p95 5.47 ms; metric_lapse_rate p50 6.36 ms, p95 8.66 ms; metric_route_counts p50 3.11 ms, p95 3.43 ms; metric_feature_card p50 1.74 ms, p95 1.90 ms; lineage_trace p50 3.74 ms, p95 3.87 ms; lineage_pit p50 3.20 ms, p95 6.05 ms; lineage_guards p50 2.72 ms, p95 3.89 ms; lineage_unused p50 3.96 ms, p95 10.77 ms; cohort_summary p50 5.44 ms, p95 9.84 ms; cohort_list p50 25.58 ms, p95 30.48 ms." width="760">
+  <img src="img/tool-latency-light.svg" alt="Paired bar chart of warm tool latency over MCP stdio (client round trip), p50 and p95 per tool: graph_describe p50 2.06 ms, p95 2.54 ms; graph_find p50 1.44 ms, p95 1.79 ms; graph_renewal_evidence p50 6.53 ms, p95 7.45 ms; graph_similar_renewals p50 15.80 ms, p95 17.72 ms; graph_exposure p50 4.45 ms, p95 4.82 ms; metric_lapse_rate p50 1.59 ms, p95 2.13 ms; metric_route_counts p50 2.20 ms, p95 4.55 ms; metric_feature_card p50 1.51 ms, p95 2.11 ms; lineage_trace p50 4.30 ms, p95 4.77 ms; lineage_pit p50 3.75 ms, p95 4.76 ms; lineage_guards p50 3.57 ms, p95 4.69 ms; lineage_unused p50 3.50 ms, p95 4.95 ms; cohort_summary p50 4.94 ms, p95 5.39 ms; cohort_list p50 25.98 ms, p95 28.34 ms." width="760">
 </picture>
 
 | toolset | tool | p50 ms | p95 ms |
 |---|---|---:|---:|
-| graph | graph_describe | 1.91 | 2.40 |
-| graph | graph_find | 1.39 | 1.55 |
-| graph | graph_renewal_evidence | 6.59 | 8.00 |
-| graph | graph_similar_renewals | 16.58 | 25.48 |
-| graph | graph_exposure | 4.56 | 5.47 |
-| metrics | metric_lapse_rate | 6.36 | 8.66 |
-| metrics | metric_route_counts | 3.11 | 3.43 |
-| metrics | metric_feature_card | 1.74 | 1.90 |
-| lineage | lineage_trace | 3.74 | 3.87 |
-| lineage | lineage_pit | 3.20 | 6.05 |
-| lineage | lineage_guards | 2.72 | 3.89 |
-| lineage | lineage_unused | 3.96 | 10.77 |
-| cohorts | cohort_summary | 5.44 | 9.84 |
-| cohorts | cohort_list | 25.58 | 30.48 |
+| graph | graph_describe | 2.06 | 2.54 |
+| graph | graph_find | 1.44 | 1.79 |
+| graph | graph_renewal_evidence | 6.53 | 7.45 |
+| graph | graph_similar_renewals | 15.80 | 17.72 |
+| graph | graph_exposure | 4.45 | 4.82 |
+| metrics | metric_lapse_rate | 1.59 | 2.13 |
+| metrics | metric_route_counts | 2.20 | 4.55 |
+| metrics | metric_feature_card | 1.51 | 2.11 |
+| lineage | lineage_trace | 4.30 | 4.77 |
+| lineage | lineage_pit | 3.75 | 4.76 |
+| lineage | lineage_guards | 3.57 | 4.69 |
+| lineage | lineage_unused | 3.50 | 4.95 |
+| cohorts | cohort_summary | 4.94 | 5.39 |
+| cohorts | cohort_list | 25.98 | 28.34 |
 
-<sub>Source: scripts/check_graph_tools.py --bench on graph build 28f3af496493 (profile s42); macOS arm64, warm calls, sandboxed stdio servers. Regenerate with scripts/graph_evidence.py.</sub>
+<sub>Source: scripts/check_graph_tools.py --bench on graph build a2598a28e164 (profile s42); macOS arm64, warm calls, sandboxed stdio servers. Regenerate with scripts/graph_evidence.py.</sub>
 <!-- graph-evidence:end figure:tool-latency -->
 
 Server RSS after warm calls, measured once (p2a acceptance run, s42): graph 230 to 293 MB, metrics
@@ -184,10 +201,15 @@ the eval keeps an unrouted arm to test it ([evaluation.md](evaluation.md#agent-e
 
 ## The open-source path
 
-Planned, **not built yet**: a Pydantic AI harness (`src/lakehouse_graph/agent.py`, `scripts/graph_chat.py`,
-a local UI) with Ollama and a 4B Qwen model, a router that picks one toolset per question, and the eval
-in [evaluation.md](evaluation.md#agent-eval). What the research measured on this Mac (installed
-`qwen3:4b`, Apache-2.0, 2026-10-01):
+Built, **experimental**, local only: a Pydantic AI harness (2.53.0 in the lock) (`src/lakehouse_graph/agent.py`) with a
+terminal chat (`scripts/graph_chat.py`), Ollama and a 4B Qwen model. A structured-output router picks one
+toolset (graph, metrics, lineage, cohorts or refuse) and a sub-agent that sees only that toolset answers
+through `scripts/graph_mcp.sh` (sandboxed on macOS, 4,000-character answers); every episode can be written
+as a replayable trace. It has its own venv (`.venv-graph-eval`, `requirements-graph-eval.txt`) and is
+unit-tested without a model (`tests/graph/test_agent.py`). The eval is in
+[evaluation.md](evaluation.md#agent-eval). There is no chat UI and no `graph-chat` Make target (the
+script's docstring mentions one): run `.venv-graph-eval/bin/python scripts/graph_chat.py "question"`.
+What the research measured on this Mac (installed `qwen3:4b`, Apache-2.0, 2026-10-01):
 
 - Pydantic AI 2.52 talks to Ollama through its OpenAI-compatible `/v1`; `max_tokens` only works with a
   profile override, and `num_ctx` cannot be set there (a derived Ollama tag with `num_ctx 8192` is used).
@@ -228,7 +250,7 @@ a confused or over-eager model; a malicious or mistaken edit to repo code that t
 |---|---|---|---|---|
 | A normal Claude Code session in this repo | yes (tools + your files) | yes (tool output) | yes: Bash, WebFetch, file writes, every user-scope MCP server and claude.ai connector | **trifecta present**; do not use it with real data |
 | `scripts/graph_ask.sh` | yes | yes | none: only the four lakehouse servers and Read; servers sandboxed with network denied | broken at the client and at the server (macOS) |
-| OSS harness (planned) | yes | yes | none by construction (no tool but the lakehouse servers) | to be verified when built |
+| OSS harness (experimental) | yes | yes | none by construction (no tool but the lakehouse servers; the model is a local Ollama endpoint) | unit-tested without a model; no end-to-end exfiltration test |
 
 **Mitigations, mapped to tests.**
 
@@ -246,7 +268,7 @@ a confused or over-eager model; a malicious or mistaken edit to repo code that t
 
 **What `read_only` does not protect.** Opening Ladybug read-only only blocks graph mutations. The engine
 still runs `LOAD FROM <any file>`, `COPY TO <any file>`, `EXPORT DATABASE`, `ATTACH` and
-`LOAD <extension>`, and it has no external-access switch. That is why no tool accepts Cypher, why the
+`LOAD <extension>`, and it has no external-access switch. That is why no default tool accepts Cypher, why the
 templates are an allowlist, and why the OS sandbox exists.
 
 **What the sandbox does not do.** It is macOS only (`sandbox-exec`, deprecated by Apple but still
@@ -258,5 +280,8 @@ stderr banner and relies on the template-only surface.
 
 **Residual risks.** Approving `.mcp.json` runs repo code; a non-interactive session can skip that
 approval. Annotations (`readOnlyHint`, ...) are hints for well-behaved clients and are not counted as a
-safety layer. The guarded raw-Cypher tool (`--enable-cypher`) is refused by the server until it exists
-and has its own tests.
+safety layer. The guarded raw-Cypher tool (`scripts/graph_mcp.sh --enable-cypher`,
+`src/lakehouse_graph/cypher_guard.py`, tested in `tests/graph/test_cypher_guard.py`) is opt-in and never
+in the default `.mcp.json` (see `.mcp.cypher.json.example`). It is served alone, over the pruned,
+label-free evidence graph, and only under the macOS sandbox; on Linux it needs
+`GRAPH_ALLOW_UNSANDBOXED_CYPHER=1` and prints a banner.

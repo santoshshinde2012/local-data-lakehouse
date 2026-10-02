@@ -7,12 +7,12 @@
 | Status | **pass** (exit 0) |
 | Profile | s42 |
 | Command | `scripts/build_graph_cohorts.py list (leiden, louvain) + summary --renewal sub_maya` |
-| Commit | `d317368` (working tree dirty: yes) |
-| Date | 2026-10-01 (UTC) |
+| Commit | `6225473` (working tree dirty: no) |
+| Date | 2026-10-02 (UTC) |
 | Host | macOS-26.6.2 (macosx_arm64) |
-| Python | 3.12.9 · ladybug 0.21.1 · pandas 3.0.6 · numpy 2.5.3 · pyarrow 25.0.1 · networkx 3.7 · mcp 2.2.0 · pydantic 2.13.5 · sqlglot 30.20.0 |
-| Spark venv | pyiceberg 0.12.0 · pyspark 3.5.3 |
-| Duration | 2.2 s |
+| Python | 3.12.9 · ladybug 0.21.2 · pandas 3.0.6 · numpy 2.5.3 · pyarrow 25.0.1 · networkx 3.7 · mcp 2.2.0 · pydantic 2.13.5 · sqlglot 30.21.0 |
+| Spark venv | pyiceberg 0.12.0 · pyspark 4.1.3 |
+| Duration | 2.0 s |
 | Summary | outside the graph contract; 15 leiden cohorts (modularity 0.805592, seed 42, networkx 3.7); 15 louvain cohorts (modularity 0.806498, seed 42, networkx 3.7) |
 
 ## Output
@@ -37,7 +37,7 @@ $ python scripts/build_graph_cohorts.py list --algorithm leiden --profile s42 --
   leiden-15    9/55 = 16.4% [0.089, 0.283]              pro: higher last_active_days_ago, lower agent_task_success_rate
 caveat: Cohorts rediscover feature segments; labels, not structure.
 caveat: Descriptive context, not a risk estimate; rates count model-routed renewals only.
-caveat: Cohorts with fewer than 5 model renewals are suppressed (null), and so is the smallest other cohort of the same plan when exactly one of its cohorts is (else the plan's population totals would give it back by subtraction).
+caveat: Cohorts with fewer than 5 model renewals are suppressed (null), and so is the smallest other cohort of the same plan when exactly one of its cohorts is, or when its suppressed cohorts hold fewer than 5 together (else the plan's population totals would give them back by subtraction; a suppressed cohort that is exactly a metric_lapse_rate cell does not count, since that tool prints it). Withheld cohorts read alike, small or not.
 
 $ python scripts/build_graph_cohorts.py list --algorithm louvain --profile s42 --graph-root $GRAPH_ROOT
 15 louvain cohorts (modularity 0.806498, seed 42, networkx 3.7):
@@ -58,7 +58,7 @@ $ python scripts/build_graph_cohorts.py list --algorithm louvain --profile s42 -
   louvain-15   9/55 = 16.4% [0.089, 0.283]              pro: higher last_active_days_ago, lower agent_task_success_rate
 caveat: Cohorts rediscover feature segments; labels, not structure.
 caveat: Descriptive context, not a risk estimate; rates count model-routed renewals only.
-caveat: Cohorts with fewer than 5 model renewals are suppressed (null), and so is the smallest other cohort of the same plan when exactly one of its cohorts is (else the plan's population totals would give it back by subtraction).
+caveat: Cohorts with fewer than 5 model renewals are suppressed (null), and so is the smallest other cohort of the same plan when exactly one of its cohorts is, or when its suppressed cohorts hold fewer than 5 together (else the plan's population totals would give them back by subtraction; a suppressed cohort that is exactly a metric_lapse_rate cell does not count, since that tool prints it). Withheld cohorts read alike, small or not.
 
 $ python scripts/build_graph_cohorts.py summary --renewal sub_maya:2026-10-07 --profile s42 --graph-root $GRAPH_ROOT
 {
@@ -89,7 +89,7 @@ $ python scripts/build_graph_cohorts.py summary --renewal sub_maya:2026-10-07 --
     "pro": 833
   },
   "provenance": {
-    "business_build_id": "28f3af496493",
+    "business_build_id": "a2598a28e164",
     "communities": 15,
     "in_contract": false,
     "library": "networkx",

@@ -346,16 +346,24 @@ def section_goldens(rep: Report, call: Calls, t: dict, build: Path, man: dict) -
     want = {flag: (sum(v.get(key, {}).get("n", 0) for v in fa.values()),
                    sum(v.get(key, {}).get("lapses", 0) for v in fa.values()))
             for flag, key in ((True, "with"), (False, "without"))}
-    got = {c["first_renewal_after_pricing_change"]: (c["n"], c["lapses"]) for c in env["data"]["cells"]}
-    rep.ok(got == want, f"lapse rate by first-renewal-after flag equals the oracle: {got}")
+    got = {c["first_renewal_after_pricing_change"]: (c["n"], c["lapses"]) for c in env["data"]["cells"]
+           if not c["suppressed"]}
+    # A shown cell equals the oracle; a null one is small or protected by the shared publication (on tiny both
+    # flag cells are null together: either one plus the plan answer would give back a small cell).
+    rep.ok(all(want[f] == v for f, v in got.items()) and
+           all(f in got or n < metrics.MIN_CELL or _complementary(env) for f, (n, _) in want.items()),
+           f"lapse rate by first-renewal-after flag equals the oracle where shown: {got} (oracle {want})")
     m = ren[(ren["route"] == "model") & (ren["plan_tier"] == "pro") & (ren["first_renewal_after_pricing_change"] == 1)
             & ren["limit_hits_14d"].between(3, 5)]
     env = call("metric_lapse_rate", {"plan_tier": "pro", "first_renewal_after_pricing_change": True,
                                      "limit_hits_14d_min": 3, "limit_hits_14d_max": 5})
     tot = env["data"]["total"]
-    rep.ok((tot["n"], tot["lapses"]) == ((len(m), int(m["churned"].sum())) if len(m) >= metrics.MIN_CELL
-                                         or len(m) == 0 else (None, None)),
-           f"pro, 3-5 cap hits, first after a cut: {tot['n']}/{tot['lapses']} equals pandas (1-4 null, 0 printed)")
+    exact = (tot["n"], tot["lapses"]) == (len(m), int(m["churned"].sum()))
+    # n >= 5 is printed exactly; under 5 is null, and so is a 0 that the shared publication pins (a filter
+    # prints what the grouped answer prints for that value); a printed small n other than 0 is a leak.
+    rep.ok(exact if len(m) >= metrics.MIN_CELL else (tot["n"] is None or (len(m) == 0 and exact)),
+           f"pro, 3-5 cap hits, first after a cut: {tot['n']}/{tot['lapses']} vs pandas {len(m)} "
+           "(n >= 5 exact; under 5 null, or a printed 0)")
     env = call("metric_route_counts", {})
     want_r = oracle.routes(t)["routes"]
     got_r: dict = {}
@@ -920,10 +928,16 @@ def attack_incident(d: dict, truth: dict[str, dict[str, int]]) -> Attack:
     zero = dict.fromkeys(tools.INCIDENT_COUNTS, 0)
     full = {p: {**zero, **(truth.get(p) or {})} for p in PLANS}
     by = d["by_route"]
-    plan = {p: a.value(("plan", p), rows[p]["exposed"], full[p]["exposed"], 0 if wh else 1) for p in PLANS}
-    col = {c: a.value(("route", c), by[c], sum(full[p][c] for p in PLANS), 0 if wh else 1) for c in INCIDENT_ROUTES}
+    # a plan row made of current (public) renewals only is public too (the engine's 'known' entries)
+    plan = {p: a.value(("plan", p), rows[p]["exposed"], full[p]["exposed"], 0 if wh else 1,
+                       small_ok=rows[p]["exposed"] is not None and rows[p]["exposed"] == rows[p]["current"])
+            for p in PLANS}
+    # the current column (score_today / pending) is public by design (named_renewal_member, EXPOSURE_RULE): a printed
+    # 1-4 there is not a disclosure, exactly as in attack_route_counts
+    col = {c: a.value(("route", c), by[c], sum(full[p][c] for p in PLANS), 0 if wh else 1, small_ok=c == "current")
+           for c in INCIDENT_ROUTES}
     cell = {(p, c): a.value(("cell", p, c), rows[p][c], full[p][c],
-                            0 if wh or rows[p]["exposed"] is None or by[c] is None else 1)
+                            0 if wh or rows[p]["exposed"] is None or by[c] is None else 1, small_ok=c == "current")
             for p in PLANS for c in INCIDENT_ROUTES}
     lap = {p: a.value(("lapses", p), rows[p]["voluntary_lapses"], full[p]["voluntary_lapses"], 0, small_ok=True)
            for p in PLANS}
@@ -963,14 +977,21 @@ def attack_pricing(d: dict, truth: dict) -> Attack:
     got = {(c["plan_tier"], c["known_by_as_of"]): c for c in d["cells"]}
     if sorted(got) != sorted((p, k) for p in PLANS for k in (True, False)):
         raise AssertionError(f"{a.name}: the rows are not the fixed plan x known_by_as_of set")
+    def public_side(k) -> bool:      # a side made of current (public) renewals only is public too
+        v = d["known_by_as_of"]["true" if k else "false"]
+        cur = [row["current"] for (_, kk), row in got.items() if kk is k]
+        return v is not None and None not in cur and v == sum(cur)
+
     side = {k: a.value(("split", k), d["known_by_as_of"]["true" if k else "false"],
-                       sum(n for (_, kk, _), (n, _) in truth.items() if kk is k), 0 if wh else 1)
+                       sum(n for (_, kk, _), (n, _) in truth.items() if kk is k), 0 if wh else 1,
+                       small_ok=public_side(k))
             for k in (True, False)}
     cells: dict = {}
     for (p, k), row in got.items():
         for c in INCIDENT_ROUTES:
             cells[(p, k, c)] = a.value(("cell", p, k, c), row[c], truth.get((p, k, c), (0, 0))[0],
-                                       0 if wh or not isinstance(side[k], int) else 1)
+                                       0 if wh or not isinstance(side[k], int) else 1,
+                                       small_ok=c == "current")    # public by design, as for incidents
         lap = a.value(("lapses", p, k), row["voluntary_lapses"], truth.get((p, k, "model"), (0, 0))[1], 0,
                       small_ok=True)
         a.at_most(lap, cells[(p, k, "model")])

@@ -17,9 +17,9 @@
 -r requirements-graph.in
 
 # Agent loop, OllamaModel (OpenAI-compatible /v1), AnthropicModel, MCPToolset over stdio. License: MIT.
-# Exact pin: the harness depends on verified 2.52 behaviour (profile overrides, NativeOutput, MCPToolset hooks).
+# Exact pin: the harness depends on verified 2.52 / 2.53 behaviour (profile overrides, NativeOutput, MCPToolset hooks).
 # The extras pull fastmcp-slim (Apache-2.0), openai (Apache-2.0), anthropic (MIT) and httpx2 (BSD-3-Clause).
-pydantic-ai-slim[mcp,openai,anthropic]==2.52.0
+pydantic-ai-slim[mcp,openai,anthropic]==2.53.0
 
 # evals/graph_cases.yaml. License: MIT.
 pyyaml>=6,<7

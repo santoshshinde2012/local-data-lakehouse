@@ -9,7 +9,7 @@
 # Base image: exact patch tag AND the multi-arch index digest (the digest is what is pulled; the
 # tag is for humans). Refresh both together:
 #   docker buildx imagetools inspect python:3.12-slim-trixie
-ARG PYTHON_IMAGE=python:3.12.14-slim-trixie@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f
+ARG PYTHON_IMAGE=python:3.12.15-slim-trixie@sha256:29113dcae7aad06daa8e95260fa09f27d62be33b9687ea3774f771d601a02256
 FROM ${PYTHON_IMAGE}
 
 ENV PYTHONDONTWRITEBYTECODE=1 \

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import os
 
-from airflow.operators.bash import BashOperator
+from airflow.providers.standard.operators.bash import BashOperator
 
 
 SPARK_CONTAINER = os.environ.get("LDL_SPARK_CONTAINER", "ldl-spark")

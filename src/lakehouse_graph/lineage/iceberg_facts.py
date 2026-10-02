@@ -134,7 +134,7 @@ def load_facts(catalog_uri: str | None = None, warehouse: str | None = None, cat
         facts.update(catalog_uri=ice._redact(str(props.get("uri", ""))), warehouse=str(props.get("warehouse", "")),
                      catalog_schema_unchanged=True, read_s=round(time.perf_counter() - t0, 2))
     finally:
-        catalog.engine.dispose()
+        ice.close_catalog(catalog)
     n_snaps = sum(len(t["snapshots"]) for t in facts["tables"].values())
     log(f"    Iceberg catalog {CATALOG} ({facts['catalog_uri']}): {len(facts['tables'])} tables, {n_snaps} snapshots, "
         f"{sum(len(t['refs']) for t in facts['tables'].values())} refs read in {facts['read_s']} s (metadata only; "

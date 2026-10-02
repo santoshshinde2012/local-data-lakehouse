@@ -55,6 +55,7 @@ import math
 from collections import defaultdict
 from collections.abc import Callable, Hashable, Iterable
 from dataclasses import dataclass, field, replace
+from fractions import Fraction
 
 import numpy as np
 import pandas as pd
@@ -299,6 +300,48 @@ class IntegerProblem:
                 self.var_rows[i].append(r)
         if not _propagate(self.rows, self.var_rows, self.lo, self.hi, set(range(len(rows)))):
             raise ValueError("published table is inconsistent with its own lower bounds")
+        self._basis: list | None = None
+
+    def _span_basis(self) -> list:
+        """An echelon basis of the published EQUATIONS (rows with lo == hi) over the rationals, built once: a list of
+        (pivot, {unknown: coefficient}) in insertion order, each row free of every earlier pivot."""
+        if self._basis is None:
+            basis: list = []
+            for idx, coef, rlo, rhi in self.rows:
+                if rlo is None or rlo != rhi:
+                    continue
+                row = {i: Fraction(c) for i, c in zip(idx, coef, strict=True)}
+                row = self._reduce(row, basis)
+                if row:
+                    pivot = min(row)
+                    lead = row[pivot]
+                    basis.append((pivot, {i: c / lead for i, c in row.items()}))
+            self._basis = basis
+        return self._basis
+
+    @staticmethod
+    def _reduce(row: dict, basis: list) -> dict:
+        row = dict(row)
+        for pivot, b in basis:            # ascending insertion order: row b holds no earlier pivot
+            c = row.get(pivot)
+            if c:
+                for i, cb in b.items():
+                    v = row.get(i, 0) - c * cb
+                    if v:
+                        row[i] = v
+                    else:
+                        row.pop(i, None)
+        return row
+
+    def span_pinned(self, key) -> bool:
+        """Is ``key`` an exact linear combination of the published equations (so every table that agrees with them
+        gives it the same value)? Sound and complete for equalities alone; the bounds and inequalities only add pins
+        the search finds. It catches the pins that bounds propagation misses (a null equal to a printed total minus
+        printed zeros, through two forms) without spending the search budget."""
+        coef, _const = self._expand({key: 1})
+        if not coef:
+            return True
+        return not self._reduce({i: Fraction(c) for i, c in coef.items()}, self._span_basis())
 
     def _expand(self, row: dict) -> tuple[dict[int, int], int]:
         """A row over keys -> (coefficients over the unknowns, constant): printed base keys are constants, derived keys
@@ -414,7 +457,7 @@ class IntegerProblem:
             if key in free or (wanted is not None and key not in wanted):
                 continue
             lo, hi = self.root_range(key)
-            if lo == hi:                  # the propagation fixpoint alone fixes it: no search needed
+            if lo == hi or self.span_pinned(key):   # the fixpoint or the published equations alone fix it
                 pinned.add(key)
                 continue
             try:
@@ -659,10 +702,14 @@ class Table:
 
     def sensitive(self, k, hidden: set) -> bool:
         """A pinned null that must not stay computable: a count of 1-4 or a head (not a numerator), or a numerator whose
-        model count (or, for a lapses total, whose line) is null. A pinned cell of 0 or >= min_cell, or a numerator
-        beside its printed model count, adds nothing when printed; protect() prints it."""
+        model count (or, for a lapses total, whose line) is null, or a margin whose line holds a null 0 that no other
+        null head covers (printing the margin would raise that 0's lower bound to 1: a false bound that pins its
+        neighbours). A pinned cell of 0 or >= min_cell, or a numerator beside its printed model count, adds nothing
+        when printed; protect() prints it."""
         if k in self.aux or not self.hideable(k):
             return False
+        if self.uncovered_zeros(k, hidden):
+            return True
         model = self._model_of.get(k)
         if model is not None:
             return model in hidden and 0 < self.values[model] < self.min_cell
@@ -670,10 +717,20 @@ class Table:
             return any(h in hidden and 0 < self.values[h] < self.min_cell for h in self._inside[k])
         return 0 < self.values[k] < self.min_cell
 
+    def uncovered_zeros(self, k, hidden: set) -> bool:
+        """Is ``k`` a margin whose line holds a null 0 (not a lapses count) under no other null head?"""
+        if k not in self.margins or k not in self.lines:
+            return False
+        return any(c in hidden and c not in self.lapses and self.values[c] == 0 and not (self._inside[c] & hidden) - {k}
+                   for c in self.lines[k])
+
     def maybe_sensitive(self, k) -> bool:
-        """Could ``k`` be sensitive for some null set (a count of 1-4, or a numerator / lapses count of one)?"""
+        """Could ``k`` be sensitive for some null set (a count of 1-4, a numerator / lapses count of one, or a margin
+        over a 0)?"""
         if k in self.aux or not self.hideable(k):
             return False
+        if k in self.margins and any(self.values[c] == 0 and c not in self.lapses for c in self.lines.get(k, ())):
+            return True
         model = self._model_of.get(k)
         if model is not None:
             return 0 < self.values[model] < self.min_cell
@@ -724,10 +781,13 @@ def protect(table: Table, budget: int = PROTECT_BUDGET, max_rounds: int = 400) -
        group is withheld), never a complement; the sensitive ones are returned in ``external``;
     1. primary: every hideable count of 1-4, plus every entry of a group withheld by rule; then Table.close();
     2. the exact check (IntegerProblem.pinned, witnesses kept across rounds): a pinned null that is sensitive
-       (Table.sensitive) or undecided gets one more complement, the cheapest printed entry of the smallest published
+       (Table.sensitive) or undecided, or a proven pin of a tied numerator (beside a null model count: it is never
+       printed), gets one more complement, the cheapest printed entry of the smallest published
        relation that holds it (Table.complement), then 2 again;
     3. a pinned null that is not sensitive (a cell of 0 or >= 5) is printed, unless its group is withheld: it adds
-       nothing an attacker cannot compute, and a printed null must never be computable;
+       nothing an attacker cannot compute, and a null must never be computable; a margin over a null 0 is
+       sensitive instead (Table.sensitive); the numerator of a model count printed here is printed with it when the
+       exact check allows; then 2 again;
     4. if a sensitive null stays pinned and nothing is left to null, its group's breakdown is withheld (every entry of
        the group but the always-shown and public ones null, every bound there 0) and the check runs again.
     """
@@ -749,6 +809,9 @@ def protect(table: Table, budget: int = PROTECT_BUDGET, max_rounds: int = 400) -
             more, _unsure = prob.pinned(budget, witnesses, only=hidden - maybe)   # undecided ones simply stay null
             pins |= more
             stays = hidden - pins
+            # a numerator beside a null model count is never printed (it is shown with its n), so a PROVEN pin of
+            # one needs a complement like a sensitive null: a null is never computable
+            bad = sorted({k for k in more if table.tied(k, stays)}, key=repr)
         if bad:
             cs = table.complements(bad, hidden)
             if cs:
@@ -762,7 +825,20 @@ def protect(table: Table, budget: int = PROTECT_BUDGET, max_rounds: int = 400) -
             continue
         printable = {k for k in pins if table.group_of(k) not in withheld and not table.tied(k, stays)}
         if printable:
-            hidden -= printable
+            # a numerator nulled only by its tie to a model count printed here goes back with it (a rate's numerator
+            # is printed with its n), when the exact check says that pins nothing sensitive and no null that must stay
+            # null (a numerator tied to a null model count)
+            nums = {num for model, num in table.numerator_of.items()
+                    if model in printable and num in hidden and table.group_of(num) not in withheld}
+            if nums:
+                trial = hidden - printable - nums
+                tprob = table.problem(trial, withheld)
+                look = {k for k in trial if table.maybe_sensitive(k) or table.tied(k, trial)}
+                tpins, tund = tprob.pinned(budget, witnesses, only=look)
+                stays_t = trial - tpins
+                if tund or any(table.sensitive(k, stays_t) or table.tied(k, stays_t) for k in tpins):
+                    nums = set()
+            hidden -= printable | nums
             continue
         return Protected(hidden, withheld, rounds, set(), set(), external, known)
     raise RuntimeError(f"protect() did not converge in {max_rounds} rounds")
@@ -1387,7 +1463,7 @@ def metric_lapse_rate(ctx, *, group_by: list[str] | None = None, plan_tier: str 
     if n_ext:
         caveats.append(f"{n_ext} count(s) here are printed although small: the public numbers (the current renewals "
                        f"and the always-shown totals) already fix them.")
-    if pub.truth(total_key) == 0:
+    if total["n"] == 0:          # only a PRINTED 0: the caveat must never give a null total back
         caveats.append("No model-routed renewal matches these filters.")
     return ctx.envelope(data, caveats)
 

@@ -13,17 +13,15 @@ Optional OpenLineage (runs, parents and timing as JSON lines under /opt/data/gra
 trigger with --conf '{"openlineage": true}'. Only the boolean switch is read from the run conf;
 spark-submit then downloads the openlineage-spark package from Maven Central on first use.
 
-NOTE: this repo pins Airflow 2.10.4, and Airflow 2.x reached end of life on 2026-04-22. The DAG uses
-only `airflow.DAG` and `airflow.operators.bash.BashOperator`; an Airflow 3 port changes those two
-imports (airflow.sdk.DAG, airflow.providers.standard.operators.bash) and the overlay's services,
-not the task chain.
+Airflow 3.3 (docker-compose.airflow.yml): `airflow.sdk.DAG` and the standard provider's BashOperator.
+Tasks reach ldl-spark / ldl-graph through the overlay's docker-proxy (docker exec only).
 """
 from __future__ import annotations
 
 import os
 from datetime import datetime
 
-from airflow import DAG
+from airflow.sdk import DAG
 
 from lakehouse_graph_operators import SPARK_CONTAINER, docker_exec_command, graph_exec_task, spark_submit_args_task
 
@@ -36,7 +34,7 @@ OPENLINEAGE_DIR = "/opt/data/graph/lineage"
 # Fixed blocks: the only run-time switch is the boolean `params.openlineage`.
 OPENLINEAGE_ARGS = (
     "{% if params.openlineage is true %}"
-    f"--packages io.openlineage:openlineage-spark_2.12:{OPENLINEAGE_VERSION} "
+    f"--packages io.openlineage:openlineage-spark_2.13:{OPENLINEAGE_VERSION} "
     "--conf spark.extraListeners=io.openlineage.spark.agent.OpenLineageSparkListener "
     "--conf spark.openlineage.transport.type=file "
     f"--conf spark.openlineage.transport.location={OPENLINEAGE_DIR}/openlineage.jsonl "

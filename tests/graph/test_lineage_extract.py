@@ -188,25 +188,24 @@ def _ci_line(text: str) -> int:
     return hits[0]
 
 
-def test_ci_clone_url_and_both_candidate_refs_resolve_from_the_step(facts):
-    """d317368: URL=... and REF chosen by if / else in the same run: block, then git clone "$REF" "$URL"."""
+def test_ci_clone_url_and_ref_resolve_from_the_step(facts):
+    """URL=... in the run: block, then git clone --branch main "$URL" (radar main reads the v2 export)."""
     step = next(s for s in facts["ci"] if s["name"] == RADAR_STEP)
     (clone,) = step["clones"]
     assert clone["urls"] == [RADAR] and clone["url_expr"] == '"$URL"' and clone["problem"] is None
-    assert clone["refs"] == ["${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}", "main"] and clone["ref_expr"] == '"$REF"'
+    assert clone["refs"] == ["main"] and clone["ref_expr"] == "main"
     assert clone["depth"] == 1 and clone["notes"] == [] and clone["line"] == _ci_line("git clone")
 
 
-def test_ci_clone_is_a_downstream_repo_with_one_clones_edge_per_candidate_ref(graph):
-    sid = "ci:churn-gold-local#" + RADAR_STEP.lower().replace(" ", "-")
+def test_ci_clone_is_a_downstream_repo_with_one_clones_edge_for_main(graph):
+    sid = "ci:t0-unit#" + RADAR_STEP.lower().replace(" ", "-")
     rid = "repo:github.com/santoshshinde2012/retention-radar"
     assert graph.unresolved == [] and graph.ids("DownstreamRepo") == [rid]
     assert graph.props(rid)["url"] == RADAR and graph.props(rid)["name"] == "retention-radar"
     clones = sorted((e["props"]["ref"], e["props"]["n_refs"], e["props"]["depth"], e["props"]["ref_expr"],
                      e["props"]["source"]) for e in graph.out(sid, "CLONES"))
     where = f"{spec.CI_WORKFLOW}:{_ci_line('git clone')}"
-    assert clones == [("${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}", 2, 1, '"$REF"', where),
-                      ("main", 2, 1, '"$REF"', where)]
+    assert clones == [("main", 1, 1, "main", where)]
     assert sorted(e["dst"] for e in graph.out(rid, "CONSUMES")) == ["export:data/export/churn_user_features.csv",
                                                                     "export:data/export/hero_inference_record.json"]
     # the cloned repo's own script is not ours to resolve (it ran inside the clone)
@@ -332,25 +331,25 @@ def test_the_url_from_a_job_or_workflow_env_resolves_and_the_job_env_wins(tmp_pa
     edit(root, spec.CI_WORKFLOW, "          URL=https://github.com/santoshshinde2012/retention-radar.git\n", "")
     edit(root, spec.CI_WORKFLOW, "jobs:\n", "env:\n  URL: https://github.com/elsewhere/radar.git  # overridden\n\n"
                                             "jobs:\n")
-    edit(root, spec.CI_WORKFLOW, "  churn-gold-local:\n",
-         "  churn-gold-local:\n    env:\n      URL: \"https://github.com/santoshshinde2012/retention-radar\"\n")
+    edit(root, spec.CI_WORKFLOW, "  t0-unit:\n",
+         "  t0-unit:\n    env:\n      URL: \"https://github.com/santoshshinde2012/retention-radar\"\n")
     g = lg.assemble(root)
     assert g.unresolved == [] and g.ids("DownstreamRepo") == ["repo:github.com/santoshshinde2012/retention-radar"]
     workflow_env, job_env = ex.ci_env_blocks((root / spec.CI_WORKFLOW).read_text().splitlines())
-    assert workflow_env == {"URL": "https://github.com/elsewhere/radar.git"}
-    assert job_env["churn-gold-local"] == {"URL": "https://github.com/santoshshinde2012/retention-radar"}
+    assert workflow_env["URL"] == "https://github.com/elsewhere/radar.git"
+    assert job_env["t0-unit"] == {"URL": "https://github.com/santoshshinde2012/retention-radar"}
 
 
 def test_an_actions_checkout_of_another_repository_is_a_clone(tmp_path):
     root = fake_repo(tmp_path)
-    edit(root, spec.CI_WORKFLOW, "      - name: Set up Python 3.12\n",
+    edit(root, spec.CI_WORKFLOW, "      - name: Host venv from the hash-locked requirements.txt\n",
          "      - name: Check out the consumer\n        uses: actions/checkout@v4\n        with:\n"
          "          repository: santoshshinde2012/retention-radar   # the consumer\n"
          "          ref: ${{ github.head_ref }}\n          fetch-depth: 0\n          path: radar\n\n"
          "      - uses: actions/checkout@v4\n        with:\n          repository: ${{ github.repository }}\n\n"
-         "      - name: Set up Python 3.12\n")
+         "      - name: Host venv from the hash-locked requirements.txt\n")
     g = lg.assemble(root)
-    sid = "ci:churn-gold-local#check-out-the-consumer"
+    sid = "ci:t0-unit#check-out-the-consumer"
     assert g.unresolved == [] and g.has(sid)
     (edge,) = g.out(sid, "CLONES")
     line = next(i for i, x in enumerate((root / spec.CI_WORKFLOW).read_text().splitlines(), 1) if "repository: s" in x)
@@ -359,7 +358,7 @@ def test_an_actions_checkout_of_another_repository_is_a_clone(tmp_path):
         "ref": "${{ github.head_ref }}", "ref_expr": "${{ github.head_ref }}", "n_refs": 1, "depth": None,
         "url_expr": "santoshshinde2012/retention-radar", "source": f"{spec.CI_WORKFLOW}:{line}"}
     # the radar step still clones it too (one DownstreamRepo, two steps)
-    assert len([e for e in g.edges if e["rel"] == "CLONES"]) == 3
+    assert len([e for e in g.edges if e["rel"] == "CLONES"]) == 2
     (own,) = [s for s in ex.extract_ci(ex.SourceFiles(root)) if s["name"] == "Check out the consumer"]
     assert own["clones"][0]["tool"] == "actions/checkout"
     block = [(1, "      - uses: actions/checkout@v4"), (2, "        with:"),

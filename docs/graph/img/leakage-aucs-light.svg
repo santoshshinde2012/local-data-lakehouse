@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="309" viewBox="0 0 760 309" role="img" font-family="system-ui, -apple-system, &#x27;Segoe UI&#x27;, sans-serif">
+<title>Leakage demo: AUC of a neighbour lapse-rate feature, by how it was built</title>
+<desc>Dot chart of AUCs: gold features only (no neighbour feature) single feature -, LR 0.7199; self-inclusive neighbour rate (own label counted) single feature 0.8525, LR 0.8649; neighbour rate as of today (outcomes after T-7 leak in) single feature 0.6158, LR 0.7212; temporally safe neighbour rate (outcomes known by each as_of) single feature 0.5487, LR 0.7208; random same-plan neighbours (control) single feature 0.4794, LR 0.7196.</desc>
+<rect width="760" height="309" rx="8" fill="#fcfcfb"/>
+<text x="24" y="38" font-size="15" fill="#0b0b0b" font-weight="600">Leakage demo: AUC of a neighbour lapse-rate feature, by how it was built</text>
+<text x="24" y="58" font-size="12" fill="#52514e">A dataset with zero network effect. A self-inclusive or as-of-today neighbour rate looks predictive; the temporally safe one does</text>
+<text x="24" y="75" font-size="12" fill="#52514e">not. 0.5 is chance.</text>
+<circle cx="30" cy="98" r="6" fill="#fcfcfb"/>
+<circle cx="30" cy="98" r="4" fill="#2a78d6"/>
+<text x="42" y="102" font-size="11" fill="#52514e">single feature</text>
+<path d="M133.99 90.1L141.89 98L133.99 105.9L126.09 98Z" fill="#fcfcfb"/>
+<path d="M133.99 92.6L139.39 98L133.99 103.4L128.59 98Z" fill="#eb6834"/>
+<text x="145.99" y="102" font-size="11" fill="#52514e">logistic regression (all features)</text>
+<line x1="399.97" y1="116" x2="399.97" y2="242" stroke="#e1e0d9" stroke-width="1"/>
+<text x="399.97" y="256" font-size="10.5" fill="#52514e" text-anchor="middle" font-variant-numeric="tabular-nums">0.5</text>
+<line x1="445.18" y1="116" x2="445.18" y2="242" stroke="#e1e0d9" stroke-width="1"/>
+<text x="445.18" y="256" font-size="10.5" fill="#52514e" text-anchor="middle" font-variant-numeric="tabular-nums">0.6</text>
+<line x1="490.38" y1="116" x2="490.38" y2="242" stroke="#e1e0d9" stroke-width="1"/>
+<text x="490.38" y="256" font-size="10.5" fill="#52514e" text-anchor="middle" font-variant-numeric="tabular-nums">0.7</text>
+<line x1="535.59" y1="116" x2="535.59" y2="242" stroke="#e1e0d9" stroke-width="1"/>
+<text x="535.59" y="256" font-size="10.5" fill="#52514e" text-anchor="middle" font-variant-numeric="tabular-nums">0.8</text>
+<line x1="580.79" y1="116" x2="580.79" y2="242" stroke="#e1e0d9" stroke-width="1"/>
+<text x="580.79" y="256" font-size="10.5" fill="#52514e" text-anchor="middle" font-variant-numeric="tabular-nums">0.9</text>
+<line x1="626" y1="116" x2="626" y2="242" stroke="#e1e0d9" stroke-width="1"/>
+<text x="626" y="256" font-size="10.5" fill="#52514e" text-anchor="middle" font-variant-numeric="tabular-nums">1.0</text>
+<text x="389.97" y="136" font-size="12" fill="#0b0b0b" text-anchor="end">gold features only (no neighbour feature)</text>
+<g><title>gold features only (no neighbour feature) lr: 0.7199</title>
+<path d="M499.38 123.42L507.95 132L499.38 140.57L490.8 132Z" fill="#fcfcfb"/>
+<path d="M499.38 125.92L505.45 132L499.38 138.07L493.3 132Z" fill="#eb6834"/>
+</g>
+<text x="638" y="136" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">- / 0.720</text>
+<text x="389.97" y="160" font-size="12" fill="#0b0b0b" text-anchor="end">self-inclusive neighbour rate (own label counted)</text>
+<g><title>self-inclusive neighbour rate (own label counted) single_feature: 0.8525</title>
+<circle cx="559.32" cy="156" r="6.5" fill="#fcfcfb"/>
+<circle cx="559.32" cy="156" r="4.5" fill="#2a78d6"/>
+</g>
+<g><title>self-inclusive neighbour rate (own label counted) lr: 0.8649</title>
+<path d="M564.93 147.43L573.5 156L564.93 164.57L556.35 156Z" fill="#fcfcfb"/>
+<path d="M564.93 149.93L571 156L564.93 162.07L558.85 156Z" fill="#eb6834"/>
+</g>
+<text x="638" y="160" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">0.853 / 0.865</text>
+<text x="389.97" y="184" font-size="12" fill="#0b0b0b" text-anchor="end">neighbour rate as of today (outcomes after T-7 leak in)</text>
+<g><title>neighbour rate as of today (outcomes after T-7 leak in) single_feature: 0.6158</title>
+<circle cx="452.32" cy="180" r="6.5" fill="#fcfcfb"/>
+<circle cx="452.32" cy="180" r="4.5" fill="#2a78d6"/>
+</g>
+<g><title>neighbour rate as of today (outcomes after T-7 leak in) lr: 0.7212</title>
+<path d="M499.97 171.43L508.54 180L499.97 188.57L491.39 180Z" fill="#fcfcfb"/>
+<path d="M499.97 173.93L506.04 180L499.97 186.07L493.89 180Z" fill="#eb6834"/>
+</g>
+<text x="638" y="184" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">0.616 / 0.721</text>
+<text x="389.97" y="208" font-size="12" fill="#0b0b0b" text-anchor="end">temporally safe neighbour rate (outcomes known by each as_of)</text>
+<g><title>temporally safe neighbour rate (outcomes known by each as_of) single_feature: 0.5487</title>
+<circle cx="421.99" cy="204" r="6.5" fill="#fcfcfb"/>
+<circle cx="421.99" cy="204" r="4.5" fill="#2a78d6"/>
+</g>
+<g><title>temporally safe neighbour rate (outcomes known by each as_of) lr: 0.7208</title>
+<path d="M499.79 195.43L508.36 204L499.79 212.57L491.21 204Z" fill="#fcfcfb"/>
+<path d="M499.79 197.93L505.86 204L499.79 210.07L493.71 204Z" fill="#eb6834"/>
+</g>
+<text x="638" y="208" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">0.549 / 0.721</text>
+<text x="389.97" y="232" font-size="12" fill="#0b0b0b" text-anchor="end">random same-plan neighbours (control)</text>
+<g><title>random same-plan neighbours (control) single_feature: 0.4794</title>
+<circle cx="399.97" cy="228" r="6.5" fill="#fcfcfb"/>
+<circle cx="399.97" cy="228" r="4.5" fill="#2a78d6"/>
+</g>
+<g><title>random same-plan neighbours (control) lr: 0.7196</title>
+<path d="M499.24 219.43L507.82 228L499.24 236.57L490.67 228Z" fill="#fcfcfb"/>
+<path d="M499.24 221.93L505.32 228L499.24 234.07L493.17 228Z" fill="#eb6834"/>
+</g>
+<text x="638" y="232" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">0.479 / 0.720</text>
+<text x="24" y="274" font-size="11" fill="#52514e">Source: leakage.json (leakage demo report).</text>
+</svg>

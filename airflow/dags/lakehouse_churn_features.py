@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from airflow import DAG
+from airflow.sdk import DAG
 
 from lakehouse_operators import spark_submit_task
 

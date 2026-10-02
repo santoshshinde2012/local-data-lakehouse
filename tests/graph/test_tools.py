@@ -214,7 +214,10 @@ def test_exposure_counts_suppress_small_cells(ctx, t):
     assert sep["total"] == 1 and sep["breakdown_withheld"] and sep["named_renewal_member"] is True
     assert len(sep["cells"]) == 6 and all(c["suppressed"] for c in sep["cells"])
     aug = call(ctx, "graph_exposure", entity_id="cap-cut-2026-08", renewal_id=HERO)["data"]
-    assert aug["total"] == 37 and aug["known_by_as_of"] == {"true": 32, "false": 5}
+    # The two sides (32 / 5) are null together: graph_exposure shares one publication with the lapse-rate cubes
+    # (metrics.publication), and printing them (with the zeros of their lines) leaves the cube's first-after n
+    # boxes undecided, which the engine treats as computable (the safe side). The total is always shown.
+    assert aug["total"] == 37 and aug["known_by_as_of"] == {"true": None, "false": None}
     assert aug["named_renewal_member"] is False and len(aug["cells"]) == 6
     assert all(v is None or v == 0 or v >= 5 for c in aug["cells"] for k, v in c.items()
                if k in ("model", "cancel_flow", "dunning", "current"))
