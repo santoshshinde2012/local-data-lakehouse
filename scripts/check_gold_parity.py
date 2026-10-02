@@ -6,7 +6,7 @@ sql/churn/gold_renewal_features.sql in PySpark local mode, runs
 scripts/build_churn_gold_local.gold on the same CSVs, and compares every
 contract column plus outcome and route row by row.
 
-Usage (needs Java 17 and `pip install pyspark==3.5.*`):
+Usage (needs Java 17 or 21 and `pip install pyspark==4.1.3`, the version in the Spark image):
   python scripts/check_gold_parity.py
   CHURN_SAMPLE_DIR=data/sample/churn/fixtures/tiny python scripts/check_gold_parity.py
 """
