@@ -84,7 +84,7 @@ Every step exited 0.
 
 **Parity** ([churn-parity.excerpt.md](docs/demo/churn-parity.excerpt.md)): Spark SQL gold and the pandas twin match on 8,001 renewals × 27 columns. The 2 `accept_rate_change` cells that Spark `bround` and numpy round differently agree within 1e-4.
 
-**Retention Radar consumes the export** ([radar-consume.excerpt.md](docs/demo/radar-consume.excerpt.md); write-up on the radar side: [docs/e2e/lakehouse-consume.md](https://github.com/santoshshinde2012/retention-radar/blob/de7d35eef8e2b5f094fe348958841172e069fe24/docs/e2e/lakehouse-consume.md)): radar loaded 7,387 rows (churn rate 0.074) and scored all of them.
+**Retention Radar consumes the export** ([radar-consume.excerpt.md](docs/demo/radar-consume.excerpt.md); write-up on the radar side: [results/lakehouse-consume-e2e.md](https://github.com/santoshshinde2012/retention-radar/blob/70c06994fd285814e821a98217377498dc749936/results/lakehouse-consume-e2e.md), re-captured against lakehouse `main` `08bb274` and radar `main` `4a947be` with the same 7,387 rows and action counts): radar loaded 7,387 rows (churn rate 0.074) and scored all of them.
 
 | Action | Rows |
 |---|---:|
@@ -135,7 +135,9 @@ retention-radar:
 |---|---|
 | PR #21 on `65cab25` | [run 37019854227](https://github.com/santoshshinde2012/retention-radar/actions/runs/37019854227): `test` and `e2e-local` succeeded |
 | `main` `7e3bec8` after the merge | [run 37029880425](https://github.com/santoshshinde2012/retention-radar/actions/runs/37029880425): both succeeded |
-| PR #22 (this write-up onto `main`) | [run 37044528066](https://github.com/santoshshinde2012/retention-radar/actions/runs/37044528066): both succeeded |
+| PR #22 (first write-up, `docs/e2e/`, merged as `4a947be`) | [run 37044528066](https://github.com/santoshshinde2012/retention-radar/actions/runs/37044528066): both succeeded |
+| `main` `4a947be` after #22 | [run 37051673526](https://github.com/santoshshinde2012/retention-radar/actions/runs/37051673526): both succeeded |
+| PR #23 (write-up moved to `results/lakehouse-consume-e2e.md`, current numbers) on `70c0699` | [run 37054120582](https://github.com/santoshshinde2012/retention-radar/actions/runs/37054120582): both succeeded |
 
 ## Known gaps
 
