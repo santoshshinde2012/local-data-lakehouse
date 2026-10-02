@@ -304,7 +304,8 @@ def test_mermaid_schema_lists_every_label_and_edge_type_with_counts():
     counts = {"nodes": {k: i + 1 for i, k in enumerate(spec.NODE_SCHEMA)},
               "edges": {k: 1000 + i for i, k in enumerate(spec.EDGE_SCHEMA)}}
     text = charts.mermaid_schema(counts)
-    assert text.startswith("flowchart LR\n")
+    assert text.startswith(charts.MERMAID_INIT + "\nflowchart LR\n")
+    assert charts.MERMAID_CLASSDEFS in text and f"  class {','.join(spec.NODE_SCHEMA)}," in text
     for label in spec.NODE_SCHEMA:
         assert f'{label}["{label}<br/>' in text
     loops = 0
@@ -321,7 +322,7 @@ def test_mermaid_schema_lists_every_label_and_edge_type_with_counts():
 
 def test_mermaid_er_matches_the_spec():
     text = charts.mermaid_er()
-    assert text.startswith("erDiagram\n")
+    assert text.startswith(charts.MERMAID_INIT + "\nerDiagram\n")
     for label, n in spec.NODE_SCHEMA.items():
         assert f"  {label} {{" in text
         assert f" {n.key} PK" in text
@@ -337,6 +338,7 @@ def test_mermaid_lineage_flows_upstream_to_downstream_and_escapes_labels():
         {"depth": 1, "rel": "COUNTS_ROWS_OF", "from": "gold.t.f", "to": "silver.s", "roles": None,
          "window": "(as_of-14, as_of]", "transform": None}]}
     text = charts.mermaid_lineage(trace)
+    assert text.startswith(charts.MERMAID_INIT + "\nflowchart LR\n") and text.rstrip().endswith(" data")
     assert 'subgraph silver["silver"]' in text and 'subgraph gold["gold"]' in text
     assert '"s (table)"' in text
     ids = {m.group(2): m.group(1) for m in re.finditer(r'(n\d+)\["([^"]+)"\]', text)}
@@ -489,7 +491,8 @@ def test_no_home_path_scratch_path_or_credential_in_the_docs(page):
 def test_mermaid_blocks_are_well_formed():
     for page in PAGES:
         for block in re.findall(r"```mermaid\n(.*?)```", page.read_text(encoding="utf-8"), flags=re.S):
-            first = block.splitlines()[0]
+            init, first = block.splitlines()[:2]
+            assert init == charts.MERMAID_INIT, f"{page.name}: the shared palette init line comes first"
             assert first in ("flowchart LR", "flowchart TD", "flowchart TB", "erDiagram"), f"{page.name}: {first}"
             assert block.count("subgraph ") == len(re.findall(r"^\s*end\s*$", block, flags=re.M))
             assert block.count('"') % 2 == 0, f"{page.name}: unbalanced quotes"

@@ -7,6 +7,10 @@ Polars on the host** (no JVM) or by **Spark 4.1 and Trino** in containers.
 This repository is the **hands-on companion** to the article *Stop Reading About Lakehouses. Build One
 Locally.* It contains Compose files, jobs, sample data, tests and verified demos (no article prose).
 
+> **Results:** [RESULTS.md](RESULTS.md) has the measured numbers of one end-to-end run from empty volumes
+> (2026-10-02, M1 Pro): start-up and memory per profile, T0–T3 counts, every step with its time and console
+> excerpt, the retail / churn / parity / Retention Radar numbers, the graph summary and the CI runs.
+
 | Component | Role |
 |---|---|
 | **Lakekeeper** v0.13.6 | Iceberg REST catalog; vends short-lived S3 credentials per table ([config/CATALOG.md](config/CATALOG.md)) |
@@ -34,46 +38,57 @@ Locally.* It contains Compose files, jobs, sample data, tests and verified demos
 ## Architecture
 
 ```mermaid
+%%{init: {"theme": "base", "flowchart": {"wrappingWidth": 360}, "themeVariables": {"primaryColor": "#CCFBF1", "primaryTextColor": "#0F172A", "primaryBorderColor": "#0F766E", "lineColor": "#64748B", "textColor": "#0F172A", "edgeLabelBackground": "#FFFFFF", "clusterBkg": "#FFFFFF", "clusterBorder": "#64748B", "titleColor": "#0F172A", "attributeBackgroundColorOdd": "#FFFFFF", "attributeBackgroundColorEven": "#F0FDFA", "relationColor": "#64748B", "relationLabelBackground": "#FFFFFF", "relationLabelColor": "#0F172A"}}}%%
 flowchart LR
-  subgraph HOST["host · light profile engines · .venv"]
+  subgraph HOSTP["host engines · .venv, no JVM"]
     direction TB
     DUCK["DuckDB 1.5.6"]
     PYI["PyIceberg 0.12.0"]
     POL["Polars 1.44.2"]
   end
-
-  subgraph STACK["docker compose · ldl-net"]
+  subgraph LIGHT["light profile · docker compose, ldl-net"]
     direction TB
-    LK["Lakekeeper v0.13.6<br/>Iceberg REST catalog<br/><b>:8181/catalog</b>"]
-    PG[("Postgres 18.6<br/>catalog state")]
-    OS[("RustFS 1.0.0 or SILO<br/>s3://lake/warehouse<br/><b>:9000 · console :9001</b>")]
     INIT["lakehouse-init<br/>bucket + warehouse"]
-    SP["Spark 4.1.3 + Iceberg 1.12.0<br/>full profile <b>:4040</b>"]
-    TR["Trino 483<br/>TRINO=1 <b>:8088</b>"]
+    LK["Lakekeeper v0.13.6<br/>Iceberg REST catalog<br/>:8181/catalog"]
+    PG[("Postgres 18.6<br/>catalog state")]
+    OS[("RustFS 1.0.0 or SILO<br/>s3://lake/warehouse<br/>:9000 · console :9001")]
+    INIT -.-> LK
+    INIT -.-> OS
+    LK --> PG
+  end
+  subgraph FULL["full profile"]
+    SP["Spark 4.1.3 + Iceberg 1.12.0<br/>:4040 while a job runs"]
+  end
+  subgraph TRINOP["trino profile · TRINO=1"]
+    TR["Trino 483<br/>:8088"]
+  end
+  subgraph AIR["Airflow 3.3.2 overlay"]
+    AF["api-server + scheduler + dag-processor<br/>docker exec via a socket proxy<br/>127.0.0.1:8080"]
   end
 
-  AF["Airflow 3.3.2 overlay<br/>docker exec via socket proxy<br/><b>127.0.0.1:8080</b>"]
+  HOSTP -->|"REST + vended credentials"| LIGHT
+  FULL -->|"REST + vended credentials"| LIGHT
+  TRINOP -->|"REST + vended credentials"| LIGHT
+  AIR -.->|"docker exec"| FULL
 
-  LK --> PG
-  INIT -.-> OS
-  INIT -.-> LK
-  DUCK & PYI & POL -->|REST + vended credentials| LK
-  SP & TR -->|REST + vended credentials| LK
-  DUCK & PYI & POL -->|Parquet + metadata| OS
-  SP & TR --> OS
-  AF -.-> SP
-
-  style LK fill:#fdebd0,stroke:#333
-  style OS fill:#d6eaf8,stroke:#333
-  style PG fill:#d6eaf8,stroke:#333
-  style SP fill:#f5f5f5,stroke:#333
-  style TR fill:#f5f5f5,stroke:#666,stroke-dasharray: 5 5
-  style AF fill:#f5f5f5,stroke:#666,stroke-dasharray: 5 5
+  classDef storage fill:#DBEAFE,stroke:#1D4ED8,color:#0F172A,stroke-width:1.5px
+  classDef catalog fill:#FEF3C7,stroke:#B45309,color:#0F172A,stroke-width:1.5px
+  classDef compute fill:#ECFCCB,stroke:#4D7C0F,color:#0F172A,stroke-width:1.5px
+  classDef orchestration fill:#FCE7F3,stroke:#BE185D,color:#0F172A,stroke-width:1.5px
+  classDef graphlayer fill:#CCFBF1,stroke:#0F766E,color:#0F172A,stroke-width:1.5px
+  classDef consumer fill:#FFEDD5,stroke:#C2410C,color:#0F172A,stroke-width:1.5px
+  classDef data fill:#F1F5F9,stroke:#475569,color:#0F172A,stroke-width:1.5px
+  class OS storage
+  class LK,PG,INIT catalog
+  class DUCK,PYI,POL,SP,TR compute
+  class AF orchestration
+  style TRINOP stroke-dasharray:5 5
+  style AIR stroke-dasharray:5 5
 ```
 
-End-to-end evidence of one run from empty volumes (every step with its time and console excerpt,
-memory per phase, the full architecture drawing and Airflow 3 screenshots):
-[docs/demo/README.md](docs/demo/README.md).
+End-to-end evidence of one run from empty volumes: the summary with every number is [RESULTS.md](RESULTS.md);
+every step with its time and console excerpt, memory per phase, the full architecture drawing and Airflow 3
+screenshots are in [docs/demo/README.md](docs/demo/README.md).
 
 Every engine asks Lakekeeper for a table; Lakekeeper answers with the metadata location **and**
 short-lived S3 credentials plus the endpoint `http://objectstore.localhost:9000`, which resolves to the
@@ -99,52 +114,54 @@ open-source parts (LadybugDB, NetworkX, sqlglot, the MCP Python SDK, Pydantic AI
 default path needs no Docker.
 
 ```mermaid
-flowchart TB
+%%{init: {"theme": "base", "flowchart": {"wrappingWidth": 360}, "themeVariables": {"primaryColor": "#CCFBF1", "primaryTextColor": "#0F172A", "primaryBorderColor": "#0F766E", "lineColor": "#64748B", "textColor": "#0F172A", "edgeLabelBackground": "#FFFFFF", "clusterBkg": "#FFFFFF", "clusterBorder": "#64748B", "titleColor": "#0F172A", "attributeBackgroundColorOdd": "#FFFFFF", "attributeBackgroundColorEven": "#F0FDFA", "relationColor": "#64748B", "relationLabelBackground": "#FFFFFF", "relationLabelColor": "#0F172A"}}}%%
+flowchart LR
   subgraph LAKE["1 · lakehouse gold product"]
-    direction LR
-    BR["bronze events<br/><b>make churn-sample</b>"] --> GD["gold.churn_renewal_features<br/>Spark + Iceberg <b>make churn-e2e</b><br/>or pandas twin <b>make churn-gold-local</b>"]
+    direction TB
+    BR["bronze events<br/>make churn-sample"] --> GD["gold.churn_renewal_features<br/>Spark + Iceberg: make churn-e2e<br/>or pandas twin: make churn-gold-local"]
   end
 
   subgraph BUILD["2 · graph build · no LLM · seconds"]
-    direction LR
-    GB["graph builder<br/>dated event edges + SIMILAR_TO"] --> PQ[("Parquet nodes + edges<br/>manifest.json")] --> LB[("graph.lbdb<br/>LadybugDB")] --> CK{"strict point-in-time<br/>contract<br/><b>make graph-local</b>"}
+    direction TB
+    GB["graph builder<br/>dated event edges + SIMILAR_TO"] --> PQ[("Parquet nodes + edges<br/>manifest.json")] --> LB[("graph.lbdb<br/>LadybugDB")] --> CK{"strict point-in-time<br/>contract<br/>make graph-local"}
     LX["lineage graph<br/>sqlglot + ast over repo code"]
     CO["feature cohorts<br/>NetworkX"]
   end
 
   subgraph SERVE["3 · serve · read-only · macOS sandbox"]
-    MCP["MCP servers <b>scripts/graph_mcp.sh</b><br/>graph · metrics · lineage · cohorts<br/>14 typed tools · provenance on every answer"]
+    MCP["MCP servers: scripts/graph_mcp.sh<br/>graph · metrics · lineage · cohorts<br/>14 typed tools · provenance on every answer"]
   end
 
   subgraph AGENTS["4 · agents"]
-    direction LR
-    CC["Claude Code<br/>.mcp.json + skill<br/><b>scripts/graph_ask.sh</b>"]
-    OSS["open-source agent, experimental<br/>Pydantic AI + Ollama qwen3:4b<br/><b>scripts/graph_chat.py</b>"]
+    direction TB
+    CC["Claude Code<br/>.mcp.json + skill<br/>scripts/graph_ask.sh"]
+    OSS["open-source agent, experimental<br/>Pydantic AI + Ollama qwen3:4b<br/>scripts/graph_chat.py"]
   end
 
-  TWIN["Docker overlay + Airflow DAG<br/>Spark writes gold.graph_* and tags every input<br/><b>make graph-e2e</b>"]
+  TWIN["Docker overlay + Airflow DAG<br/>Spark writes gold.graph_* and tags every input<br/>make graph-e2e"]
 
   GD --> GB
   GD -.-> TWIN
-  TWIN -.->|PyIceberg REST read pinned by tag + snapshot| GB
-  CK -->|pass, then promote| MCP
+  TWIN -.->|"PyIceberg REST read pinned by tag + snapshot"| GB
+  CK -->|"pass, then promote"| MCP
   LX --> MCP
   CO --> MCP
   MCP --> CC
   MCP --> OSS
 
-  style BR fill:#d6eaf8,stroke:#333
-  style GD fill:#fdebd0,stroke:#333
-  style GB fill:#d6eaf8,stroke:#333
-  style PQ fill:#fdebd0,stroke:#333
-  style LB fill:#fdebd0,stroke:#333
-  style CK fill:#e8f6e8,stroke:#333
-  style LX fill:#d6eaf8,stroke:#333
-  style CO fill:#d6eaf8,stroke:#333
-  style MCP fill:#1a1a1a,color:#7CFC98,stroke:#1a1a1a
-  style CC fill:#f5f5f5,stroke:#333
-  style OSS fill:#f5f5f5,stroke:#666,stroke-dasharray: 5 5
-  style TWIN fill:#f5f5f5,stroke:#666,stroke-dasharray: 5 5
+  classDef storage fill:#DBEAFE,stroke:#1D4ED8,color:#0F172A,stroke-width:1.5px
+  classDef catalog fill:#FEF3C7,stroke:#B45309,color:#0F172A,stroke-width:1.5px
+  classDef compute fill:#ECFCCB,stroke:#4D7C0F,color:#0F172A,stroke-width:1.5px
+  classDef orchestration fill:#FCE7F3,stroke:#BE185D,color:#0F172A,stroke-width:1.5px
+  classDef graphlayer fill:#CCFBF1,stroke:#0F766E,color:#0F172A,stroke-width:1.5px
+  classDef consumer fill:#FFEDD5,stroke:#C2410C,color:#0F172A,stroke-width:1.5px
+  classDef data fill:#F1F5F9,stroke:#475569,color:#0F172A,stroke-width:1.5px
+  class BR,GD data
+  class GB,PQ,LB,CK,LX,CO graphlayer
+  class MCP,CC,OSS consumer
+  class TWIN orchestration
+  style TWIN stroke-dasharray:5 5
+  style OSS stroke-dasharray:5 5
 ```
 
 | Stage | What happens | Command |
@@ -156,7 +173,7 @@ flowchart TB
 | **agents** | Claude Code limited to the lakehouse servers, or a local open-source agent (experimental; its own venv, `requirements-graph-eval.txt`) | `scripts/graph_ask.sh` · `scripts/graph_chat.py` |
 | **Docker path** *(optional)* | Spark publishes `gold.graph_*` to Iceberg with tags; the graph container reads them back through the REST catalog (no credentials of its own) | `make graph-e2e` (178 s measured) |
 
-Dashed boxes are optional (Docker) or experimental (the local-model agent). There is no chat UI.
+Dashed borders mark optional (Docker) or experimental (the local-model agent) parts; colours follow the [diagram palette](docs/diagrams.md). There is no chat UI.
 Docs, results and charts: [docs/graph/README.md](docs/graph/README.md). The graph layer has its own
 TEACHING-ONLY banner and threat model in [docs/graph/agent.md](docs/graph/agent.md).
 

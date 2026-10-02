@@ -6,12 +6,12 @@
 |---|---|
 | Status | **pass** (exit 0) |
 | Command | `python scripts/graph_bench.py --graph-root $GRAPH_ROOT` |
-| Commit | `6225473` (working tree dirty: no) |
+| Commit | `2ad9612` (working tree dirty: no) |
 | Date | 2026-10-02 (UTC) |
 | Host | macOS-26.6.2 (macosx_arm64) |
 | Python | 3.12.9 · ladybug 0.21.2 · pandas 3.0.6 · numpy 2.5.3 · pyarrow 25.0.1 · networkx 3.7 · mcp 2.2.0 · pydantic 2.13.5 · sqlglot 30.21.0 |
 | Spark venv | pyiceberg 0.12.0 · pyspark 4.1.3 |
-| Duration | 16.1 s |
+| Duration | 16.8 s |
 | Summary | graph_bench: OK (profile s42, build a2598a28e164) |
 
 ## Output
@@ -24,11 +24,11 @@ Profile s42, build `a2598a28e164`, macosx_arm64, commit 013dd4e; 20 warm calls p
 | build | value |
 |---|---:|
 | source | fresh build in a scratch graph root |
-| wall clock (s) | 5.99 |
-| builder (s) | 4.17 |
-| builder max RSS (MiB) | 311.4 |
-| Ladybug load (s) | 1.03 |
-| loader max RSS (MiB) | 217.7 |
+| wall clock (s) | 6.25 |
+| builder (s) | 4.31 |
+| builder max RSS (MiB) | 293.8 |
+| Ladybug load (s) | 1.11 |
+| loader max RSS (MiB) | 229.3 |
 | graph.lbdb (MB) | 27.7 |
 | nodes / edges | 40204 / 130366 |
 
@@ -43,27 +43,27 @@ Profile s42, build `a2598a28e164`, macosx_arm64, commit 013dd4e; 20 warm calls p
 
 | toolset | server start (s) | RSS (MiB) |
 |---|---:|---:|
-| graph | 0.89 | 280.9 |
-| metrics | 0.85 | 167.5 |
-| lineage | 0.84 | 285.9 |
-| cohorts | 0.85 | 186.5 |
+| graph | 0.88 | 282.0 |
+| metrics | 0.85 | 169.0 |
+| lineage | 0.93 | 282.3 |
+| cohorts | 0.88 | 184.7 |
 
 | tool | in process p50 / p95 (ms) | stdio p50 / p95 (ms) |
 |---|---:|---:|
-| graph_describe | 0.85 / 2.09 | 2.33 / 2.72 |
-| graph_find | 0.29 / 0.34 | 1.45 / 2.03 |
-| graph_renewal_evidence | 4.67 / 5.47 | 6.52 / 7.55 |
-| graph_similar_renewals | 14.86 / 15.34 | 15.8 / 17.24 |
-| graph_exposure | 2.76 / 2.93 | 4.45 / 5.89 |
-| metric_lapse_rate | 0.36 / 0.38 | 1.83 / 2.42 |
-| metric_route_counts | 0.39 / 0.44 | 1.85 / 2.22 |
-| metric_feature_card | 0.27 / 0.33 | 1.91 / 2.25 |
-| lineage_trace | 2.6 / 3.14 | 4.72 / 5.25 |
-| lineage_pit | 2.12 / 2.83 | 3.47 / 4.02 |
-| lineage_guards | 1.58 / 2.01 | 2.97 / 3.89 |
-| lineage_unused | 1.6 / 2.05 | 2.89 / 3.65 |
-| cohort_summary | 3.16 / 3.57 | 4.74 / 5.02 |
-| cohort_list | 23.91 / 27.19 | 24.78 / 27.9 |
+| graph_describe | 0.66 / 0.91 | 1.98 / 2.18 |
+| graph_find | 0.29 / 0.39 | 1.51 / 2.01 |
+| graph_renewal_evidence | 5.03 / 6.07 | 6.28 / 6.91 |
+| graph_similar_renewals | 14.39 / 14.96 | 14.72 / 15.27 |
+| graph_exposure | 2.85 / 3.11 | 4.65 / 5.11 |
+| metric_lapse_rate | 0.42 / 0.5 | 1.64 / 1.77 |
+| metric_route_counts | 0.42 / 0.47 | 1.73 / 2.02 |
+| metric_feature_card | 0.29 / 0.37 | 1.87 / 2.31 |
+| lineage_trace | 2.81 / 3.16 | 5.92 / 13.69 |
+| lineage_pit | 1.7 / 2.21 | 4.44 / 6.74 |
+| lineage_guards | 1.57 / 2.14 | 3.85 / 4.83 |
+| lineage_unused | 1.7 / 1.92 | 3.82 / 4.62 |
+| cohort_summary | 3.14 / 4.24 | 5.55 / 6.74 |
+| cohort_list | 23.75 / 25.81 | 28.74 / 43.83 |
 
 One machine under whatever else it runs: indicative, not a benchmark suite.
 

@@ -709,10 +709,9 @@ def render_index(results: list[Result], env: dict, charts_note: str) -> str:
            "", index_table(results), "",
            "Also here: [palette-validation.md](palette-validation.md) (the chart palette, validated light and dark) "
            "and [mermaid/](mermaid/) (the generated diagrams).", "",
-           "Regenerate: `.venv-graph/bin/python scripts/graph_evidence.py --graph-root <dir>` (there is no "
-           "`make graph-evidence` target yet), after `make graph-sample PROFILE=s42`, `make graph-sample "
-           "PROFILE=tiny`, `make graph-local` for tiny, s42 and default, `scripts/build_lineage_local.py` and "
-           "`scripts/build_graph_cohorts.py` ([operations.md](../operations.md)).", ""]
+           "Regenerate: `make graph-evidence` (`scripts/graph_evidence.py --graph-root $GRAPH_ROOT`), after "
+           "`make graph-sample PROFILE=s42`, `make graph-sample PROFILE=tiny`, `make graph-local` for tiny, s42 "
+           "and default, `make lineage-local` and `make graph-cohorts` ([operations.md](../operations.md)).", ""]
     return "\n".join(out)
 
 
