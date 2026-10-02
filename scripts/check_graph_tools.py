@@ -920,10 +920,16 @@ def attack_incident(d: dict, truth: dict[str, dict[str, int]]) -> Attack:
     zero = dict.fromkeys(tools.INCIDENT_COUNTS, 0)
     full = {p: {**zero, **(truth.get(p) or {})} for p in PLANS}
     by = d["by_route"]
-    plan = {p: a.value(("plan", p), rows[p]["exposed"], full[p]["exposed"], 0 if wh else 1) for p in PLANS}
-    col = {c: a.value(("route", c), by[c], sum(full[p][c] for p in PLANS), 0 if wh else 1) for c in INCIDENT_ROUTES}
+    # a plan row made of current (public) renewals only is public too (the engine's 'known' entries)
+    plan = {p: a.value(("plan", p), rows[p]["exposed"], full[p]["exposed"], 0 if wh else 1,
+                       small_ok=rows[p]["exposed"] is not None and rows[p]["exposed"] == rows[p]["current"])
+            for p in PLANS}
+    # the current column (score_today / pending) is public by design (named_renewal_member, EXPOSURE_RULE): a printed
+    # 1-4 there is not a disclosure, exactly as in attack_route_counts
+    col = {c: a.value(("route", c), by[c], sum(full[p][c] for p in PLANS), 0 if wh else 1, small_ok=c == "current")
+           for c in INCIDENT_ROUTES}
     cell = {(p, c): a.value(("cell", p, c), rows[p][c], full[p][c],
-                            0 if wh or rows[p]["exposed"] is None or by[c] is None else 1)
+                            0 if wh or rows[p]["exposed"] is None or by[c] is None else 1, small_ok=c == "current")
             for p in PLANS for c in INCIDENT_ROUTES}
     lap = {p: a.value(("lapses", p), rows[p]["voluntary_lapses"], full[p]["voluntary_lapses"], 0, small_ok=True)
            for p in PLANS}
@@ -963,14 +969,21 @@ def attack_pricing(d: dict, truth: dict) -> Attack:
     got = {(c["plan_tier"], c["known_by_as_of"]): c for c in d["cells"]}
     if sorted(got) != sorted((p, k) for p in PLANS for k in (True, False)):
         raise AssertionError(f"{a.name}: the rows are not the fixed plan x known_by_as_of set")
+    def public_side(k) -> bool:      # a side made of current (public) renewals only is public too
+        v = d["known_by_as_of"]["true" if k else "false"]
+        cur = [row["current"] for (_, kk), row in got.items() if kk is k]
+        return v is not None and None not in cur and v == sum(cur)
+
     side = {k: a.value(("split", k), d["known_by_as_of"]["true" if k else "false"],
-                       sum(n for (_, kk, _), (n, _) in truth.items() if kk is k), 0 if wh else 1)
+                       sum(n for (_, kk, _), (n, _) in truth.items() if kk is k), 0 if wh else 1,
+                       small_ok=public_side(k))
             for k in (True, False)}
     cells: dict = {}
     for (p, k), row in got.items():
         for c in INCIDENT_ROUTES:
             cells[(p, k, c)] = a.value(("cell", p, k, c), row[c], truth.get((p, k, c), (0, 0))[0],
-                                       0 if wh or not isinstance(side[k], int) else 1)
+                                       0 if wh or not isinstance(side[k], int) else 1,
+                                       small_ok=c == "current")    # public by design, as for incidents
         lap = a.value(("lapses", p, k), row["voluntary_lapses"], truth.get((p, k, "model"), (0, 0))[1], 0,
                       small_ok=True)
         a.at_most(lap, cells[(p, k, "model")])
