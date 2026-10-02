@@ -98,7 +98,7 @@ jobs:
       - name: Install uv
         run: pip install "uv==${UV_VERSION}"
       - run: make venv
-      - name: objectstore.localhost -> loopback (required: plain glibc does not resolve *.localhost; only systemd-resolved / nss-myhostname do)
+      - name: "objectstore.localhost -> loopback (required: plain glibc does not resolve *.localhost; only systemd-resolved / nss-myhostname do)"
         run: echo "127.0.0.1 objectstore.localhost" | sudo tee -a /etc/hosts
       - name: Validate Compose files and profiles
         run: |
