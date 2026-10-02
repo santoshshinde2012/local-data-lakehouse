@@ -18,7 +18,7 @@ PYTEST = $(PY) -m pytest
 .PHONY: graph-test graph-venv graph-sample graph-build graph-check graph-local graph-promote graph-clean graph-golden graph-e2e
 
 help:
-	@echo "local-data-lakehouse (Iceberg 1.11 REST catalog: Lakekeeper + RustFS; see README)"
+	@echo "local-data-lakehouse (Iceberg 1.12 REST catalog: Lakekeeper + RustFS; see README)"
 	@echo "  make venv                .venv (Python 3.12) from the hash-locked requirements.txt (uv)"
 	@echo "  make up-light            light profile: Postgres 18 + Lakekeeper + RustFS + init, waits for health"
 	@echo "  make up-full [TRINO=1]   full profile: light + Spark 4.1.3 (+ Trino 483), waits for health"

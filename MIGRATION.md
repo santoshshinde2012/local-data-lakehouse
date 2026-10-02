@@ -1,4 +1,4 @@
-# Migration: JDBC catalog + SILO + Spark 3.5 → Lakekeeper REST + RustFS + Iceberg 1.11 + Spark 4.1
+# Migration: JDBC catalog + SILO + Spark 3.5 → Lakekeeper REST + RustFS + Iceberg 1.12 + Spark 4.1
 
 This is the October 2026 "local-first stack" upgrade (branch `feat/local-first-stack-2026`).
 It changes how every engine finds tables, so **old volumes cannot be reused**: start clean.
@@ -24,7 +24,7 @@ volumes that a service of the loaded model mounts.
 | Credentials | `spark-defaults.conf` hard-coded `minioadmin` keys; every client held root S3 keys | `.env` only (compose fails fast when unset); engines get **short-lived STS credentials** from Lakekeeper (`X-Iceberg-Access-Delegation: vended-credentials`) | No secrets in tracked files; least privilege. |
 | Object store | SILO `RELEASE.2026-09-03…` + `pgsty/mc` init | **RustFS 1.0.0** default; **SILO `RELEASE.2026-09-16…`** (security release) as `STORE=silo` | Apache-2.0, STS support, small. SILO kept as a drop-in. |
 | Endpoint | `http://silo:9000` (in-network only) | `http://objectstore.localhost:9000` everywhere | Vended endpoint must work from containers and the host. |
-| Spark | 3.5.3 (Scala 2.12, Java 17), Iceberg 1.6.1, hadoop-aws + aws-java-sdk-bundle, `s3a://` | **Spark 4.1.3** (Scala 2.13, Java 21), **Iceberg 1.11.0** runtime + `iceberg-aws-bundle`, `S3FileIO`, `s3://` | Current Iceberg; no Hadoop S3A stack. Spark 4.2 has no Iceberg runtime yet; 3.5.x is the LTS fallback (see README). |
+| Spark | 3.5.3 (Scala 2.12, Java 17), Iceberg 1.6.1, hadoop-aws + aws-java-sdk-bundle, `s3a://` | **Spark 4.1.3** (Scala 2.13, Java 21), **Iceberg 1.12.0** runtime + `iceberg-aws-bundle`, `S3FileIO`, `s3://` | Current Iceberg; no Hadoop S3A stack. Spark 4.2 has no Iceberg runtime yet; 3.5.x is the LTS fallback (see README). |
 | Profiles | one stack, always with the JVM | `light` (no JVM) and `full` (+ Spark, + optional Trino) | A laptop-sized default; JVM only when you need it. |
 | Host engines | pandas only | **DuckDB 1.5.6**, **PyIceberg 0.12.0**, **Polars 1.44.2**, pyarrow 25.0.1 in a hash-locked `.venv` | Run the medallion without Spark (`make demo-light`). |
 | Trino | none | **Trino 483**, optional (`TRINO=1`, port 8088) | Cross-engine parity in T3. |
@@ -64,7 +64,7 @@ Spark-compatible types (`TIMESTAMPTZ`), so `make e2e` can append to them afterwa
 - **Vended credentials expire after laptop sleep.** A Spark job that spans a sleep fails with S3
   `400 Bad Request` and "Failed to refresh storage credentials … Invalid credentials endpoint: null".
   Re-run the job.
-- **Iceberg 1.11 rejects `option("snapshot-id")`.** Use `VERSION AS OF` or `option("versionAsOf", …)`.
+- **Iceberg 1.11+ (also 1.12) rejects `option("snapshot-id")`.** Use `VERSION AS OF` or `option("versionAsOf", …)`.
 - **Silver dedupe fix.** Bronze now records one `_ingested_at` per orders file and silver breaks ties
   on `_source_file DESC`; before, o-1006 (same `order_ts` on both days) made the silver count 18 or 19.
 - **Graph Spark harness stays on 3.5.** `scripts/check_graph_parity.py` keeps its hermetic local
@@ -106,7 +106,7 @@ commit (or to `main`).
 - **Stack:** Lakekeeper v0.13.6 REST catalog on Postgres 18.6; RustFS 1.0.0 (default) or SILO
   RELEASE.2026-09-16T00-00-00Z (`STORE=silo`); `lakehouse-init` (curl 8.22.0); profiles `light`
   (no JVM), `full` (+ Spark 4.1.3), `trino` (+ Trino 483). Every image pinned by tag + digest.
-- **Engines:** Spark 4.1.3 (Scala 2.13, Java 21) + Iceberg 1.11.0 with `S3FileIO`; host DuckDB 1.5.6,
+- **Engines:** Spark 4.1.3 (Scala 2.13, Java 21) + Iceberg 1.12.0 with `S3FileIO`; host DuckDB 1.5.6,
   PyIceberg 0.12.0, Polars 1.44.2, pyarrow 25.0.1 (`requirements.txt`, hash-locked, uv).
 - **Security:** no secrets in tracked files; vended credentials; non-root containers; Airflow behind a
   socket proxy with generated secrets.
@@ -114,7 +114,7 @@ commit (or to `main`).
 - **Graph:** PyIceberg REST catalog (was `SqlCatalog` on the JDBC tables); Postgres read-only role removed.
 - **Tests and CI:** T0–T3 tiers; CI on Node 24 actions, uv 0.12.4, pyspark 4.1.3 parity on Java 21;
   the Retention Radar step uses radar's v2 consumer.
-- **Fixes:** nondeterministic silver dedupe; Iceberg 1.11 time-travel option; lineage extractor
+- **Fixes:** nondeterministic silver dedupe; Iceberg 1.11+ time-travel option; lineage extractor
   resolution of the bronze ingest and the radar step.
 - **Docs:** README, `config/CATALOG.md`, `docs/object-store.md`, `docs/graph/*`, demo excerpts; the
   49 MB demo video removed from the tree (attach it to a GitHub Release).

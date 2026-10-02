@@ -28,7 +28,7 @@ described in [MIGRATION.md](../MIGRATION.md).
 | Storage | bucket `lake` (`S3_BUCKET`), key prefix `warehouse`, path-style, `sts-enabled` | `docker/init/bootstrap.sh` |
 | Endpoint vended to engines | `http://objectstore.localhost:9000` (`S3_ENDPOINT`) | same URL inside `ldl-net` and on the host ([docs/object-store.md](../docs/object-store.md)) |
 | Catalog name in engines | `lakehouse` (Spark `spark.sql.defaultCatalog`, Trino catalog, DuckDB `ATTACH … AS lakehouse`, PyIceberg) | |
-| Spark FileIO | `org.apache.iceberg.aws.s3.S3FileIO` (iceberg-aws-bundle 1.11.0; no hadoop-aws) | `config/spark-defaults.conf` |
+| Spark FileIO | `org.apache.iceberg.aws.s3.S3FileIO` (iceberg-aws-bundle 1.12.0; no hadoop-aws) | `config/spark-defaults.conf` |
 | Authentication | none (local teaching stack; Lakekeeper's API is open on port 8181) | `docker-compose.yml` |
 
 Spark, for example:
@@ -76,8 +76,8 @@ The light demo writes the retail tables with Spark-compatible types (DuckDB `TIM
   reader ignores vended credentials and probes the EC2 metadata service.
 - **Trino 483:** `iceberg.catalog.type=rest`, `iceberg.rest-catalog.vended-credentials-enabled=true`,
   native S3 filesystem; no keys in the catalog file.
-- **Spark 4.1.3 / Iceberg 1.11.0:** time travel with `VERSION AS OF <snapshot>` in SQL or
-  `option("versionAsOf", …)` in the DataFrame API (`option("snapshot-id")` is rejected by 1.11).
+- **Spark 4.1.3 / Iceberg 1.12.0:** time travel with `VERSION AS OF <snapshot>` in SQL or
+  `option("versionAsOf", …)` in the DataFrame API (`option("snapshot-id")` is rejected since 1.11).
 - **Vended credentials expire.** If the laptop sleeps during a long job, the job fails with S3 `400 Bad
   Request` and `S3FileIO: Failed to refresh storage credentials … Invalid credentials endpoint: null`
   (Lakekeeper advertises no refresh endpoint). Re-run the job.

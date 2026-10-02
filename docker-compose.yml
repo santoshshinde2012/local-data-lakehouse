@@ -4,7 +4,7 @@
 # Profiles (nothing starts without one):
 #   light   postgres + lakekeeper (migrate -> serve) + objectstore + lakehouse-init. No JVM.
 #           Engines run on the host: DuckDB / PyIceberg / Polars (requirements.txt).
-#   full    light + spark (Spark 4.1.3, Iceberg 1.11). Add --profile trino for Trino 483.
+#   full    light + spark (Spark 4.1.3, Iceberg 1.12). Add --profile trino for Trino 483.
 # Usage:
 #   cp .env.example .env
 #   docker compose --profile light up -d --wait          # make up-light
@@ -146,7 +146,7 @@ services:
   spark:
     build:
       context: ./docker/spark
-    image: ldl-spark:4.1.3-iceberg1.11.0
+    image: ldl-spark:4.1.3-iceberg1.12.0
     container_name: ldl-spark
     profiles: [full]
     depends_on:
@@ -166,7 +166,7 @@ services:
       - ./data/export:/opt/data/export
       - ./sql:/opt/sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "test -f /opt/spark/jars/iceberg-spark-runtime-4.1_2.13-1.11.0.jar && curl -fsS -o /dev/null http://lakekeeper:8181/health"]
+      test: ["CMD-SHELL", "test -f /opt/spark/jars/iceberg-spark-runtime-4.1_2.13-1.12.0.jar && curl -fsS -o /dev/null http://lakekeeper:8181/health"]
       interval: 5s
       timeout: 5s
       retries: 12

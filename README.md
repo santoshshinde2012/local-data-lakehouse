@@ -12,7 +12,7 @@ Locally.* It contains Compose files, jobs, sample data, tests and verified demos
 | **Lakekeeper** v0.13.6 | Iceberg REST catalog; vends short-lived S3 credentials per table ([config/CATALOG.md](config/CATALOG.md)) |
 | **PostgreSQL** 18.6 | Lakekeeper's state (no engine talks to it) |
 | **RustFS** 1.0.0 (default) / **SILO** (`STORE=silo`) | S3-compatible object store, bucket `lake` ([docs/object-store.md](docs/object-store.md)) |
-| **Apache Iceberg** 1.11.0 | ACID tables, snapshots, time travel |
+| **Apache Iceberg** 1.12.0 | ACID tables, snapshots, time travel |
 | **DuckDB / PyIceberg / Polars** | Host engines of the `light` profile |
 | **Apache Spark** 4.1.3 | Ingest, transform, SQL (`full` profile) |
 | **Trino** 483 | Optional SQL engine (`TRINO=1`), cross-engine parity |
@@ -48,7 +48,7 @@ flowchart LR
     PG[("Postgres 18.6<br/>catalog state")]
     OS[("RustFS 1.0.0 or SILO<br/>s3://lake/warehouse<br/><b>:9000 · console :9001</b>")]
     INIT["lakehouse-init<br/>bucket + warehouse"]
-    SP["Spark 4.1.3 + Iceberg 1.11.0<br/>full profile <b>:4040</b>"]
+    SP["Spark 4.1.3 + Iceberg 1.12.0<br/>full profile <b>:4040</b>"]
     TR["Trino 483<br/>TRINO=1 <b>:8088</b>"]
   end
 
@@ -386,7 +386,7 @@ tag floats, a digest is missing, or this table drifts from the pins.
 | SILO | RELEASE.2026-09-16T00-00-00Z | `pgsty/silo:RELEASE.2026-09-16T00-00-00Z` | https://github.com/pgsty/silo |
 | curl (init) | 8.22.0 | `curlimages/curl:8.22.0` | https://hub.docker.com/r/curlimages/curl |
 | Apache Spark | Spark 4.1.3 (Scala 2.13, Java 21) | `apache/spark:4.1.3-scala2.13-java21-python3-ubuntu` | https://spark.apache.org/downloads.html |
-| Apache Iceberg | Iceberg 1.11.0 | `iceberg-spark-runtime-4.1_2.13`, `iceberg-aws-bundle` | https://iceberg.apache.org/releases/ |
+| Apache Iceberg | Iceberg 1.12.0 | `iceberg-spark-runtime-4.1_2.13`, `iceberg-aws-bundle` | https://iceberg.apache.org/releases/ |
 | Trino | 483 | `trinodb/trino:483` | https://trino.io/docs/current/release.html |
 | Apache Airflow | 3.3.2 | `apache/airflow:3.3.2-python3.12` | https://airflow.apache.org/docs/apache-airflow/stable/release_notes.html |
 | socket-proxy | 1.13.1 | `wollomatic/socket-proxy:1.13.1` | https://github.com/wollomatic/socket-proxy |
@@ -474,7 +474,7 @@ docker-compose.airflow.yml
 ```text
 local-data-lakehouse/
   config/                 # spark-defaults.conf, log4j2, trino/ catalog, CATALOG.md
-  docker/spark/           # Spark 4.1.3 + Iceberg 1.11.0 image
+  docker/spark/           # Spark 4.1.3 + Iceberg 1.12.0 image
   docker/init/            # lakehouse-init bootstrap (bucket, warehouse)
   docker/airflow/ docker/graph/
   src/jobs/retail|churn|graph/   # Spark jobs, one stage each

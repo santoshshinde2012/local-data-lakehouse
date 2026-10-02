@@ -1,4 +1,4 @@
-# Spark 4.1.3 (Scala 2.13, Java 21, Python 3) + Iceberg 1.11.0 runtime + Iceberg AWS bundle.
+# Spark 4.1.3 (Scala 2.13, Java 21, Python 3) + Iceberg 1.12.0 runtime + Iceberg AWS bundle.
 # The REST catalog (Lakekeeper) vends S3 credentials per table, and Iceberg's own S3FileIO (AWS SDK
 # v2 from iceberg-aws-bundle) reads/writes the files: no hadoop-aws, no aws-java-sdk-bundle, no
 # JDBC driver. Multi-arch base (amd64 + arm64), pinned by tag AND index digest; refresh together:
@@ -7,12 +7,12 @@
 ARG SPARK_IMAGE=apache/spark:4.1.3-scala2.13-java21-python3-ubuntu@sha256:bf9d035a7c32a8ca46aa58d6348182ffd7d2dff6409206ecfbb3915ff1fef211
 FROM ${SPARK_IMAGE}
 
-ARG ICEBERG_VERSION=1.11.0
+ARG ICEBERG_VERSION=1.12.0
 ARG SPARK_SERIES=4.1
 ARG SCALA=2.13
 # sha256 of the two Maven Central jars (verified at build time).
-ARG ICEBERG_RUNTIME_SHA256=d6ea6c5d099288daeb7d5a92061bd3d7d8f296492632b42378e5f2f0e3066242
-ARG ICEBERG_AWS_SHA256=38f01da7e96850cdd05e6616d758b77b43314b712a8808e3f9a824d56976162f
+ARG ICEBERG_RUNTIME_SHA256=3123c3798af642dd537230923548e013ef41cc28b6626e5225808cf5670a0f82
+ARG ICEBERG_AWS_SHA256=dd7e49ffa4ac9b215bed846581991259e3aec9bb2fa08d6cec029c46cd66d957
 
 USER root
 RUN set -eux; \

@@ -141,13 +141,13 @@ def test_trino_catalog_uses_vended_credentials():
 def test_spark_image_is_spark_41_iceberg_111_without_hadoop_aws():
     text = (REPO / "docker/spark/Dockerfile").read_text()
     assert re.search(r"apache/spark:4\.1\.3-scala2\.13-java21-python3-ubuntu@sha256:[0-9a-f]{64}", text)
-    assert "ARG ICEBERG_VERSION=1.11.0" in text and "iceberg-aws-bundle" in text
+    assert "ARG ICEBERG_VERSION=1.12.0" in text and "iceberg-aws-bundle" in text
     assert re.search(r"ICEBERG_RUNTIME_SHA256=[0-9a-f]{64}", text) and re.search(r"ICEBERG_AWS_SHA256=[0-9a-f]{64}", text)
     code = "\n".join(ln for ln in text.splitlines() if not ln.lstrip().startswith("#"))
     assert "hadoop-aws" not in code and "aws-java-sdk-bundle" not in code and "postgresql" not in code
     assert re.search(r"^USER spark$", text, re.M), "the Spark image must end non-root"
     compose = (REPO / "docker-compose.yml").read_text()
-    assert "iceberg-spark-runtime-4.1_2.13-1.11.0.jar" in compose
+    assert "iceberg-spark-runtime-4.1_2.13-1.12.0.jar" in compose
 
 
 def test_init_script_is_posix_and_enables_sts():
@@ -165,5 +165,5 @@ def test_versions_in_readme_match_the_pins():
     for repo, ref in pins.items():
         tag = ref.split("@", 1)[0].rsplit(":", 1)[1]
         assert tag in readme, f"README version table misses {repo}:{tag}"
-    for needle in ("Iceberg 1.11.0", "Spark 4.1.3", "duckdb 1.5.6", "pyiceberg 0.12.0", "polars 1.44.2"):
+    for needle in ("Iceberg 1.12.0", "Spark 4.1.3", "duckdb 1.5.6", "pyiceberg 0.12.0", "polars 1.44.2"):
         assert needle.lower() in readme.lower(), needle
