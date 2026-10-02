@@ -34,7 +34,6 @@ GRAPH_DAG_HELPERS = "airflow/dags/lakehouse_graph_operators.py"   # graph_exec_t
 GRAPH_E2E = "pipelines/run_graph_e2e.sh"                          # the same chain without Airflow
 RADAR = "https://github.com/santoshshinde2012/retention-radar"
 RADAR_STEP = "Retention Radar consumes the export"
-V2_BRANCH = "feat/coding-assistant-renewal-v2"   # radar's v2 consumer (hero_inference_record.json)
 COPIED = ["sql", "src/jobs", "airflow/dags", "pipelines", "Makefile", ".github/workflows/ci.yml", "README.md"]
 
 
@@ -189,17 +188,16 @@ def _ci_line(text: str) -> int:
     return hits[0]
 
 
-def test_ci_clone_url_and_both_candidate_refs_resolve_from_the_step(facts):
-    """URL=... and REF chosen by if / else in the same run: block (the same-named radar branch, else radar's
-    v2 consumer branch), then git clone "$REF" "$URL"."""
+def test_ci_clone_url_and_ref_resolve_from_the_step(facts):
+    """URL=... in the run: block, then git clone --branch main "$URL" (radar main reads the v2 export)."""
     step = next(s for s in facts["ci"] if s["name"] == RADAR_STEP)
     (clone,) = step["clones"]
     assert clone["urls"] == [RADAR] and clone["url_expr"] == '"$URL"' and clone["problem"] is None
-    assert clone["refs"] == ["${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}", V2_BRANCH] and clone["ref_expr"] == '"$REF"'
+    assert clone["refs"] == ["main"] and clone["ref_expr"] == "main"
     assert clone["depth"] == 1 and clone["notes"] == [] and clone["line"] == _ci_line("git clone")
 
 
-def test_ci_clone_is_a_downstream_repo_with_one_clones_edge_per_candidate_ref(graph):
+def test_ci_clone_is_a_downstream_repo_with_one_clones_edge_for_main(graph):
     sid = "ci:t0-unit#" + RADAR_STEP.lower().replace(" ", "-")
     rid = "repo:github.com/santoshshinde2012/retention-radar"
     assert graph.unresolved == [] and graph.ids("DownstreamRepo") == [rid]
@@ -207,8 +205,7 @@ def test_ci_clone_is_a_downstream_repo_with_one_clones_edge_per_candidate_ref(gr
     clones = sorted((e["props"]["ref"], e["props"]["n_refs"], e["props"]["depth"], e["props"]["ref_expr"],
                      e["props"]["source"]) for e in graph.out(sid, "CLONES"))
     where = f"{spec.CI_WORKFLOW}:{_ci_line('git clone')}"
-    assert clones == [("${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}", 2, 1, '"$REF"', where),
-                      (V2_BRANCH, 2, 1, '"$REF"', where)]
+    assert clones == [("main", 1, 1, "main", where)]
     assert sorted(e["dst"] for e in graph.out(rid, "CONSUMES")) == ["export:data/export/churn_user_features.csv",
                                                                     "export:data/export/hero_inference_record.json"]
     # the cloned repo's own script is not ours to resolve (it ran inside the clone)
@@ -361,7 +358,7 @@ def test_an_actions_checkout_of_another_repository_is_a_clone(tmp_path):
         "ref": "${{ github.head_ref }}", "ref_expr": "${{ github.head_ref }}", "n_refs": 1, "depth": None,
         "url_expr": "santoshshinde2012/retention-radar", "source": f"{spec.CI_WORKFLOW}:{line}"}
     # the radar step still clones it too (one DownstreamRepo, two steps)
-    assert len([e for e in g.edges if e["rel"] == "CLONES"]) == 3
+    assert len([e for e in g.edges if e["rel"] == "CLONES"]) == 2
     (own,) = [s for s in ex.extract_ci(ex.SourceFiles(root)) if s["name"] == "Check out the consumer"]
     assert own["clones"][0]["tool"] == "actions/checkout"
     block = [(1, "      - uses: actions/checkout@v4"), (2, "        with:"),

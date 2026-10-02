@@ -2,17 +2,14 @@
 # Retention Radar consumes this repo's churn export (what CI's "Retention Radar consumes the export" runs).
 #   ./pipelines/radar_consume.sh [export_dir] [checkout_dir]
 # CI clones radar itself (so the lineage graph sees the clone) and passes RADAR_CHECKOUT_READY=1.
-# Ref choice: RADAR_REF if set; else the radar branch named like this branch (paired PRs); else RADAR_V2_SHA,
-# the last radar commit that reads the v2 export (hero_inference_record.json). Radar main still reads the
-# v1 export (santosh_inference_record.json) until radar PR #21 (branch feat/local-first-stack-2026, the v2
-# reader on top of main) merges, so falling back to main fails with FileNotFoundError.
+# Ref: radar main, which reads this repo's v2 export (churn_user_features.csv + hero_inference_record.json)
+# since radar PR #21 merged. For paired changes, point at a radar branch or commit with RADAR_REF=<ref>.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 EXPORT_DIR="$(cd "${1:-$ROOT/data/export}" && pwd)"
 DEST="${2:-${TMPDIR:-/tmp}/retention-radar}"
 URL="${RADAR_URL:-https://github.com/santoshshinde2012/retention-radar.git}"
-V2_SHA="${RADAR_V2_SHA:-953af3ab57b79bf6c22a1a4f6a4ae299de90b6d3}"
-BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-$(git -C "$ROOT" rev-parse --abbrev-ref HEAD)}}"
+REF="${RADAR_REF:-main}"
 # Radar needs Python 3.12+ (its bundle is XGBoost 3.4.1 on 3.12); prefer python3.12 when present.
 PY="${PYTHON:-$(command -v python3.12 || command -v python3)}"
 
@@ -23,9 +20,6 @@ done
 if [[ "${RADAR_CHECKOUT_READY:-0}" == 1 && -d "$DEST/.git" ]]; then
   echo "using the existing checkout at $DEST (RADAR_CHECKOUT_READY=1)"
 else
-  if [[ -n "${RADAR_REF:-}" ]]; then REF="$RADAR_REF"
-  elif [[ "$BRANCH" != main ]] && git ls-remote --exit-code --heads "$URL" "$BRANCH" >/dev/null 2>&1; then REF="$BRANCH"
-  else REF="$V2_SHA"; fi
   echo "retention-radar ref: $REF"
   rm -rf "$DEST"
   git init -q "$DEST"

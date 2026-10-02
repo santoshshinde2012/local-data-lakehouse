@@ -58,16 +58,12 @@ jobs:
           CHURN_SAMPLE_DIR=data/sample/churn/fixtures/tiny .venv/bin/python scripts/check_gold_parity.py
           .venv/bin/python scripts/check_gold_parity.py
       - name: Retention Radar consumes the export
-        # Radar main still reads the v1 export (santosh_inference_record.json); the v2 consumer that reads
-        # hero_inference_record.json lives on radar's feat/coding-assistant-renewal-v2 branch (PR #18, closed
-        # unmerged; head 953af3a) and on feat/local-first-stack-2026 (radar PR #21: v2 on top of main). Use the
-        # same-named radar branch when one exists, else the v2 branch.
+        # Radar main reads the v2 export (churn_user_features.csv + hero_inference_record.json) since radar
+        # PR #21 merged. A paired radar change can be tried locally with RADAR_REF=<ref> ./pipelines/radar_consume.sh.
         run: |
           URL=https://github.com/santoshshinde2012/retention-radar.git
-          BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
-          if git ls-remote --exit-code --heads "$URL" "$BRANCH" >/dev/null; then REF="$BRANCH"; else REF=feat/coding-assistant-renewal-v2; fi
-          echo "retention-radar ref: $REF"
-          git clone --depth 1 --branch "$REF" "$URL" "$RUNNER_TEMP/retention-radar"
+          echo "retention-radar ref: main"
+          git clone --depth 1 --branch main "$URL" "$RUNNER_TEMP/retention-radar"
           RADAR_CHECKOUT_READY=1 ./pipelines/radar_consume.sh "$GITHUB_WORKSPACE/data/export" "$RUNNER_TEMP/retention-radar"
 
   graph:
