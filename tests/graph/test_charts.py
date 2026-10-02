@@ -177,13 +177,38 @@ def test_a_planted_count_is_printed_and_sizes_its_bar():
 @pytest.mark.parametrize("name,in_svg,in_table", [
     ("leak", "321 of 900 after as_of", "| 321 |"), ("naive", "4,321 wrong", "| 4,321 |"),
     ("timeline", "inc-777", "| inc-777 |"), ("neighbours", "sub_00007", "sub_00007:"),
-    ("exposure", "4,242", "| 4,242 |"), ("lapse", "77/500", "| 500 | 77 |"), ("cohorts", "leiden-02", "| leiden-02 |"),
+    ("exposure", "700 exposed", "| 4,242 |"), ("lapse", "77/500", "| 500 | 77 |"), ("cohorts", "leiden-02", "| leiden-02 |"),
     ("latency", "37.8", "| 37.75 |"), ("eval", "17/22", "| 17/22 |"), ("leakage", "0.853", "| 0.8525 |"),
 ])
 def test_planted_values_reach_the_svg_and_the_table(name, in_svg, in_table):
     fig = FIGURES[name]()
     assert in_svg in _all_text(fig.svg(charts.LIGHT)), f"{in_svg!r} missing from the {name} SVG"
     assert in_table in fig.table_md(), f"{in_table!r} missing from the {name} table"
+
+
+@pytest.mark.parametrize("name", sorted(FIGURES))
+def test_image_text_stays_short_and_the_detail_goes_to_the_caption(name):
+    """A title, one subtitle line, a short legend, one footer of at most 8 words; no paragraph."""
+    fig = FIGURES[name]()
+    texts = [t.text or "" for t in _texts(fig.svg(charts.LIGHT))]
+    assert len(fig.title) <= 60, fig.title
+    sub = texts[1]
+    assert len(charts.wrap(sub, charts.W - 2 * charts.PAD, 12)) == 1 and len(sub) <= 90, sub
+    assert all(len(t.split()) <= 8 for t in texts if t.startswith("Graph build"))
+    assert not any("Source:" in t or "regenerate" in t for t in texts), "the long note is not drawn"
+    assert all(len(t) <= 90 for t in texts), [t for t in texts if len(t) > 90]
+    assert fig.caption and fig.caption in fig.markdown() and fig.note in fig.markdown()
+
+
+def test_the_drawn_footer_is_the_build_id_and_seed_only():
+    man = {"business_build_id": "e2b501f9dbe9", "profile": "tiny", "seed": 42, "n_users": 120,
+           "data_end": "2026-09-30", "spec": {"graph": "renewal-graph/1"}, "commit": "abc1234", "dirty": False}
+    note = charts.build_note(man, "Rows as graph_renewal_evidence returns them.")
+    assert charts.short_footer(note) == "Graph build e2b501f9dbe9, seed 42"
+    fig = charts.timeline_figure({**TIMELINE, "note": note})
+    texts = [t.text or "" for t in _texts(fig.svg(charts.LIGHT))]
+    assert texts[-1] == "Graph build e2b501f9dbe9, seed 42" and "abc1234" not in " ".join(texts)
+    assert "commit abc1234" in fig.markdown(), "the full provenance stays in the doc caption"
 
 
 def _all_text(svg: str) -> str:
@@ -194,23 +219,26 @@ def _all_text(svg: str) -> str:
 def test_withheld_cohorts_are_listed_never_drawn():
     fig = charts.cohorts_figure(COHORTS)
     svg = fig.svg(charts.LIGHT)
-    assert "Withheld (small cells): leiden-03" in ET.fromstring(svg).find(f"{NS}desc").text or "leiden-03" in svg
+    assert "Withheld (small cells): leiden-03" in fig.caption
     assert not any(g.find(f"{NS}title") is not None and g.find(f"{NS}title").text.startswith("leiden-03")
                    for g in ET.fromstring(svg).iter(f"{NS}g"))
     assert ["leiden-03", "withheld", "-", "-", "-", "-", "small cell (or its complement)"] in fig.rows
 
 
 def test_declared_exception_and_hidden_events_are_named_on_the_timeline():
-    text = _all_text(charts.timeline_figure(TIMELINE).svg(charts.LIGHT))
-    assert "declared exception" in text and "(5 exist for this renewal)" in text
-    assert "cap-cut-2026-10 (after as_of)" in text
+    fig = charts.timeline_figure(TIMELINE)
+    text = _all_text(fig.svg(charts.LIGHT))
+    assert "after as_of (exception)" in text and "cap-cut-2026-10" in text
+    assert "declared exception" in fig.caption and "(5 exist for this renewal)" in fig.caption
+    assert fig.caption in fig.markdown(), "the detail is the caption under the image"
 
 
 def test_historical_neighbours_without_visible_outcomes_are_shown_as_not_yet_observed():
     d = {**NEIGHBOURS, "visibility": "source_as_of",
          "neighbours": [{**NEIGHBOURS["neighbours"][0], "outcome": "not_yet_observed"}, *NEIGHBOURS["neighbours"][1:]]}
-    text = _all_text(charts.neighbours_figure(d).svg(charts.DARK))
-    assert "not yet observed" in text and "outcomes visible as of 2026-09-30" in text
+    fig = charts.neighbours_figure(d)
+    assert "not yet observed" in _all_text(fig.svg(charts.DARK))
+    assert "outcomes visible as of 2026-09-30" in fig.caption
 
 
 def _marks(svg: str, prefix: str) -> list[ET.Element]:
@@ -267,8 +295,8 @@ def test_a_cumulative_feature_window_is_shaded_from_the_start_to_as_of():
            "declared_exception": False, "detail": None}
     with_band = charts.timeline_figure({**TIMELINE, "rows": [*TIMELINE["rows"], row], "cumulative": ["CUT_CAP"]})
     without = charts.timeline_figure({**TIMELINE, "rows": [*TIMELINE["rows"], row]})
-    assert "window: everything on or before as_of" in _all_text(with_band.svg(charts.LIGHT))
-    assert "window: everything on or before as_of" not in _all_text(without.svg(charts.LIGHT))
+    assert "all before as_of" in _all_text(with_band.svg(charts.LIGHT))
+    assert "all before as_of" not in _all_text(without.svg(charts.LIGHT))
 
 
 def test_headline_table_numbers_come_from_the_manifest_contract_and_bench():
@@ -366,13 +394,13 @@ def test_fill_regions_replaces_only_between_the_markers():
 def test_figures_from_the_tiny_build(tiny_build):
     bdir, man = tiny_build
     figs = {f.name: f for f in charts.figures_from_build(bdir)}
-    assert {"graph-composition", "leak-surface", "naive-vs-pit", "maya-timeline", "maya-neighbours",
+    assert {"graph-composition", "leak-surface", "naive-vs-pit", "santosh-timeline", "santosh-neighbours",
             "inc-002-exposure", "lapse-first-after-cut"} <= set(figs)
     assert ["total", "nodes", "616"] in figs["graph-composition"].rows
     assert ["total", "edges", "1,949"] in figs["graph-composition"].rows
     naive = {r[0]: r[3] for r in figs["naive-vs-pit"].rows}
     assert naive == {"limit_hits_14d": "16", "incident_exposed_28d": "12", "support_tickets_90d": "4"}
-    assert len(figs["maya-timeline"].rows) == 8, "the hero's 8 evidence rows (tiny = seed 42)"
+    assert len(figs["santosh-timeline"].rows) == 8, "the hero's 8 evidence rows (tiny = seed 42)"
     assert man["business_build_id"] in figs["leak-surface"].note
 
 
@@ -389,7 +417,7 @@ def test_graph_charts_cli_writes_both_themes_and_fills_a_page(tiny_build, tmp_pa
     p = subprocess.run([sys.executable, str(REPO / "scripts/graph_charts.py"), *args], capture_output=True, text=True,
                        cwd=REPO, timeout=300, check=False)
     assert p.returncode == 0, p.stderr
-    for name in ("naive-vs-pit", "maya-timeline", "graph-composition"):
+    for name in ("naive-vs-pit", "santosh-timeline", "graph-composition"):
         assert (tmp_path / "img" / f"{name}-light.svg").is_file() and (tmp_path / "img" / f"{name}-dark.svg").is_file()
     assert (tmp_path / "mmd" / "schema.mmd").is_file() and (tmp_path / "mmd" / "er.mmd").is_file()
     text = page.read_text(encoding="utf-8")
@@ -424,7 +452,7 @@ def test_seed_42_charts_carry_the_plan_numbers(s42_build):
     expo = {r[0]: r[1] for r in figs["inc-002-exposure"].rows}
     assert (expo["pro"], expo["pro_plus"], expo["ultra"]) == ("606", "185", "46")
     assert "329" in figs["inc-002-exposure"].svg(charts.LIGHT)
-    assert any("2 of 10 lapsed, Wilson 95% [0.057, 0.510]" in r for r in rows["maya-neighbours"])
+    assert any("2 of 10 lapsed, Wilson 95% [0.057, 0.510]" in r for r in rows["santosh-neighbours"])
     lapse = {(r[0], r[1]): (r[2], r[3]) for r in figs["lapse-first-after-cut"].rows}
     assert lapse[("all plans", "first after a cut")] == ("2,292", "227")
     assert lapse[("pro", "not first after a cut")] == ("4,016", "275")
@@ -514,8 +542,8 @@ def test_honesty_notes_are_published():
 
 
 def test_generated_regions_are_known_and_filled_with_existing_charts():
-    names = {f"figure:{n}" for n in ("graph-composition", "leak-surface", "naive-vs-pit", "maya-timeline",
-                                     "maya-neighbours", "inc-002-exposure", "lapse-first-after-cut",
+    names = {f"figure:{n}" for n in ("graph-composition", "leak-surface", "naive-vs-pit", "santosh-timeline",
+                                     "santosh-neighbours", "inc-002-exposure", "lapse-first-after-cut",
                                      "cohort-lapse-rates", "tool-latency", "eval-pass3", "leakage-aucs")}
     names |= {"mermaid:schema", "mermaid:er", "mermaid:lineage-limit_hits_14d", "results:checks", "summary:headline"}
     seen = set()
