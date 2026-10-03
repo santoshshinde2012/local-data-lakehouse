@@ -64,7 +64,7 @@ Every answer is one JSON object with five keys:
 
 ```json
 {"data": {"...": "what the tool found, cleaned and capped"},
- "provenance": {"build_id": "28f3af496493", "profile": "default",
+ "provenance": {"build_id": "dde502e2a8e1", "profile": "default",
                 "spec": {"graph": "renewal-graph/v1", "similar_to": "similar_to/renewal-v1",
                          "lineage": "metadata-graph/0.1", "cohorts": "cohorts/renewal-v1"},
                 "inputs_sha256": "...", "code_sha256": "...", "exports_sha256": "...", "manifest_sha256": "...",
@@ -134,27 +134,29 @@ A failed write never fails the call.
 <!-- graph-evidence:begin figure:tool-latency -->
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="img/tool-latency-dark.svg">
-  <img src="img/tool-latency-light.svg" alt="Paired bar chart of warm tool latency over MCP stdio (client round trip), p50 and p95 per tool: graph_describe p50 1.93 ms, p95 2.30 ms; graph_find p50 1.42 ms, p95 1.78 ms; graph_renewal_evidence p50 5.60 ms, p95 6.17 ms; graph_similar_renewals p50 14.89 ms, p95 15.34 ms; graph_exposure p50 4.17 ms, p95 4.42 ms; metric_lapse_rate p50 1.64 ms, p95 2.06 ms; metric_route_counts p50 1.60 ms, p95 2.08 ms; metric_feature_card p50 1.46 ms, p95 1.77 ms; lineage_trace p50 4.67 ms, p95 5.17 ms; lineage_pit p50 3.52 ms, p95 4.15 ms; lineage_guards p50 3.24 ms, p95 3.76 ms; lineage_unused p50 3.39 ms, p95 4.32 ms; cohort_summary p50 4.77 ms, p95 6.12 ms; cohort_list p50 24.10 ms, p95 26.39 ms." width="760">
+  <img src="img/tool-latency-light.svg" alt="Paired bar chart of warm tool latency over MCP stdio (client round trip), p50 and p95 per tool: graph_describe p50 2.35 ms, p95 3.19 ms; graph_find p50 1.44 ms, p95 2.16 ms; graph_renewal_evidence p50 5.38 ms, p95 5.57 ms; graph_similar_renewals p50 16.47 ms, p95 26.76 ms; graph_exposure p50 4.45 ms, p95 4.82 ms; metric_lapse_rate p50 2.38 ms, p95 3.84 ms; metric_route_counts p50 2.38 ms, p95 4.02 ms; metric_feature_card p50 1.77 ms, p95 1.98 ms; lineage_trace p50 3.75 ms, p95 4.11 ms; lineage_pit p50 2.84 ms, p95 3.72 ms; lineage_guards p50 2.94 ms, p95 4.17 ms; lineage_unused p50 4.28 ms, p95 5.37 ms; cohort_summary p50 5.99 ms, p95 7.62 ms; cohort_list p50 28.63 ms, p95 44.38 ms." width="760">
 </picture>
+
+20 warm calls per tool over MCP stdio (client round trip). Slowest p95: cohort_list 44.4 ms. Graph tools p95 at most 26.8 ms (gate: below 50 ms). One Mac under load: indicative, not a benchmark.
 
 | toolset | tool | p50 ms | p95 ms |
 |---|---|---:|---:|
-| graph | graph_describe | 1.93 | 2.30 |
-| graph | graph_find | 1.42 | 1.78 |
-| graph | graph_renewal_evidence | 5.60 | 6.17 |
-| graph | graph_similar_renewals | 14.89 | 15.34 |
-| graph | graph_exposure | 4.17 | 4.42 |
-| metrics | metric_lapse_rate | 1.64 | 2.06 |
-| metrics | metric_route_counts | 1.60 | 2.08 |
-| metrics | metric_feature_card | 1.46 | 1.77 |
-| lineage | lineage_trace | 4.67 | 5.17 |
-| lineage | lineage_pit | 3.52 | 4.15 |
-| lineage | lineage_guards | 3.24 | 3.76 |
-| lineage | lineage_unused | 3.39 | 4.32 |
-| cohorts | cohort_summary | 4.77 | 6.12 |
-| cohorts | cohort_list | 24.10 | 26.39 |
+| graph | graph_describe | 2.35 | 3.19 |
+| graph | graph_find | 1.44 | 2.16 |
+| graph | graph_renewal_evidence | 5.38 | 5.57 |
+| graph | graph_similar_renewals | 16.47 | 26.76 |
+| graph | graph_exposure | 4.45 | 4.82 |
+| metrics | metric_lapse_rate | 2.38 | 3.84 |
+| metrics | metric_route_counts | 2.38 | 4.02 |
+| metrics | metric_feature_card | 1.77 | 1.98 |
+| lineage | lineage_trace | 3.75 | 4.11 |
+| lineage | lineage_pit | 2.84 | 3.72 |
+| lineage | lineage_guards | 2.94 | 4.17 |
+| lineage | lineage_unused | 4.28 | 5.37 |
+| cohorts | cohort_summary | 5.99 | 7.62 |
+| cohorts | cohort_list | 28.63 | 44.38 |
 
-<sub>Source: scripts/check_graph_tools.py --bench on graph build a2598a28e164 (profile s42); macOS arm64, warm calls, sandboxed stdio servers. Regenerate with scripts/graph_evidence.py.</sub>
+<sub>Source: scripts/check_graph_tools.py --bench on graph build dde502e2a8e1 (profile s42); macOS arm64, warm calls, sandboxed stdio servers. Regenerate with scripts/graph_evidence.py.</sub>
 <!-- graph-evidence:end figure:tool-latency -->
 
 Server RSS after warm calls, measured once (p2a acceptance run, s42): graph 230 to 293 MB, metrics

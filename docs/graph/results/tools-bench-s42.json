@@ -2,130 +2,130 @@
  "bench": {
   "in_process": {
    "cohort_list": {
-    "p50": 22.19,
-    "p95": 24.5
+    "p50": 22.58,
+    "p95": 29.35
    },
    "cohort_summary": {
-    "p50": 2.67,
-    "p95": 2.93
+    "p50": 2.52,
+    "p95": 2.94
    },
    "graph_describe": {
-    "p50": 0.59,
-    "p95": 0.65
+    "p50": 0.6,
+    "p95": 0.6
    },
    "graph_exposure": {
-    "p50": 2.4,
-    "p95": 2.78
+    "p50": 2.34,
+    "p95": 2.98
    },
    "graph_find": {
     "p50": 0.23,
-    "p95": 0.27
+    "p95": 0.24
    },
    "graph_renewal_evidence": {
-    "p50": 4.34,
-    "p95": 4.91
+    "p50": 4.79,
+    "p95": 7.04
    },
    "graph_similar_renewals": {
-    "p50": 14.27,
-    "p95": 15.25
+    "p50": 16.63,
+    "p95": 21.82
    },
    "lineage_guards": {
-    "p50": 1.44,
-    "p95": 1.56
+    "p50": 1.47,
+    "p95": 2.47
    },
    "lineage_pit": {
-    "p50": 1.72,
-    "p95": 2.05
+    "p50": 1.57,
+    "p95": 1.98
    },
    "lineage_trace": {
-    "p50": 2.36,
-    "p95": 2.83
+    "p50": 2.38,
+    "p95": 2.61
    },
    "lineage_unused": {
-    "p50": 1.5,
-    "p95": 1.89
+    "p50": 1.61,
+    "p95": 1.87
    },
    "metric_feature_card": {
     "p50": 0.22,
-    "p95": 0.29
+    "p95": 0.23
    },
    "metric_lapse_rate": {
-    "p50": 0.31,
-    "p95": 0.37
+    "p50": 0.32,
+    "p95": 0.33
    },
    "metric_route_counts": {
     "p50": 0.35,
-    "p95": 0.38
+    "p95": 0.41
    }
   },
   "rss_kb": {
-   "cohorts": 188784,
-   "graph": 288400,
-   "lineage": 292128,
-   "metrics": 174144
+   "cohorts": 183728,
+   "graph": 282896,
+   "lineage": 289600,
+   "metrics": 174544
   },
   "stdio": {
    "cohort_list": {
-    "p50": 24.1,
-    "p95": 26.39
+    "p50": 28.63,
+    "p95": 44.38
    },
    "cohort_summary": {
-    "p50": 4.77,
-    "p95": 6.12
+    "p50": 5.99,
+    "p95": 7.62
    },
    "graph_describe": {
-    "p50": 1.93,
-    "p95": 2.3
+    "p50": 2.35,
+    "p95": 3.19
    },
    "graph_exposure": {
-    "p50": 4.17,
-    "p95": 4.42
+    "p50": 4.45,
+    "p95": 4.82
    },
    "graph_find": {
-    "p50": 1.42,
-    "p95": 1.78
+    "p50": 1.44,
+    "p95": 2.16
    },
    "graph_renewal_evidence": {
-    "p50": 5.6,
-    "p95": 6.17
+    "p50": 5.38,
+    "p95": 5.57
    },
    "graph_similar_renewals": {
-    "p50": 14.89,
-    "p95": 15.34
+    "p50": 16.47,
+    "p95": 26.76
    },
    "lineage_guards": {
-    "p50": 3.24,
-    "p95": 3.76
+    "p50": 2.94,
+    "p95": 4.17
    },
    "lineage_pit": {
-    "p50": 3.52,
-    "p95": 4.15
+    "p50": 2.84,
+    "p95": 3.72
    },
    "lineage_trace": {
-    "p50": 4.67,
-    "p95": 5.17
+    "p50": 3.75,
+    "p95": 4.11
    },
    "lineage_unused": {
-    "p50": 3.39,
-    "p95": 4.32
+    "p50": 4.28,
+    "p95": 5.37
    },
    "metric_feature_card": {
-    "p50": 1.46,
-    "p95": 1.77
+    "p50": 1.77,
+    "p95": 1.98
    },
    "metric_lapse_rate": {
-    "p50": 1.64,
-    "p95": 2.06
+    "p50": 2.38,
+    "p95": 3.84
    },
    "metric_route_counts": {
-    "p50": 1.6,
-    "p95": 2.08
+    "p50": 2.38,
+    "p95": 4.02
    }
   }
  },
  "bench_calls": 20,
- "build_id": "a2598a28e164",
- "commit": "2ad9612",
+ "build_id": "dde502e2a8e1",
+ "commit": "adad48b",
  "generated_by": "scripts/graph_evidence.py",
  "platform": "macosx_arm64",
  "profile": "s42"

@@ -85,7 +85,7 @@ flowchart LR
   class n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10 data
 ```
 
-<sub>Generated from the lineage Parquet of build a2598a28e164 (lineage build 1030de6ac5e1, core profile) by the pure-Python oracle: 10 edges, 9 columns.</sub>
+<sub>Generated from the lineage Parquet of build dde502e2a8e1 (lineage build 1f60ea692ef1, core profile) by the pure-Python oracle: 10 edges, 9 columns.</sub>
 <!-- graph-evidence:end mermaid:lineage-limit_hits_14d -->
 
 The point-in-time window `(as_of-14, as_of]` sits on the gold read of `silver.churn_limit_events.hit_date`.

@@ -17,19 +17,19 @@ The latest run of every check, with its command and output: [results/index.md](r
 <!-- graph-evidence:begin results:checks -->
 | Check | Profile | Status | Result | Summary |
 |---|---|---|---|---|
-| Graph contract (tiny) | tiny | pass | [graph-contract-tiny.md](results/graph-contract-tiny.md) | Graph contract OK (renewal-graph/v1, profile tiny, build 6c8fea296d84): 616 nodes / 1,949 edges; PIT parity 0 mismatches x 6 features in pandas and Cypher; naive wrong in 16 / 12 / 4 renewals; golden tiny; strict |
-| Graph contract (s42) | s42 | pass | [graph-contract-s42.md](results/graph-contract-s42.md) | Graph contract OK (renewal-graph/v1, profile s42, build a2598a28e164): 40,204 nodes / 130,366 edges; PIT parity 0 mismatches x 6 features in pandas and Cypher; naive wrong in 1,165 / 681 / 114 renewals; golden s42; strict |
-| Graph contract (default) | default | pass | [graph-contract-default.md](results/graph-contract-default.md) | Graph contract OK (renewal-graph/v1, profile default, build a2598a28e164): 40,204 nodes / 130,366 edges; PIT parity 0 mismatches x 6 features in pandas and Cypher; naive wrong in 1,165 / 681 / 114 renewals; golden s42; strict |
+| Graph contract (tiny) | tiny | pass | [graph-contract-tiny.md](results/graph-contract-tiny.md) | Graph contract OK (renewal-graph/v1, profile tiny, build e2b501f9dbe9): 616 nodes / 1,949 edges; PIT parity 0 mismatches x 6 features in pandas and Cypher; naive wrong in 16 / 12 / 4 renewals; golden tiny; strict |
+| Graph contract (s42) | s42 | pass | [graph-contract-s42.md](results/graph-contract-s42.md) | Graph contract OK (renewal-graph/v1, profile s42, build dde502e2a8e1): 40,204 nodes / 130,366 edges; PIT parity 0 mismatches x 6 features in pandas and Cypher; naive wrong in 1,165 / 681 / 114 renewals; golden s42; strict |
+| Graph contract (default) | default | pass | [graph-contract-default.md](results/graph-contract-default.md) | Graph contract OK (renewal-graph/v1, profile default, build dde502e2a8e1): 40,204 nodes / 130,366 edges; PIT parity 0 mismatches x 6 features in pandas and Cypher; naive wrong in 1,165 / 681 / 114 renewals; golden s42; strict |
 | Graph contract (Iceberg-sourced build) | - | not run | [graph-contract-iceberg.md](results/graph-contract-iceberg.md) | The newest Iceberg-sourced build (e74f42fea9c6) was built on manylinux_aarch64, this host is macosx_arm64: the platform is part of its business_build_id, so a strict host re-check reports it stale. Its strict contract ran in ldl-graph; the recorded Docker run is in docker-e2e.md. |
-| Lineage contract (core profile) | default | pass | [lineage-contract.md](results/lineage-contract.md) | Lineage contract OK (metadata-graph/0.1, profile core, lineage build cd69f7f940ff): 30 gold SQL columns resolve (137 DERIVED_FROM + 3 COUNTS_ROWS_OF); 20 of 22 features compliant, declared exceptions renewals_completed, first_renewal_after_pricing_change; Cypher = oracle; slowest question Q15_dow... |
+| Lineage contract (core profile) | default | pass | [lineage-contract.md](results/lineage-contract.md) | Lineage contract OK (metadata-graph/0.1, profile core, lineage build 1f60ea692ef1): 30 gold SQL columns resolve (137 DERIVED_FROM + 3 COUNTS_ROWS_OF); 20 of 22 features compliant, declared exceptions renewals_completed, first_renewal_after_pricing_change; Cypher = oracle; slowest question Q15_dow... |
 | Repo contracts (Tier-0 mini) | - | pass | [repo-contracts.md](results/repo-contracts.md) | Repo contracts OK: 0 errors, 2 warnings |
-| Agent tools check (tiny) | tiny | pass | [graph-tools-tiny.md](results/graph-tools-tiny.md) | check_graph_tools: OK (61/61 checks, 0 warning(s), 17.8 s) |
-| Agent tools check (s42) | s42 | pass | [graph-tools-s42.md](results/graph-tools-s42.md), [tools-bench-s42.json](results/tools-bench-s42.json) | check_graph_tools: OK (97/97 checks, 0 warning(s), 275.4 s) |
+| Agent tools check (tiny) | tiny | pass | [graph-tools-tiny.md](results/graph-tools-tiny.md) | check_graph_tools: OK (59/59 checks, 1 warning(s), 16.7 s) |
+| Agent tools check (s42) | s42 | pass | [graph-tools-s42.md](results/graph-tools-s42.md), [tools-bench-s42.json](results/tools-bench-s42.json) | check_graph_tools: OK (97/97 checks, 0 warning(s), 192.4 s) |
 | macOS sandbox check | - | pass | [sandbox-check.md](results/sandbox-check.md) | graph_sandbox_check: OK (47/47 checks passed) |
-| Spark SQL twin parity (tiny) | tiny | pass | [graph-parity-tiny.md](results/graph-parity-tiny.md) | Graph parity OK (similar_to/renewal-v1): 21 tables equal and SIMILAR_TO 1,182 edges identical with the persisted scaler on the same input; reported configurations tie-only; 24.38 s |
-| Spark SQL twin parity (s42) | s42 | pass | [graph-parity-s42.md](results/graph-parity-s42.md) | Graph parity OK (similar_to/renewal-v1): 21 tables equal and SIMILAR_TO 80,010 edges identical with the persisted scaler on the same input; reported configurations tie-only; 74.51 s |
+| Spark SQL twin parity (tiny) | tiny | pass | [graph-parity-tiny.md](results/graph-parity-tiny.md) | Graph parity OK (similar_to/renewal-v1): 21 tables equal and SIMILAR_TO 1,182 edges identical with the persisted scaler on the same input; reported configurations tie-only; 34.77 s |
+| Spark SQL twin parity (s42) | s42 | pass | [graph-parity-s42.md](results/graph-parity-s42.md) | Graph parity OK (similar_to/renewal-v1): 21 tables equal and SIMILAR_TO 80,010 edges identical with the persisted scaler on the same input; reported configurations tie-only; 63.91 s |
 | Feature cohorts (s42) | s42 | pass | [cohorts.md](results/cohorts.md) | outside the graph contract; 15 leiden cohorts (modularity 0.805592, seed 42, networkx 3.7); 15 louvain cohorts (modularity 0.806498, seed 42, networkx 3.7) |
-| Build and serve benchmark | - | pass | [bench.md](results/bench.md) | graph_bench: OK (profile s42, build a2598a28e164) |
+| Build and serve benchmark | - | pass | [bench.md](results/bench.md) | graph_bench: OK (profile s42, build dde502e2a8e1) |
 | Agent eval report | - | not available | [eval.md](results/eval.md) | No eval report given (--eval-json): run scripts/graph_eval.py on evals/graph_cases.yaml and pass its report. LLM results gate article claims, never merges. |
 | Leakage demo (AUCs) | - | pass | [leakage.md](results/leakage.md) | The data has no relationships between subscriptions: any lift from a neighbour feature is leakage (self-inclusive, as of today) or noise. Reported, never pinned. |
 | Docker end-to-end run (recorded) | - | pass | [docker-e2e.md](results/docker-e2e.md) | recorded run; every step exited as expected |
@@ -48,6 +48,8 @@ then, and nothing after it:
   <img src="img/santosh-timeline-light.svg" alt="Timeline of sub_santosh&#x27;s evidence before as_of 2026-09-30: 2026-08-15 CUT_CAP cap-cut-2026-08 (in window); 2026-08-25 EXPOSED_TO inc-002 (outside window); 2026-09-09 EXPOSED_TO inc-003 (in window); 2026-09-20 CUT_CAP cap-cut-2026-09 (in window); 2026-09-20 FIRST_RENEWAL_AFTER cap-cut-2026-09 (in window); 2026-09-24 HIT_LIMIT lh:sub_santosh:001 (in window); 2026-09-25 HIT_LIMIT lh:sub_santosh:002 (in window); 2026-09-27 HIT_LIMIT lh:sub_santosh:003 (in window)." width="760">
 </picture>
 
+8 evidence rows on or before as_of 2026-09-30 (renewal 2026-10-07). Events after as_of are never served (0 exist for this renewal). Shaded: each feature's window. FIRST_RENEWAL_AFTER follows the gold rule, the one declared exception; here the cut was known by as_of.
+
 | event_date | relation | target | feeds feature | in feature window | known by as_of | declared exception |
 |---|---|---|---|---|---|---|
 | 2026-08-15 | CUT_CAP | cap-cut-2026-08 | allowance_used_pct | yes | yes | no |
@@ -59,7 +61,7 @@ then, and nothing after it:
 | 2026-09-25 | HIT_LIMIT | lh:sub_santosh:002 | limit_hits_14d | yes | yes | no |
 | 2026-09-27 | HIT_LIMIT | lh:sub_santosh:003 | limit_hits_14d | yes | yes | no |
 
-<sub>Rows as graph_renewal_evidence returns them (oracle.evidence). Source: graph build a2598a28e164 · profile s42 · seed 42, N_USERS 8000 (verified) · data_end 2026-09-30 · renewal-graph/v1 · commit 013dd4e · regenerate with scripts/graph_evidence.py.</sub>
+<sub>Rows as graph_renewal_evidence returns them (oracle.evidence). Source: graph build dde502e2a8e1 · profile s42 · seed 42, N_USERS 8000 (verified) · data_end 2026-09-30 · renewal-graph/v1 · commit 4eddd87 · regenerate with scripts/graph_evidence.py.</sub>
 <!-- graph-evidence:end figure:santosh-timeline -->
 
 `graph_similar_renewals` shows the ten closest past renewals of the same plan in feature space, with
@@ -71,6 +73,8 @@ would only see outcomes observed by its own as_of.
   <source media="(prefers-color-scheme: dark)" srcset="img/santosh-neighbours-dark.svg">
   <img src="img/santosh-neighbours-light.svg" alt="Radial graph: sub_santosh at the centre and its 10 nearest renewals by SIMILAR_TO rank. rank 1 sub_07200:2026-08-17 distance 2.258 voluntary_lapse; rank 2 sub_06614:2026-08-21 distance 2.365 renewed; rank 3 sub_01541:2026-08-16 distance 2.370 renewed; rank 4 sub_04760:2026-09-09 distance 2.510 renewed; rank 5 sub_01355:2026-09-05 distance 2.570 voluntary_lapse; rank 6 sub_05564:2026-08-20 distance 2.693 renewed; rank 7 sub_01475:2026-08-19 distance 2.713 renewed; rank 8 sub_04856:2026-08-22 distance 2.715 renewed; rank 9 sub_01888:2026-08-23 distance 2.740 renewed; rank 10 sub_00228:2026-08-03 distance 2.777 renewed. 2 of 10 lapsed." width="760">
 </picture>
+
+2 of 10 lapsed (Wilson 95% 0.057-0.510); outcomes visible today (a current renewal). Edges are labelled by rank; distance from the centre is the SIMILAR_TO distance (feature space, same plan; the rings start above 0). Narrative evidence, not a risk estimate.
 
 | rank | renewal | dist | d2_q | outcome |
 |---:|---|---:|---:|---|
@@ -86,7 +90,7 @@ would only see outcomes observed by its own as_of.
 | 10 | sub_00228:2026-08-03 | 2.7773 | 7,713,654,324 | renewed |
 |  | summary |  |  | 2 of 10 lapsed, Wilson 95% [0.057, 0.510] |
 
-<sub>SIMILAR_TO spec similar_to/renewal-v1: blocked by plan, 20 features, persisted z-score scaler, rank on floor(d2*1e9 + 0.5) then dst. Source: graph build a2598a28e164 · profile s42 · seed 42, N_USERS 8000 (verified) · data_end 2026-09-30 · renewal-graph/v1 · commit 013dd4e · regenerate with scripts/graph_evidence.py.</sub>
+<sub>SIMILAR_TO spec similar_to/renewal-v1: blocked by plan, 20 features, persisted z-score scaler, rank on floor(d2*1e9 + 0.5) then dst. Source: graph build dde502e2a8e1 · profile s42 · seed 42, N_USERS 8000 (verified) · data_end 2026-09-30 · renewal-graph/v1 · commit 4eddd87 · regenerate with scripts/graph_evidence.py.</sub>
 <!-- graph-evidence:end figure:santosh-neighbours -->
 
 Why is `sub_07200` the closest? With `explain=true` the tool returns each pair's top feature shares of
@@ -105,6 +109,8 @@ window, with the same as-of discipline:
   <img src="img/inc-002-exposure-light.svg" alt="Stacked horizontal bars of renewals exposed to inc-002 by plan: pro 606 (renewed 488, voluntary lapse 57, cancel flow 33, dunning 28); pro_plus 185 (renewed 152, voluntary lapse 10, cancel flow 11, dunning 12); ultra 46 (renewed 39, voluntary lapse 5, cancel flow 0, dunning 2). A naive graph would add 329." width="760">
 </picture>
 
+837 renewals were active during inc-002 inside their 28-day window before as_of. A graph without the as_of bound would add 329 more. Descriptive, not causal.
+
 | plan | exposed | renewed | voluntary lapse | cancel flow | dunning |
 |---|---:|---:|---:|---:|---:|
 | pro | 606 | 488 | 57 | 33 | 28 |
@@ -113,7 +119,7 @@ window, with the same as-of discipline:
 | total | 837 | 679 | 72 | 44 | 42 |
 | a graph without the as_of bound would add | 329 |  |  |  |  |
 
-<sub>Exposed = an active usage day during the incident inside (as_of-28, as_of]; renewed and voluntary lapse are model-routed renewals. Source: graph build a2598a28e164 · profile s42 · seed 42, N_USERS 8000 (verified) · data_end 2026-09-30 · renewal-graph/v1 · commit 013dd4e · regenerate with scripts/graph_evidence.py.</sub>
+<sub>Exposed = an active usage day during the incident inside (as_of-28, as_of]; renewed and voluntary lapse are model-routed renewals. Source: graph build dde502e2a8e1 · profile s42 · seed 42, N_USERS 8000 (verified) · data_end 2026-09-30 · renewal-graph/v1 · commit 4eddd87 · regenerate with scripts/graph_evidence.py.</sub>
 <!-- graph-evidence:end figure:inc-002-exposure -->
 
 The counts are graph-shaped; the effect is not reliable. Activity-stratified odds ratios measured in the
@@ -130,6 +136,8 @@ Rates are metric questions, answered by `metric_lapse_rate` with n and a Wilson 
   <img src="img/lapse-first-after-cut-light.svg" alt="Dot and whisker chart of voluntary-lapse rates with Wilson 95% intervals: all plans not first after a cut 6.3% [5.7%, 7.0%] (n 5,095); all plans first after a cut 9.9% [8.8%, 11.2%] (n 2,292); pro not first after a cut 6.8% [6.1%, 7.7%] (n 4,016); pro first after a cut 10.5% [9.2%, 12.0%] (n 1,799); pro_plus not first after a cut 4.9% [3.7%, 6.6%] (n 871); pro_plus first after a cut 7.8% [5.5%, 10.8%] (n 387); ultra not first after a cut 1.4% [0.5%, 4.2%] (n 208); ultra first after a cut 7.5% [3.9%, 14.2%] (n 106)." width="760">
 </picture>
 
+Model-routed renewals (voluntary lapse label), Wilson 95% intervals. All plans: 9.9% first after a cut vs 6.3% otherwise. The generator plants this association; it is a metric question, not a graph result.
+
 | group | renewals | n | lapses | rate | Wilson 95% |
 |---|---|---:|---:|---:|---|
 | all plans | not first after a cut | 5,095 | 321 | 6.3% | [5.7%, 7.0%] |
@@ -141,7 +149,7 @@ Rates are metric questions, answered by `metric_lapse_rate` with n and a Wilson 
 | ultra | not first after a cut | 208 | 3 | 1.4% | [0.5%, 4.2%] |
 | ultra | first after a cut | 106 | 8 | 7.5% | [3.9%, 14.2%] |
 
-<sub>First renewal after a cap cut = a FIRST_RENEWAL_AFTER edge (the gold rule). Same population as metric_lapse_rate (route = model). Source: graph build a2598a28e164 · profile s42 · seed 42, N_USERS 8000 (verified) · data_end 2026-09-30 · renewal-graph/v1 · commit 013dd4e · regenerate with scripts/graph_evidence.py.</sub>
+<sub>First renewal after a cap cut = a FIRST_RENEWAL_AFTER edge (the gold rule). Same population as metric_lapse_rate (route = model). Source: graph build dde502e2a8e1 · profile s42 · seed 42, N_USERS 8000 (verified) · data_end 2026-09-30 · renewal-graph/v1 · commit 4eddd87 · regenerate with scripts/graph_evidence.py.</sub>
 <!-- graph-evidence:end figure:lapse-first-after-cut -->
 
 The association between a cap cut and lapsing exists because the generator plants it. Narrower cells:
@@ -161,6 +169,8 @@ cohort. Cohorts sit outside the graph contract ([results/cohorts.md](results/coh
   <img src="img/cohort-lapse-rates-light.svg" alt="Dot plot of 15 published cohorts sorted by lapse rate with Wilson intervals: leiden-14 pro 31.9% (n 94); leiden-11 pro 21.0% (n 143); leiden-15 pro 16.4% (n 55); leiden-13 pro 13.8% (n 94); leiden-12 pro_plus 10.2% (n 108); leiden-02 pro 9.1% (n 833); leiden-04 pro 8.7% (n 734); leiden-05 pro 8.2% (n 734); leiden-03 pro 7.5% (n 778); leiden-09 pro 7.4% (n 435); leiden-08 pro 6.5% (n 538); leiden-01 pro_plus 5.4% (n 1,150); leiden-06 pro 4.6% (n 712); leiden-07 pro 3.6% (n 665); leiden-10 ultra 3.5% (n 314). Overall model-renewal rate 7.4%." width="760">
 </picture>
 
+15 cohorts over SIMILAR_TO (networkx 3.7, modularity 0.8056), sorted by rate; model renewals only. Cohorts rediscover feature segments: labels, not structure. Plan purity is 1.0 by construction.
+
 | cohort | plan | n | lapses | rate | Wilson 95% | name |
 |---|---|---:|---:|---:|---|---|
 | leiden-14 | pro | 94 | 30 | 31.9% | [23.4%, 41.9%] | higher limit_hits_14d, higher allowance_used_pct |
@@ -179,7 +189,7 @@ cohort. Cohorts sit outside the graph contract ([results/cohorts.md](results/coh
 | leiden-07 | pro | 665 | 24 | 3.6% | [2.4%, 5.3%] | lower incident_exposed_28d, higher active_days_7d |
 | leiden-10 | ultra | 314 | 11 | 3.5% | [2.0%, 6.2%] | higher active_days_28d, higher ide_sessions_28d |
 
-<sub>cohort_list (cohorts/renewal-v1, seed 42); outside the graph contract; cells under 5 and their complements are withheld. Source: graph build a2598a28e164 · profile s42 · seed 42, N_USERS 8000 (verified) · data_end 2026-09-30 · renewal-graph/v1 · commit 013dd4e · regenerate with scripts/graph_evidence.py.</sub>
+<sub>cohort_list (cohorts/renewal-v1, seed 42); outside the graph contract; cells under 5 and their complements are withheld. Source: graph build dde502e2a8e1 · profile s42 · seed 42, N_USERS 8000 (verified) · data_end 2026-09-30 · renewal-graph/v1 · commit 4eddd87 · regenerate with scripts/graph_evidence.py.</sub>
 <!-- graph-evidence:end figure:cohort-lapse-rates -->
 
 | | Louvain | Leiden |
@@ -215,6 +225,8 @@ temporally safe rate 0.5487.
   <source media="(prefers-color-scheme: dark)" srcset="img/leakage-aucs-dark.svg">
   <img src="img/leakage-aucs-light.svg" alt="Dot chart of AUCs: gold features only (no neighbour feature) single feature -, LR 0.7199; self-inclusive neighbour rate (own label counted) single feature 0.8525, LR 0.8649; neighbour rate as of today (outcomes after T-7 leak in) single feature 0.6158, LR 0.7212; temporally safe neighbour rate (outcomes known by each as_of) single feature 0.5487, LR 0.7208; random same-plan neighbours (control) single feature 0.4794, LR 0.7196." width="760">
 </picture>
+
+A dataset with zero network effect. A self-inclusive or as-of-today neighbour rate looks predictive; the temporally safe one does not. 0.5 is chance.
 
 | variant | single-feature AUC | LR AUC |
 |---|---:|---:|

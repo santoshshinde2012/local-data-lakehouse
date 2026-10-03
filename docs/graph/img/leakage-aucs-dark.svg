@@ -1,73 +1,71 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="760" height="309" viewBox="0 0 760 309" role="img" font-family="system-ui, -apple-system, &#x27;Segoe UI&#x27;, sans-serif">
-<title>Leakage demo: AUC of a neighbour lapse-rate feature, by how it was built</title>
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="277" viewBox="0 0 760 277" role="img" font-family="system-ui, -apple-system, &#x27;Segoe UI&#x27;, sans-serif">
+<title>Leakage demo: neighbour lapse-rate AUC</title>
 <desc>Dot chart of AUCs: gold features only (no neighbour feature) single feature -, LR 0.7199; self-inclusive neighbour rate (own label counted) single feature 0.8525, LR 0.8649; neighbour rate as of today (outcomes after T-7 leak in) single feature 0.6158, LR 0.7212; temporally safe neighbour rate (outcomes known by each as_of) single feature 0.5487, LR 0.7208; random same-plan neighbours (control) single feature 0.4794, LR 0.7196.</desc>
-<rect width="760" height="309" rx="8" fill="#1a1a19"/>
-<text x="24" y="38" font-size="15" fill="#ffffff" font-weight="600">Leakage demo: AUC of a neighbour lapse-rate feature, by how it was built</text>
-<text x="24" y="58" font-size="12" fill="#c3c2b7">A dataset with zero network effect. A self-inclusive or as-of-today neighbour rate looks predictive; the temporally safe one does</text>
-<text x="24" y="75" font-size="12" fill="#c3c2b7">not. 0.5 is chance.</text>
-<circle cx="30" cy="98" r="6" fill="#1a1a19"/>
-<circle cx="30" cy="98" r="4" fill="#3987e5"/>
-<text x="42" y="102" font-size="11" fill="#c3c2b7">single feature</text>
-<path d="M133.99 90.1L141.89 98L133.99 105.9L126.09 98Z" fill="#1a1a19"/>
-<path d="M133.99 92.6L139.39 98L133.99 103.4L128.59 98Z" fill="#d95926"/>
-<text x="145.99" y="102" font-size="11" fill="#c3c2b7">logistic regression (all features)</text>
-<line x1="399.97" y1="116" x2="399.97" y2="242" stroke="#2c2c2a" stroke-width="1"/>
-<text x="399.97" y="256" font-size="10.5" fill="#c3c2b7" text-anchor="middle" font-variant-numeric="tabular-nums">0.5</text>
-<line x1="445.18" y1="116" x2="445.18" y2="242" stroke="#2c2c2a" stroke-width="1"/>
-<text x="445.18" y="256" font-size="10.5" fill="#c3c2b7" text-anchor="middle" font-variant-numeric="tabular-nums">0.6</text>
-<line x1="490.38" y1="116" x2="490.38" y2="242" stroke="#2c2c2a" stroke-width="1"/>
-<text x="490.38" y="256" font-size="10.5" fill="#c3c2b7" text-anchor="middle" font-variant-numeric="tabular-nums">0.7</text>
-<line x1="535.59" y1="116" x2="535.59" y2="242" stroke="#2c2c2a" stroke-width="1"/>
-<text x="535.59" y="256" font-size="10.5" fill="#c3c2b7" text-anchor="middle" font-variant-numeric="tabular-nums">0.8</text>
-<line x1="580.79" y1="116" x2="580.79" y2="242" stroke="#2c2c2a" stroke-width="1"/>
-<text x="580.79" y="256" font-size="10.5" fill="#c3c2b7" text-anchor="middle" font-variant-numeric="tabular-nums">0.9</text>
-<line x1="626" y1="116" x2="626" y2="242" stroke="#2c2c2a" stroke-width="1"/>
-<text x="626" y="256" font-size="10.5" fill="#c3c2b7" text-anchor="middle" font-variant-numeric="tabular-nums">1.0</text>
-<text x="389.97" y="136" font-size="12" fill="#ffffff" text-anchor="end">gold features only (no neighbour feature)</text>
+<rect width="760" height="277" rx="8" fill="#1a1a19"/>
+<text x="24" y="38" font-size="15" fill="#ffffff" font-weight="600">Leakage demo: neighbour lapse-rate AUC</text>
+<text x="24" y="58" font-size="12" fill="#c3c2b7">No network effect exists in this data. 0.5 is chance.</text>
+<circle cx="30" cy="81" r="6" fill="#1a1a19"/>
+<circle cx="30" cy="81" r="4" fill="#3987e5"/>
+<text x="42" y="85" font-size="11" fill="#c3c2b7">single feature</text>
+<path d="M133.99 73.1L141.89 81L133.99 88.9L126.09 81Z" fill="#1a1a19"/>
+<path d="M133.99 75.6L139.39 81L133.99 86.4L128.59 81Z" fill="#d95926"/>
+<text x="145.99" y="85" font-size="11" fill="#c3c2b7">logistic regression</text>
+<line x1="399.97" y1="99" x2="399.97" y2="225" stroke="#2c2c2a" stroke-width="1"/>
+<text x="399.97" y="239" font-size="10.5" fill="#c3c2b7" text-anchor="middle" font-variant-numeric="tabular-nums">0.5</text>
+<line x1="445.18" y1="99" x2="445.18" y2="225" stroke="#2c2c2a" stroke-width="1"/>
+<text x="445.18" y="239" font-size="10.5" fill="#c3c2b7" text-anchor="middle" font-variant-numeric="tabular-nums">0.6</text>
+<line x1="490.38" y1="99" x2="490.38" y2="225" stroke="#2c2c2a" stroke-width="1"/>
+<text x="490.38" y="239" font-size="10.5" fill="#c3c2b7" text-anchor="middle" font-variant-numeric="tabular-nums">0.7</text>
+<line x1="535.59" y1="99" x2="535.59" y2="225" stroke="#2c2c2a" stroke-width="1"/>
+<text x="535.59" y="239" font-size="10.5" fill="#c3c2b7" text-anchor="middle" font-variant-numeric="tabular-nums">0.8</text>
+<line x1="580.79" y1="99" x2="580.79" y2="225" stroke="#2c2c2a" stroke-width="1"/>
+<text x="580.79" y="239" font-size="10.5" fill="#c3c2b7" text-anchor="middle" font-variant-numeric="tabular-nums">0.9</text>
+<line x1="626" y1="99" x2="626" y2="225" stroke="#2c2c2a" stroke-width="1"/>
+<text x="626" y="239" font-size="10.5" fill="#c3c2b7" text-anchor="middle" font-variant-numeric="tabular-nums">1.0</text>
+<text x="389.97" y="119" font-size="12" fill="#ffffff" text-anchor="end">gold features only (no neighbour feature)</text>
 <g><title>gold features only (no neighbour feature) lr: 0.7199</title>
-<path d="M499.38 123.42L507.95 132L499.38 140.57L490.8 132Z" fill="#1a1a19"/>
-<path d="M499.38 125.92L505.45 132L499.38 138.07L493.3 132Z" fill="#d95926"/>
+<path d="M499.38 106.42L507.95 115L499.38 123.58L490.8 115Z" fill="#1a1a19"/>
+<path d="M499.38 108.92L505.45 115L499.38 121.08L493.3 115Z" fill="#d95926"/>
 </g>
-<text x="638" y="136" font-size="11" fill="#c3c2b7" font-variant-numeric="tabular-nums">- / 0.720</text>
-<text x="389.97" y="160" font-size="12" fill="#ffffff" text-anchor="end">self-inclusive neighbour rate (own label counted)</text>
+<text x="638" y="119" font-size="11" fill="#c3c2b7" font-variant-numeric="tabular-nums">- / 0.720</text>
+<text x="389.97" y="143" font-size="12" fill="#ffffff" text-anchor="end">self-inclusive neighbour rate (own label counted)</text>
 <g><title>self-inclusive neighbour rate (own label counted) single_feature: 0.8525</title>
-<circle cx="559.32" cy="156" r="6.5" fill="#1a1a19"/>
-<circle cx="559.32" cy="156" r="4.5" fill="#3987e5"/>
+<circle cx="559.32" cy="139" r="6.5" fill="#1a1a19"/>
+<circle cx="559.32" cy="139" r="4.5" fill="#3987e5"/>
 </g>
 <g><title>self-inclusive neighbour rate (own label counted) lr: 0.8649</title>
-<path d="M564.93 147.43L573.5 156L564.93 164.57L556.35 156Z" fill="#1a1a19"/>
-<path d="M564.93 149.93L571 156L564.93 162.07L558.85 156Z" fill="#d95926"/>
+<path d="M564.93 130.43L573.5 139L564.93 147.57L556.35 139Z" fill="#1a1a19"/>
+<path d="M564.93 132.93L571 139L564.93 145.07L558.85 139Z" fill="#d95926"/>
 </g>
-<text x="638" y="160" font-size="11" fill="#c3c2b7" font-variant-numeric="tabular-nums">0.853 / 0.865</text>
-<text x="389.97" y="184" font-size="12" fill="#ffffff" text-anchor="end">neighbour rate as of today (outcomes after T-7 leak in)</text>
+<text x="638" y="143" font-size="11" fill="#c3c2b7" font-variant-numeric="tabular-nums">0.853 / 0.865</text>
+<text x="389.97" y="167" font-size="12" fill="#ffffff" text-anchor="end">neighbour rate as of today (outcomes after T-7 leak in)</text>
 <g><title>neighbour rate as of today (outcomes after T-7 leak in) single_feature: 0.6158</title>
-<circle cx="452.32" cy="180" r="6.5" fill="#1a1a19"/>
-<circle cx="452.32" cy="180" r="4.5" fill="#3987e5"/>
+<circle cx="452.32" cy="163" r="6.5" fill="#1a1a19"/>
+<circle cx="452.32" cy="163" r="4.5" fill="#3987e5"/>
 </g>
 <g><title>neighbour rate as of today (outcomes after T-7 leak in) lr: 0.7212</title>
-<path d="M499.97 171.43L508.54 180L499.97 188.57L491.39 180Z" fill="#1a1a19"/>
-<path d="M499.97 173.93L506.04 180L499.97 186.07L493.89 180Z" fill="#d95926"/>
+<path d="M499.97 154.43L508.54 163L499.97 171.57L491.39 163Z" fill="#1a1a19"/>
+<path d="M499.97 156.93L506.04 163L499.97 169.07L493.89 163Z" fill="#d95926"/>
 </g>
-<text x="638" y="184" font-size="11" fill="#c3c2b7" font-variant-numeric="tabular-nums">0.616 / 0.721</text>
-<text x="389.97" y="208" font-size="12" fill="#ffffff" text-anchor="end">temporally safe neighbour rate (outcomes known by each as_of)</text>
+<text x="638" y="167" font-size="11" fill="#c3c2b7" font-variant-numeric="tabular-nums">0.616 / 0.721</text>
+<text x="389.97" y="191" font-size="12" fill="#ffffff" text-anchor="end">temporally safe neighbour rate (outcomes known by each as_of)</text>
 <g><title>temporally safe neighbour rate (outcomes known by each as_of) single_feature: 0.5487</title>
-<circle cx="421.99" cy="204" r="6.5" fill="#1a1a19"/>
-<circle cx="421.99" cy="204" r="4.5" fill="#3987e5"/>
+<circle cx="421.99" cy="187" r="6.5" fill="#1a1a19"/>
+<circle cx="421.99" cy="187" r="4.5" fill="#3987e5"/>
 </g>
 <g><title>temporally safe neighbour rate (outcomes known by each as_of) lr: 0.7208</title>
-<path d="M499.79 195.43L508.36 204L499.79 212.57L491.21 204Z" fill="#1a1a19"/>
-<path d="M499.79 197.93L505.86 204L499.79 210.07L493.71 204Z" fill="#d95926"/>
+<path d="M499.79 178.43L508.36 187L499.79 195.57L491.21 187Z" fill="#1a1a19"/>
+<path d="M499.79 180.93L505.86 187L499.79 193.07L493.71 187Z" fill="#d95926"/>
 </g>
-<text x="638" y="208" font-size="11" fill="#c3c2b7" font-variant-numeric="tabular-nums">0.549 / 0.721</text>
-<text x="389.97" y="232" font-size="12" fill="#ffffff" text-anchor="end">random same-plan neighbours (control)</text>
+<text x="638" y="191" font-size="11" fill="#c3c2b7" font-variant-numeric="tabular-nums">0.549 / 0.721</text>
+<text x="389.97" y="215" font-size="12" fill="#ffffff" text-anchor="end">random same-plan neighbours (control)</text>
 <g><title>random same-plan neighbours (control) single_feature: 0.4794</title>
-<circle cx="399.97" cy="228" r="6.5" fill="#1a1a19"/>
-<circle cx="399.97" cy="228" r="4.5" fill="#3987e5"/>
+<circle cx="399.97" cy="211" r="6.5" fill="#1a1a19"/>
+<circle cx="399.97" cy="211" r="4.5" fill="#3987e5"/>
 </g>
 <g><title>random same-plan neighbours (control) lr: 0.7196</title>
-<path d="M499.24 219.43L507.82 228L499.24 236.57L490.67 228Z" fill="#1a1a19"/>
-<path d="M499.24 221.93L505.32 228L499.24 234.07L493.17 228Z" fill="#d95926"/>
+<path d="M499.24 202.43L507.82 211L499.24 219.57L490.67 211Z" fill="#1a1a19"/>
+<path d="M499.24 204.93L505.32 211L499.24 217.07L493.17 211Z" fill="#d95926"/>
 </g>
-<text x="638" y="232" font-size="11" fill="#c3c2b7" font-variant-numeric="tabular-nums">0.479 / 0.720</text>
-<text x="24" y="274" font-size="11" fill="#c3c2b7">Source: leakage.json (leakage demo report).</text>
+<text x="638" y="215" font-size="11" fill="#c3c2b7" font-variant-numeric="tabular-nums">0.479 / 0.720</text>
 </svg>

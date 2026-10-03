@@ -7,12 +7,12 @@
 | Status | **pass** (exit 0) |
 | Profile | s42 |
 | Command | `scripts/build_graph_cohorts.py list (leiden, louvain) + summary --renewal sub_santosh` |
-| Commit | `2ad9612` (working tree dirty: no) |
-| Date | 2026-10-02 (UTC) |
+| Commit | `adad48b` (working tree dirty: yes) |
+| Date | 2026-10-03 (UTC) |
 | Host | macOS-26.6.2 (macosx_arm64) |
 | Python | 3.12.9 · ladybug 0.21.2 · pandas 3.0.6 · numpy 2.5.3 · pyarrow 25.0.1 · networkx 3.7 · mcp 2.2.0 · pydantic 2.13.5 · sqlglot 30.21.0 |
 | Spark venv | pyiceberg 0.12.0 · pyspark 4.1.3 |
-| Duration | 2.1 s |
+| Duration | 1.8 s |
 | Summary | outside the graph contract; 15 leiden cohorts (modularity 0.805592, seed 42, networkx 3.7); 15 louvain cohorts (modularity 0.806498, seed 42, networkx 3.7) |
 
 ## Output
@@ -89,7 +89,7 @@ $ python scripts/build_graph_cohorts.py summary --renewal sub_santosh:2026-10-07
     "pro": 833
   },
   "provenance": {
-    "business_build_id": "a2598a28e164",
+    "business_build_id": "dde502e2a8e1",
     "communities": 15,
     "in_contract": false,
     "library": "networkx",

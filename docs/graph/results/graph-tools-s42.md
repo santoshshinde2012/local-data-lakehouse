@@ -7,18 +7,18 @@
 | Status | **pass** (exit 0) |
 | Profile | s42 |
 | Command | `python scripts/check_graph_tools.py --profile s42 --graph-root $GRAPH_ROOT --json <tmp> --bench 20` |
-| Commit | `2ad9612` (working tree dirty: no) |
-| Date | 2026-10-02 (UTC) |
+| Commit | `adad48b` (working tree dirty: yes) |
+| Date | 2026-10-03 (UTC) |
 | Host | macOS-26.6.2 (macosx_arm64) |
 | Python | 3.12.9 · ladybug 0.21.2 · pandas 3.0.6 · numpy 2.5.3 · pyarrow 25.0.1 · networkx 3.7 · mcp 2.2.0 · pydantic 2.13.5 · sqlglot 30.21.0 |
 | Spark venv | pyiceberg 0.12.0 · pyspark 4.1.3 |
-| Duration | 276.1 s |
-| Summary | check_graph_tools: OK (97/97 checks, 0 warning(s), 275.4 s) |
+| Duration | 193.1 s |
+| Summary | check_graph_tools: OK (97/97 checks, 0 warning(s), 192.4 s) |
 
 ## Output
 
 ```text
-check_graph_tools: build a2598a28e164 (profile s42, seed 42, N 8000), contract strict_pass, GRAPH_ROOT $GRAPH_ROOT
+check_graph_tools: build dde502e2a8e1 (profile s42, seed 42, N 8000), contract strict_pass, GRAPH_ROOT $GRAPH_ROOT
 == 1 goldens (tool answers vs the oracle of this build)
   ok    hero evidence: 8 rows equal the oracle, in order
   ok    hero top-10: rank, renewal, d2_q and outcome equal the oracle
@@ -62,7 +62,7 @@ check_graph_tools: build a2598a28e164 (profile s42, seed 42, N 8000), contract s
   ok    forced caps (3 rows, 4,000 chars), window feature_windows: the first 3 of 7 rows shown, summary.rows = 7 (counted before the cap), the caveat gives the true total
   ok    named_renewal_member under a 3-row cap equals the uncapped answer for every incident and pricing change (sub_santosh:2026-10-07)
   ok    forced 4,000-char cap on a long lineage trace: 3784 chars, truncated
-  ok    at the minimum cap (4,000 chars) all 16 largest everyday answers fit (max 3,967) and keep their answer and summary
+  ok    at the minimum cap (4,000 chars) all 16 largest everyday answers fit (max 3,979) and keep their answer and summary
   ok    no string over 200 characters in 48 answers
   ok    user_name appears only in graph_find and in the named renewal's own evidence
   ok    no city (6 values) and no 'city' key in any answer
@@ -76,7 +76,7 @@ check_graph_tools: build a2598a28e164 (profile s42, seed 42, N 8000), contract s
   ok    0 BILLED outcome-evidence rows served
   ok    auto / source_as_of: 0 neighbour outcomes observed after a historical source's as_of (56994 visible outcomes checked; nearest lapses too)
   ok    'today' rejected for all 8000 historical sources, accepted for 1 current
-  note  sweep took 254.9 s
+  note  sweep took 166.8 s
 == 5 audit log
   ok    one line per call: 7 lines for 7 calls (3 failed)
   ok    every line has exactly ('ts', 'session', 'pid', 'toolset', 'tool', 'args_hash', 'args_key', 'latency_ms', 'rows', 'chars', 'truncated', 'outcome', 'build_id')
@@ -92,51 +92,51 @@ check_graph_tools: build a2598a28e164 (profile s42, seed 42, N 8000), contract s
   ok    7 unknown-but-well-formed ids (graph, lineage, cohorts): a repairable error that never repeats the id sent
 == 9 MCP stdio smoke through scripts/graph_mcp.sh (GRAPH_PY=.venv-graph/bin/python)
   note  GRAPH_PY is the repo's .venv-graph interpreter
-  ok    graph/legacy: protocol 2025-11-25, 5 tools, read-only hints, call + resources ok, sandboxed=True (1177 ms)
-  ok    graph/2026-07-28: protocol 2026-07-28, 5 tools, read-only hints, call + resources ok, sandboxed=True (961 ms)
-  ok    metrics/legacy: protocol 2025-11-25, 3 tools, read-only hints, call + resources ok, sandboxed=True (1142 ms)
-  ok    metrics/2026-07-28: protocol 2026-07-28, 3 tools, read-only hints, call + resources ok, sandboxed=True (1148 ms)
-  ok    lineage/legacy: protocol 2025-11-25, 4 tools, read-only hints, call + resources ok, sandboxed=True (1075 ms)
-  ok    lineage/2026-07-28: protocol 2026-07-28, 4 tools, read-only hints, call + resources ok, sandboxed=True (1053 ms)
-  ok    cohorts/legacy: protocol 2025-11-25, 2 tools, read-only hints, call + resources ok, sandboxed=True (1193 ms)
-  ok    cohorts/2026-07-28: protocol 2026-07-28, 2 tools, read-only hints, call + resources ok, sandboxed=True (1174 ms)
+  ok    graph/legacy: protocol 2025-11-25, 5 tools, read-only hints, call + resources ok, sandboxed=True (1249 ms)
+  ok    graph/2026-07-28: protocol 2026-07-28, 5 tools, read-only hints, call + resources ok, sandboxed=True (1373 ms)
+  ok    metrics/legacy: protocol 2025-11-25, 3 tools, read-only hints, call + resources ok, sandboxed=True (1352 ms)
+  ok    metrics/2026-07-28: protocol 2026-07-28, 3 tools, read-only hints, call + resources ok, sandboxed=True (2246 ms)
+  ok    lineage/legacy: protocol 2025-11-25, 4 tools, read-only hints, call + resources ok, sandboxed=True (1729 ms)
+  ok    lineage/2026-07-28: protocol 2026-07-28, 4 tools, read-only hints, call + resources ok, sandboxed=True (1853 ms)
+  ok    cohorts/legacy: protocol 2025-11-25, 2 tools, read-only hints, call + resources ok, sandboxed=True (1583 ms)
+  ok    cohorts/2026-07-28: protocol 2026-07-28, 2 tools, read-only hints, call + resources ok, sandboxed=True (1439 ms)
 == 9c guarded raw Cypher (opt-in: graph_mcp.sh --enable-cypher, evidence graph only)
   ok    graph_cypher is in no default toolset (the default servers never offer it)
   note  skipped: needs macOS (its sandbox) and the build's evidence graph (scripts/build_evidence_graph.py)
 == 10 bench (warm, 20 calls per tool)
-  ok    in process graph_describe: p50 0.59 ms, p95 0.65 ms
-  ok    in process graph_find: p50 0.23 ms, p95 0.27 ms
-  ok    in process graph_renewal_evidence: p50 4.34 ms, p95 4.91 ms
-  ok    in process graph_similar_renewals: p50 14.27 ms, p95 15.25 ms
-  ok    in process graph_exposure: p50 2.4 ms, p95 2.78 ms
-  ok    in process metric_lapse_rate: p50 0.31 ms, p95 0.37 ms
-  ok    in process metric_route_counts: p50 0.35 ms, p95 0.38 ms
-  ok    in process metric_feature_card: p50 0.22 ms, p95 0.29 ms
-  ok    in process lineage_trace: p50 2.36 ms, p95 2.83 ms
-  ok    in process lineage_pit: p50 1.72 ms, p95 2.05 ms
-  ok    in process lineage_guards: p50 1.44 ms, p95 1.56 ms
-  ok    in process lineage_unused: p50 1.5 ms, p95 1.89 ms
-  ok    in process cohort_summary: p50 2.67 ms, p95 2.93 ms
-  ok    in process cohort_list: p50 22.19 ms, p95 24.5 ms
-  ok    stdio graph_describe: p50 1.93 ms, p95 2.3 ms (client round trip)
-  ok    stdio graph_find: p50 1.42 ms, p95 1.78 ms (client round trip)
-  ok    stdio graph_renewal_evidence: p50 5.6 ms, p95 6.17 ms (client round trip)
-  ok    stdio graph_similar_renewals: p50 14.89 ms, p95 15.34 ms (client round trip)
-  ok    stdio graph_exposure: p50 4.17 ms, p95 4.42 ms (client round trip)
-  note  server RSS graph: 288400 KiB after the warm calls (pid 38934)
-  ok    stdio metric_lapse_rate: p50 1.64 ms, p95 2.06 ms (client round trip)
-  ok    stdio metric_route_counts: p50 1.6 ms, p95 2.08 ms (client round trip)
-  ok    stdio metric_feature_card: p50 1.46 ms, p95 1.77 ms (client round trip)
-  note  server RSS metrics: 174144 KiB after the warm calls (pid 38999)
-  ok    stdio lineage_trace: p50 4.67 ms, p95 5.17 ms (client round trip)
-  ok    stdio lineage_pit: p50 3.52 ms, p95 4.15 ms (client round trip)
-  ok    stdio lineage_guards: p50 3.24 ms, p95 3.76 ms (client round trip)
-  ok    stdio lineage_unused: p50 3.39 ms, p95 4.32 ms (client round trip)
-  note  server RSS lineage: 292128 KiB after the warm calls (pid 39043)
-  ok    stdio cohort_summary: p50 4.77 ms, p95 6.12 ms (client round trip)
-  ok    stdio cohort_list: p50 24.1 ms, p95 26.39 ms (client round trip)
-  note  server RSS cohorts: 188784 KiB after the warm calls (pid 39080)
-check_graph_tools: OK (97/97 checks, 0 warning(s), 275.4 s)
+  ok    in process graph_describe: p50 0.6 ms, p95 0.6 ms
+  ok    in process graph_find: p50 0.23 ms, p95 0.24 ms
+  ok    in process graph_renewal_evidence: p50 4.79 ms, p95 7.04 ms
+  ok    in process graph_similar_renewals: p50 16.63 ms, p95 21.82 ms
+  ok    in process graph_exposure: p50 2.34 ms, p95 2.98 ms
+  ok    in process metric_lapse_rate: p50 0.32 ms, p95 0.33 ms
+  ok    in process metric_route_counts: p50 0.35 ms, p95 0.41 ms
+  ok    in process metric_feature_card: p50 0.22 ms, p95 0.23 ms
+  ok    in process lineage_trace: p50 2.38 ms, p95 2.61 ms
+  ok    in process lineage_pit: p50 1.57 ms, p95 1.98 ms
+  ok    in process lineage_guards: p50 1.47 ms, p95 2.47 ms
+  ok    in process lineage_unused: p50 1.61 ms, p95 1.87 ms
+  ok    in process cohort_summary: p50 2.52 ms, p95 2.94 ms
+  ok    in process cohort_list: p50 22.58 ms, p95 29.35 ms
+  ok    stdio graph_describe: p50 2.35 ms, p95 3.19 ms (client round trip)
+  ok    stdio graph_find: p50 1.44 ms, p95 2.16 ms (client round trip)
+  ok    stdio graph_renewal_evidence: p50 5.38 ms, p95 5.57 ms (client round trip)
+  ok    stdio graph_similar_renewals: p50 16.47 ms, p95 26.76 ms (client round trip)
+  ok    stdio graph_exposure: p50 4.45 ms, p95 4.82 ms (client round trip)
+  note  server RSS graph: 282896 KiB after the warm calls (pid 56294)
+  ok    stdio metric_lapse_rate: p50 2.38 ms, p95 3.84 ms (client round trip)
+  ok    stdio metric_route_counts: p50 2.38 ms, p95 4.02 ms (client round trip)
+  ok    stdio metric_feature_card: p50 1.77 ms, p95 1.98 ms (client round trip)
+  note  server RSS metrics: 174544 KiB after the warm calls (pid 56345)
+  ok    stdio lineage_trace: p50 3.75 ms, p95 4.11 ms (client round trip)
+  ok    stdio lineage_pit: p50 2.84 ms, p95 3.72 ms (client round trip)
+  ok    stdio lineage_guards: p50 2.94 ms, p95 4.17 ms (client round trip)
+  ok    stdio lineage_unused: p50 4.28 ms, p95 5.37 ms (client round trip)
+  note  server RSS lineage: 289600 KiB after the warm calls (pid 56392)
+  ok    stdio cohort_summary: p50 5.99 ms, p95 7.62 ms (client round trip)
+  ok    stdio cohort_list: p50 28.63 ms, p95 44.38 ms (client round trip)
+  note  server RSS cohorts: 183728 KiB after the warm calls (pid 56409)
+check_graph_tools: OK (97/97 checks, 0 warning(s), 192.4 s)
 ```
 
 [Back to the results index](index.md)
