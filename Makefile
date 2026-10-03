@@ -218,6 +218,9 @@ airflow-demo: airflow-trigger-retail airflow-trigger-churn
 graph-e2e: up-full
 	mkdir -p data/graph
 	$(COMPOSE) -f docker-compose.graph.yml $(FULL_PROFILES) up -d --build --wait
+	@# ldl-graph bind-mounts README.md and Makefile as single files; an editor or sed -i that replaces the file
+	@# leaves a running container on the deleted copy, so always start it fresh (a few seconds).
+	$(COMPOSE) -f docker-compose.graph.yml $(FULL_PROFILES) up -d --wait --no-deps --force-recreate graph
 	./pipelines/run_graph_e2e.sh
 
 # ---------------------------------------------------------------------------

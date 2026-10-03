@@ -18,4 +18,5 @@ Back to the [README](../README.md). Every fix below touches only this project; `
 | `up --wait` fails with `required variable … is missing` | `make env` (or add the key from `.env.example` to your `.env`) |
 | Old volumes from the JDBC-catalog era | Not readable by this stack (Postgres 18 refuses a 16 data directory): `make purge` ([MIGRATION.md](../MIGRATION.md)) |
 | `make airflow-up` fails with `Bind for 127.0.0.1:8080 failed: port is already allocated` | Another app or container holds 8080. Set `AIRFLOW_API_PORT` (for example `8085`) in `.env` or the shell; `make airflow-wait` and the UI follow it |
+| `make graph-e2e`: `Lineage build FAILED: README.md: cannot be read` | `ldl-graph` bind-mounts `README.md` and `Makefile` as single files, and an editor that replaces the file leaves a running container on the old copy. `make graph-e2e` now recreates `ldl-graph` each time; on an older checkout run `docker compose -f docker-compose.yml -f docker-compose.graph.yml --profile full up -d --force-recreate graph` |
 | Airflow never healthy | `docker compose -f docker-compose.yml -f docker-compose.airflow.yml --profile full logs airflow-apiserver` |
