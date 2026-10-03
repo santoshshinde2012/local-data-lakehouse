@@ -11,9 +11,7 @@ One scripted run from empty volumes (`make purge` first) on 2026-10-03, with eve
 | Host engines | DuckDB 1.5.6 · PyIceberg 0.12.0 · Polars 1.44.2 (no JVM) |
 | Consumer | retention-radar `chore/sample-customer-santosh` ([PR #24](https://github.com/santoshshinde2012/retention-radar/pull/24)) at `98df572` and `07d8205`, Python 3.12, XGBoost 3.4.1 |
 
-![Architecture: host engines, light / full / trino profiles, Airflow 3 and graph overlays, data/export and the consumers](docs/demo/architecture-e2e.png)
-
-Source: [docs/demo/architecture-e2e.mmd](docs/demo/architecture-e2e.mmd); palette and rules: [docs/diagrams.md](docs/diagrams.md).
+The end-to-end architecture diagram (host engines, profiles, Airflow and graph overlays, export and consumers) is in [docs/demo/README.md](docs/demo/README.md#architecture).
 
 ## Start-up and memory per profile
 

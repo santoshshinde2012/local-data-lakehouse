@@ -1,0 +1,51 @@
+# Weekly, grouped dependency updates. Each group opens one PR; CI (T0-T2, plus T3 with the
+# "full-stack" label) decides whether it can merge. Versions are documented in docs/reference.md.
+version: 2
+updates:
+  # Python locks: requirements*.in -> requirements*.txt, compiled with `uv pip compile`
+  # (Dependabot reads the uv header and re-compiles with uv, keeping the hashes).
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      timezone: "Asia/Kolkata"
+    open-pull-requests-limit: 5
+    groups:
+      python-minor-and-patch:
+        update-types: ["minor", "patch"]
+      python-major:
+        update-types: ["major"]
+
+  # Base images in the Dockerfiles (Spark, Airflow, graph).
+  - package-ecosystem: "docker"
+    directories: ["/docker/spark", "/docker/airflow", "/docker/graph"]
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      timezone: "Asia/Kolkata"
+    groups:
+      docker-images:
+        patterns: ["*"]
+
+  # Service images pinned by tag + digest in the Compose files.
+  - package-ecosystem: "docker-compose"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      timezone: "Asia/Kolkata"
+    groups:
+      compose-images:
+        patterns: ["*"]
+
+  # Actions used by .github/workflows/ci.yml.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      timezone: "Asia/Kolkata"
+    groups:
+      github-actions:
+        patterns: ["*"]

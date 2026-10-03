@@ -53,10 +53,41 @@ make churn-parity          # run the gold SQL in local Spark 4.1.3 and compare w
                            # (needs pyspark 4.1.3: uses .venv-graph-spark if present, else PARITY_PY=...)
 ```
 
-`churn-check` fails on structural breaks: columns, nulls, plan tiers, 0/1 flags, `active_days_7d > active_days_28d`, dunning or cancel-flow rows in the train export, and label or metadata leaking into the inference JSON. It warns on schema range breaches (`--strict` fails on them). CI runs `churn-parity` on the tiny fixture and the full sample (measured locally: 23.6 s and 20.8 s).
+`churn-check` fails on structural breaks: columns, nulls, plan tiers, 0/1 flags, `active_days_7d > active_days_28d`, dunning or cancel-flow rows in the train export, and label or metadata leaking into the inference JSON. It warns on schema range breaches (`--strict` fails on them). CI runs `churn-parity` on the tiny fixture and the full sample. Locally, `make churn-parity` on the full sample took 15.3 s (2026-10-03).
 
-A 120-subscription fixture lives in `data/sample/churn/fixtures/tiny/` for quick demos. Sufficiency notes: [churn-gold-sufficiency.md](churn-gold-sufficiency.md).
+A 120-subscription fixture lives in `data/sample/churn/fixtures/tiny/` for quick demos.
 
+
+## Is the gold enough for retention-radar?
+
+The lakehouse builds the features and the label. Model choice and the renewal policy live in
+[retention-radar](https://github.com/santoshshinde2012/retention-radar). Checked on 2026-10-03 with seed 42
+(`make churn-sample`, `make churn-e2e`, `make churn-check`, `make churn-parity`):
+
+| Check | Result |
+|---|---|
+| Contract | The train CSV has 22 features, `user_id`, `user_name` and `churned` (25 columns, in radar's order). The inference JSON has the 24 fields and no label. |
+| Point in time | Features read only events dated on or before each renewal's T-7. Bronze has usage and cap hits after T-7; gold ignores them. |
+| Label | Derived from billing events after the renewal (paid invoice, scheduled cancel, failed invoice and retries), not copied from a source column. |
+| Routing | 8,001 snapshots: 7,387 model rows, 326 dunning, 287 cancel flow, 1 scored today. Dunning and cancel-flow rows never reach the train export (`churn-check` fails if they do). |
+| Volume | 7,387 renewals, 548 voluntary lapses (7.4%). |
+| Nulls | None in the export. A ratio with a zero denominator is 0 (1.0 for `accept_rate_change`). |
+| Spark vs pandas | Identical on all 8,001 rows × 27 columns (every contract column plus `outcome` and `route`). |
+
+Lapses by plan:
+
+| Plan | Renewals | Voluntary lapse rate | Lapses |
+|---|---:|---:|---:|
+| pro | 5,815 | 8.0% | 464 |
+| pro_plus | 1,258 | 5.8% | 73 |
+| ultra | 314 | 3.5% | 11 |
+
+Ultra is thin, with 11 lapses. That is enough to score Ultra subscribers and to show why the one
+person-written playbook is Ultra-only, but not enough to tune anything Ultra-specific.
+
+To train on this export in retention-radar (cloned beside this repo), run `./scripts/run_lakehouse_e2e.sh ../local-data-lakehouse`
+there. It trains in `artifacts/lakehouse_run/` and writes `results/lakehouse_e2e_summary.json`; radar's committed
+`models/` stay on its synthetic seed-42 run.
 
 ## Settings
 

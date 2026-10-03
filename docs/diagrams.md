@@ -1,6 +1,6 @@
 # Diagrams: palette and rules
 
-Every Mermaid diagram in this repo uses the same palette and syntax. That covers the ```` ```mermaid ```` blocks in the Markdown pages, [`demo/architecture-e2e.mmd`](demo/architecture-e2e.mmd) and the generated diagrams in [`graph/results/mermaid/`](graph/results/mermaid/), which `src/lakehouse_graph/charts.py` writes. `tests/unit/test_mermaid_diagrams.py` (T0) checks every block against this page. [retention-radar](https://github.com/santoshshinde2012/retention-radar/blob/main/docs/diagrams.md) uses the same palette and rules, so the lakehouse-to-radar flow in both READMEs looks the same.
+Every Mermaid diagram in this repo uses the same palette and syntax. That covers the ```` ```mermaid ```` blocks in the Markdown pages, the end-to-end architecture in [`demo/README.md`](demo/README.md#architecture), and the generated diagrams in [`graph/results/mermaid/`](graph/results/mermaid/), which `src/lakehouse_graph/charts.py` writes. `tests/unit/test_mermaid_diagrams.py` (T0) checks every block against this page. [retention-radar](https://github.com/santoshshinde2012/retention-radar/blob/main/docs/diagrams.md) uses the same palette and rules, so the lakehouse-to-radar flow in both READMEs looks the same.
 
 ## Palette
 
@@ -24,4 +24,4 @@ A dashed border (`style <id> stroke-dasharray:5 5`) marks an optional profile or
 - Lay diagrams out left to right. Each profile or overlay (light, full, trino, Airflow, graph) is a `subgraph`. Link a whole subgraph when the edge means the whole profile; Mermaid ignores a subgraph's `direction` once one of its nodes links outside it.
 - Quote every label and every edge label (`A -->|"REST + vended credentials"| B`). The only HTML allowed is `<br/>`; GitHub strips the rest.
 - `erDiagram` has no `classDef`: GitHub's renderer may not support it there, so entities take the graph-layer colours from the init line.
-- Render after every change with mermaid-cli 12 (`npx -y @mermaid-js/mermaid-cli@12.0.0 -i <file> -o <file>.png -s 3 -b white`; for a Markdown page, `-i page.md` renders each block). `docs/demo/architecture-e2e.png` is rendered from its `.mmd` at natural size (no max-width) and scale 2, on a white background: `npx -y @mermaid-js/mermaid-cli@12.0.0 -i docs/demo/architecture-e2e.mmd -o docs/demo/architecture-e2e.png -c docs/demo/mermaid-render.json -s 2 -b white`.
+- Render after every change with mermaid-cli 12 (`npx -y @mermaid-js/mermaid-cli@12.0.0 -i <file> -o <file>.png -s 3 -b white`; for a Markdown page, `-i page.md` renders each block).
