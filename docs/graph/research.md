@@ -51,7 +51,7 @@ date-sensitive fact.
 | 10 | LadybugDB accepted despite a bus factor of about 1 | accepted |
 | 11 | DuckDB 1.5.6 only in the eval's SE arm, never a product dependency (1.5.x EOL 2026-11-01) | eval not built |
 | 12 | The Claude-arm eval budget is not spent without approval | not spent |
-| 13 | `config/CATALOG.md` refresh | **not done yet** |
+| 13 | `config/catalog.md` refresh | **not done yet** |
 | 14 | A strict eval / parity preflight (Docker up, memory pressure, free swap), `FORCE=1` to override | **not built yet** |
 | 15 | A "graph edition" generator (the only honest route to a network-effect lesson) is future work | not scheduled |
 | 16 | Local model `qwen3:4b` (installed, Apache-2.0); `qwen3.5:4b` or the instruct sibling only with approval | researched; harness not built |

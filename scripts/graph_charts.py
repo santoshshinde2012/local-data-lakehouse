@@ -7,7 +7,7 @@ Writes, for every chart, a light and a dark SVG (lakehouse_graph.charts; same in
       graph-composition, leak-surface, naive-vs-pit, santosh-timeline, santosh-neighbours, inc-002-exposure,
       lapse-first-after-cut, cohort-lapse-rates (needs cohorts.parquet), tool-latency (needs --tools-json),
       eval-pass3 (needs --eval-json), leakage-aucs (needs --leakage-json)
-  docs/graph/results/mermaid/{schema,er,lineage-<column>}.mmd
+  docs/graph/results/mermaid/{schema,er,lineage-<column-in-kebab-case>}.mmd
 
 and, with --docs-dir, rewrites the generated regions of the docs pages, i.e. the text between
 ``<!-- graph-evidence:begin NAME -->`` and ``<!-- graph-evidence:end NAME -->``: ``figure:<chart>`` gets the
@@ -156,7 +156,7 @@ def collect(a) -> tuple[list[charts.Figure], dict[str, str], dict[str, str], dic
     lin_note = ""
     if (build / "lineage" / "manifest.json").is_file():
         trace = charts.lineage_trace_data(build, a.lineage_target, "upstream")
-        col = a.lineage_target.rsplit(".", 1)[-1]
+        col = a.lineage_target.rsplit(".", 1)[-1].replace("_", "-")  # file names are kebab-case
         mermaid[f"lineage-{col}"] = charts.mermaid_lineage(trace)
         lman = json.loads((build / "lineage" / "manifest.json").read_text(encoding="utf-8"))
         lin_note = (f"Generated from the lineage Parquet of build {man.get('business_build_id')} (lineage build "
@@ -184,7 +184,7 @@ def collect(a) -> tuple[list[charts.Figure], dict[str, str], dict[str, str], dic
     for key in [k for k in mermaid if k.startswith("lineage-")]:
         regions[f"mermaid:{key}"] = charts.fence("mermaid", mermaid[key]) + f"\n\n<sub>{lin_note}</sub>"
     if not any(k.startswith("lineage-") for k in mermaid):
-        col = a.lineage_target.rsplit(".", 1)[-1]
+        col = a.lineage_target.rsplit(".", 1)[-1].replace("_", "-")
         regions[f"mermaid:lineage-{col}"] = charts.pending("This build has no lineage graph.",
                                                            "Run `make lineage-local PROFILE=s42`.")
     return figs, mermaid, regions, man

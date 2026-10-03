@@ -545,7 +545,7 @@ def test_generated_regions_are_known_and_filled_with_existing_charts():
     names = {f"figure:{n}" for n in ("graph-composition", "leak-surface", "naive-vs-pit", "santosh-timeline",
                                      "santosh-neighbours", "inc-002-exposure", "lapse-first-after-cut",
                                      "cohort-lapse-rates", "tool-latency", "eval-pass3", "leakage-aucs")}
-    names |= {"mermaid:schema", "mermaid:er", "mermaid:lineage-limit_hits_14d", "results:checks", "summary:headline"}
+    names |= {"mermaid:schema", "mermaid:er", "mermaid:lineage-limit-hits-14d", "results:checks", "summary:headline"}
     seen = set()
     for page in PAGES:
         regions = charts.region_names(page.read_text(encoding="utf-8"))

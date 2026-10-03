@@ -13,7 +13,7 @@ Locally.* It contains Compose files, jobs, sample data, tests and verified demos
 
 | Component | Role |
 |---|---|
-| **Lakekeeper** v0.13.6 | Iceberg REST catalog; vends short-lived S3 credentials per table ([config/CATALOG.md](config/CATALOG.md)) |
+| **Lakekeeper** v0.13.6 | Iceberg REST catalog; vends short-lived S3 credentials per table ([config/catalog.md](config/catalog.md)) |
 | **PostgreSQL** 18.6 | Lakekeeper's state (no engine talks to it) |
 | **RustFS** 1.0.0 (default) / **SILO** (`STORE=silo`) | S3-compatible object store, bucket `lake` ([docs/object-store.md](docs/object-store.md)) |
 | **Apache Iceberg** 1.12.0 | ACID tables, snapshots, time travel |
@@ -498,7 +498,7 @@ docker-compose.airflow.yml
 
 ```text
 local-data-lakehouse/
-  config/                 # spark-defaults.conf, log4j2, trino/ catalog, CATALOG.md
+  config/                 # spark-defaults.conf, log4j2, trino/ catalog, catalog.md
   docker/spark/           # Spark 4.1.3 + Iceberg 1.12.0 image
   docker/init/            # lakehouse-init bootstrap (bucket, warehouse)
   docker/airflow/ docker/graph/
@@ -520,7 +520,7 @@ Design notes:
 
 - **Single responsibility**: each job owns one stage; pipelines only sequence `spark-submit`
 - **One catalog**: every engine reads and writes through the REST catalog; no engine has store keys
-- **Stable contracts**: table names and gold metrics are documented here, in `config/CATALOG.md` and under `sql/`
+- **Stable contracts**: table names and gold metrics are documented here, in `config/catalog.md` and under `sql/`
 
 The demo video of the earlier stack is not kept in the tree; see [docs/demo/README.md](docs/demo/README.md#demo-video).
 
