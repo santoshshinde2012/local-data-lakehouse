@@ -216,3 +216,13 @@ def test_committed_results_carry_a_provenance_header():
         text = f.read_text(encoding="utf-8")
         for row in ("| Status |", "| Commit |", "| Date |", "| Host |", "| Python |", "| Summary |"):
             assert row in text, f"{f.name}: {row}"
+
+
+def test_task_state_lines_parse_with_and_without_a_logical_date():
+    """Airflow 3 leaves logical_date empty for a manual run; both layouts count as task-state lines."""
+    mod = _load()
+    a3 = "lakehouse_graph                  publish_gold_graph      success  2026-10-03T12:49:44+00:00  2026-10-03T12:50:40+00:00"
+    a2 = "lakehouse_graph  2026-10-01T10:00:00+00:00  build_graph  failed  2026-10-01T10:00:01+00:00  2026-10-01T10:00:09+00:00"
+    assert mod.TASK_STATE.match(a3).groups()[:2] == ("publish_gold_graph", "success")
+    assert mod.TASK_STATE.match(a2).groups()[:2] == ("build_graph", "failed")
+    assert mod.TASK_STATE.match("dag_id  logical_date  task_id  state  start_date  end_date") is None

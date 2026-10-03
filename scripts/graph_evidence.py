@@ -302,7 +302,8 @@ def tool_catalogue() -> str:
 
 # --------------------------------------------------------------------------- docker run record
 NEGATIVE_STEP = re.compile(r"negative|must_fail", re.I)   # a step that passes by failing
-TASK_STATE = re.compile(r"^\S+\s+\S+\s+(\w+)\s+(success|failed|upstream_failed|skipped|up_for_retry|running|queued)"
+# dag_id, logical_date (empty for a manual run on Airflow 3), task_id, state
+TASK_STATE = re.compile(r"^\S+\s+(?:\S+\s+)?(\w+)\s+(success|failed|upstream_failed|skipped|up_for_retry|running|queued)"
                         r"(\s|$)")
 
 
