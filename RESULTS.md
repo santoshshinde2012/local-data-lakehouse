@@ -5,11 +5,11 @@ One scripted run from empty volumes (`make purge` first) on 2026-10-03, with eve
 | | |
 |---|---|
 | Date | 2026-10-03 (IST), one session from empty volumes |
-| Code under test | branch `chore/sample-customer-santosh` ([PR #16](https://github.com/santoshshinde2012/local-data-lakehouse/pull/16)): `2fcb92f` for the stack, pipeline, test and Airflow steps; `5d8e09f` for the graph steps, re-run after the README rewrite (the lineage graph reads the README) and the `graph-e2e` fix found in this run. Between them only docs, `pipelines/airflow_wait.sh` and the `graph-e2e` target changed |
+| Code under test | branch `chore/sample-customer-santosh`, merged to `main` as [PR #16](https://github.com/santoshshinde2012/local-data-lakehouse/pull/16): `2fcb92f` for the stack, pipeline, test and Airflow steps; `5d8e09f` for the graph steps, re-run after the README rewrite (the lineage graph reads the README) and the `graph-e2e` fix found in this run. Between them only docs, `pipelines/airflow_wait.sh` and the `graph-e2e` target changed |
 | Machine | MacBook Pro, Apple M1 Pro, 16 GB, macOS 26.6.2; Docker Desktop 29.8.1 (VM 10 CPUs / 7.65 GiB), Compose 5.5.1 |
 | Stack | Postgres 18.6 · Lakekeeper v0.13.6 (Iceberg REST) · RustFS 1.0.0 · lakehouse-init (curl 8.22.0) · Spark 4.1.3 + Iceberg 1.12.0 · Trino 483 · Airflow 3.3.2 + socket proxy |
 | Host engines | DuckDB 1.5.6 · PyIceberg 0.12.0 · Polars 1.44.2 (no JVM) |
-| Consumer | retention-radar `chore/sample-customer-santosh` ([PR #24](https://github.com/santoshshinde2012/retention-radar/pull/24)) at `98df572` and `07d8205`, Python 3.12, XGBoost 3.4.1 |
+| Consumer | retention-radar `chore/sample-customer-santosh`, merged as [PR #24](https://github.com/santoshshinde2012/retention-radar/pull/24), at `98df572` and `07d8205`, Python 3.12, XGBoost 3.4.1 |
 
 The end-to-end architecture diagram (host engines, profiles, Airflow and graph overlays, export and consumers) is in [docs/demo/README.md](docs/demo/README.md#architecture).
 
@@ -89,7 +89,7 @@ Every step below exited 0 in this run, except the first `make airflow-up` (port 
 
 **Parity** ([churn-parity.excerpt.md](docs/demo/churn-parity.excerpt.md)): Spark SQL gold and the pandas twin match on 8,001 renewals × 27 columns.
 
-**Retention Radar consumes the export** ([radar-consume.excerpt.md](docs/demo/radar-consume.excerpt.md); radar's write-up of this run: [results/lakehouse-consume-e2e.md](https://github.com/santoshshinde2012/retention-radar/blob/chore/sample-customer-santosh/results/lakehouse-consume-e2e.md)): radar loaded 7,387 rows (churn rate 0.074) and scored all of them, with the same counts on both consumes.
+**Retention Radar consumes the export** ([radar-consume.excerpt.md](docs/demo/radar-consume.excerpt.md); radar's write-up of this run: [results/lakehouse-consume-e2e.md](https://github.com/santoshshinde2012/retention-radar/blob/main/results/lakehouse-consume-e2e.md)): radar loaded 7,387 rows (churn rate 0.074) and scored all of them, with the same counts on both consumes.
 
 | Action | Rows |
 |---|---:|
@@ -112,11 +112,24 @@ Full record: [docs/graph/results/index.md](docs/graph/results/index.md), regener
 - **Spark SQL twin parity:** tiny 1,182 and s42 80,010 SIMILAR_TO edges identical.
 - **Lineage contract:** lineage build `3999f2dea0cb` (it follows the README and pipeline files); 30 gold SQL columns resolve.
 - **Cohorts:** leiden and louvain each found 15 cohorts (modularity 0.8056 / 0.8065).
-- **Not covered:** there is no LLM eval report; [docker-e2e.md](docs/graph/results/docker-e2e.md) keeps the timings of an earlier recorded Docker run (this run's Docker graph output is the excerpt above).
+- **Not covered:** there is no LLM eval report.
+
+## Re-run on existing volumes
+
+On 2026-10-03 from 18:01 to 18:22 IST, every step was run again at `59b08b6` (docs-only changes since `3b11ac6`) on the volumes the run above left, with `AIRFLOW_API_PORT=8085`. All 27 steps exited 0. Step timings and summary lines: [docker-e2e.md](docs/graph/results/docker-e2e.md).
+
+| Step | Time | Result |
+|---|---:|---|
+| `make e2e` (retail) | 110.8 s | pass |
+| `make churn-e2e` / `make churn-parity` | 92.4 s / 15.8 s | pass; 8,001 × 27 equal |
+| `radar_consume.sh` (radar `main` at `c5dd040`) + radar pytest | 75.9 s + 41.7 s | 7,387 rows scored; 101 passed |
+| `make graph-e2e` / strict default contract | 126.6 s / 14.9 s | pass; 40,204 nodes / 130,366 edges |
+| `make test-t3` | 224.1 s | pass |
+| `make airflow-up` / `make airflow-demo` / `lakehouse_graph` DAG | 34.1 s / 279.7 s / 141.8 s | 0 import errors; 5/5, 4/4 and 7/7 tasks success |
 
 ## Airflow 3 UI
 
-Headless Playwright screenshots from the 2026-10-02 run (the DAGs and task chains are unchanged; this run's task states are in [airflow-e2e.excerpt.md](docs/demo/airflow-e2e.excerpt.md)):
+Headless Chrome screenshots (1600 × 1000, saved at 1024 × 640) taken after the re-run above, at 18:25 IST on 2026-10-03. Each DAG shows its two runs from that day; the task states are also in [airflow-e2e.excerpt.md](docs/demo/airflow-e2e.excerpt.md):
 
 | DAG list | Retail medallion |
 |---|---|
@@ -126,17 +139,19 @@ Headless Playwright screenshots from the 2026-10-02 run (the DAGs and task chain
 
 ## CI
 
-CI runs on every push to [PR #16](https://github.com/santoshshinde2012/local-data-lakehouse/pull/16) (label `full-stack`, so `t3-full` runs too); a newer push cancels the run of the previous head. The PR body links the run of the final head. The first push of this work:
+CI ran on every push to [PR #16](https://github.com/santoshshinde2012/local-data-lakehouse/pull/16) (label `full-stack`, so `t3-full` runs too); a newer push cancels the run of the previous head. All four jobs passed on the first push, on the final head and on `main` after the merge:
 
 | Head | Run | t0-unit | t2-light | t3-full | graph |
 |---|---|---|---|---|---|
-| `2fcb92f` (naming convention, link check) | [37109135526](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37109135526) | [2 min 18 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37109135526/job/111163479310) | [1 min 5 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37109135526/job/111163479346) | [5 min 29 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37109135526/job/111163479265) | [18 min 32 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37109135526/job/111163479150) |
+| `2fcb92f` (first push) | [37109135526](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37109135526) | [2 min 18 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37109135526/job/111163479310) | [1 min 5 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37109135526/job/111163479346) | [5 min 29 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37109135526/job/111163479265) | [18 min 32 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37109135526/job/111163479150) |
 
-retention-radar CI for the paired branch is on [PR #24](https://github.com/santoshshinde2012/retention-radar/pull/24) (`test` and `e2e-local`; `e2e-local` clones this branch).
+| `3b11ac6` (final head of PR #16) | [37113333382](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37113333382) | [2 min 23 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37113333382/job/111175336072) | [58 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37113333382/job/111175336061) | [5 min 47 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37113333382/job/111175335913) | [14 min 9 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37113333382/job/111175336045) |
+| `ec28a70` (`main`, after the merge) | [37119697670](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37119697670) | pass | pass | pass | pass |
+
+retention-radar CI for the paired branch is on [PR #24](https://github.com/santoshshinde2012/retention-radar/pull/24) (`test` and `e2e-local`; `e2e-local` clones the lakehouse branch of the same name).
 
 ## Known gaps
 
 - **Strict default graph contract:** run `make churn-gold-local` first. Against a Spark-written export it reports the 2 rounding cells as drift ([lakehouse-twin.md](docs/graph/lakehouse-twin.md#why-gold-drifts-by-1e-4-in-two-cells)).
 - **Radar drift check:** radar's `feature_stats.json` has no `psi_bins`, so the check falls back to SMD.
-- **Airflow screenshots** are from the 2026-10-02 run; this run's DAG and task states are captured as text.
 - **No LLM eval report** for the graph agent.

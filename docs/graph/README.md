@@ -118,23 +118,22 @@ Then start Claude Code in the repo root and approve the project servers in `.mcp
 
 ## Status
 
-What exists and passes, what exists and fails, and what is not built (updated 2026-10-02, branch
-`feat/local-first-stack-2026`). The generated results under [results/](results/index.md) were
-regenerated on 2026-10-02 on the REST-catalog stack (15 pass, 0 fail; the Iceberg-sourced build is
-checked in its container, the eval needs an LLM run).
+What exists and passes, what exists and fails, and what is not built (updated 2026-10-03). The generated
+results under [results/](results/index.md) were regenerated on 2026-10-03 on the REST-catalog stack (15 pass,
+0 fail; the Iceberg-sourced build is checked in its container, the eval needs an LLM run).
 
 | Part | State | Evidence |
 |---|---|---|
 | Business graph, contract, goldens, profiles (`make graph-*`) | **built, passing**: strict contract on tiny, s42 and default | [results](results/index.md) |
 | Repo contracts (constants, columns, appName, LEAKY) | **built, passing** (0 errors, 2 known warnings) | [repo-contracts.md](results/repo-contracts.md) |
-| Agent surface: 4 MCP servers, 14 tools, envelope, audit log, `.mcp.json`, skill, `graph_ask.sh` | **built, passing**: tools check 61/61 on tiny and 97/97 on s42 (2026-10-02) | [graph-tools-s42.md](results/graph-tools-s42.md) |
+| Agent surface: 4 MCP servers, 14 tools, envelope, audit log, `.mcp.json`, skill, `graph_ask.sh` | **built, passing**: tools check 59/59 on tiny and 97/97 on s42 (2026-10-03) | [graph-tools-s42.md](results/graph-tools-s42.md) |
 | macOS sandbox around the servers | **built, passing** when run alone; its unified-log step can fail while other sandboxed processes run | [sandbox-check.md](results/sandbox-check.md) |
 | Tier-0 lineage graph and tools | **built, passing**: the lineage contract passes again (the CI clone line is resolved) | [lineage.md](lineage.md#known-issue-the-ci-clone-line) |
 | Tier-1 Iceberg lineage facts (`build_lineage_local.py --iceberg`) | **built**; reads snapshots and refs through the REST catalog (2026-10-02) | [lineage.md](lineage.md#tiers) |
 | Feature cohorts, Cytoscape.js evidence views | **built, passing** (outside the contract) | [cohorts.md](results/cohorts.md) |
-| Spark SQL twin, Iceberg tags, PyIceberg REST reader, source-aware contract | **built, passing** (parity exact on tiny (24.4 s) and s42 (74.5 s) on pyspark 4.1.3 + Iceberg 1.12.0, 2026-10-02) | [graph-parity-s42.md](results/graph-parity-s42.md) |
-| Docker overlay, `make graph-e2e` / `run_graph_e2e.sh` | **built, passing** on the REST stack: `make graph-e2e` 115.1 s on existing volumes, `run_graph_e2e.sh` 98 s (2026-10-03; 103.5 s and 87 s from empty volumes on 2026-10-02) | [lakehouse-twin.md](lakehouse-twin.md#the-docker-run) |
-| Airflow DAG `lakehouse_graph` | **built, passing** on Airflow 3.3.2: all 7 tasks `success` in 132 s (2026-10-02, [airflow excerpt](../demo/airflow-e2e.excerpt.md)) | [lakehouse-twin.md](lakehouse-twin.md#airflow) |
+| Spark SQL twin, Iceberg tags, PyIceberg REST reader, source-aware contract | **built, passing** (parity exact on tiny (25.3 s) and s42 (73.6 s) on pyspark 4.1.3 + Iceberg 1.12.0, 2026-10-03) | [graph-parity-s42.md](results/graph-parity-s42.md) |
+| Docker overlay, `make graph-e2e` / `run_graph_e2e.sh` | **built, passing** on the REST stack: `make graph-e2e` 126.6 s on existing volumes (`run_graph_e2e.sh` 109 s) and 103.1 s after a start from empty volumes (2026-10-03) | [lakehouse-twin.md](lakehouse-twin.md#the-docker-run) |
+| Airflow DAG `lakehouse_graph` | **built, passing** on Airflow 3.3.2: all 7 tasks `success` in 141.8 s (2026-10-03, [docker-e2e.md](results/docker-e2e.md)) | [lakehouse-twin.md](lakehouse-twin.md#airflow) |
 | Export fix in `src/jobs/churn/04_export_features.py` | **applied** | [lakehouse-twin.md](lakehouse-twin.md#the-export-fix-04_export_featurespy) |
 | These docs, charts and the evidence runner | **built** | `scripts/graph_evidence.py`, `scripts/graph_charts.py` |
 | Open-source agent: Pydantic AI harness (`src/lakehouse_graph/agent.py`), chat CLI (`scripts/graph_chat.py`) | **built, experimental**: local model `qwen3:4b` through Ollama; own venv (`requirements-graph-eval.txt`); unit-tested without a model (`tests/graph/test_agent.py`) | [agent.md](agent.md#the-open-source-path) |
@@ -145,8 +144,8 @@ checked in its container, the eval needs an LLM run).
 | CI `graph` job | **added** (graph tests + tiny build and strict contract) | `.github/workflows/ci.yml` |
 | Linux validation | **run in CI** (`graph` job on ubuntu-latest, PR #13): the 18 known failures and one shellcheck finding are fixed | `.github/workflows/ci.yml` |
 
-`make graph-test` on 2026-10-02 (macOS arm64, ladybug 0.21.2, sqlglot 30.21.0): 1,391 passed, 0 failed,
-32 skipped in 12 min; `make graph-sample PROFILE=tiny && make graph-local PROFILE=tiny` passes the strict
+`make graph-test` on 2026-10-03 (macOS arm64, ladybug 0.21.2, sqlglot 30.21.0): 1,403 passed, 0 failed,
+32 skipped in 13 min; `make graph-sample PROFILE=tiny && make graph-local PROFILE=tiny` passes the strict
 contract. The 18 disclosure / evidence failures that were also on `origin/main` are fixed, none by
 loosening suppression (the rules are in [agent.md](agent.md#output-hygiene-and-small-cells)):
 

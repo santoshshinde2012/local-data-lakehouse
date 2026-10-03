@@ -7,6 +7,13 @@ Notable changes, newest first. Dates are when the change was verified. Each entr
 - `config/catalog.md` moved to `docs/catalog.md` and `MIGRATION.md` to `docs/migration.md`.
   This changelog was split out of the migration guide. Added `SECURITY.md`, `CODE_OF_CONDUCT.md`, `.editorconfig`,
   and issue and pull-request templates; `.gitignore` gaps filled.
+- The end-to-end architecture diagram is a Mermaid block in `docs/demo/README.md`; the PNG, its `.mmd` source and
+  `mermaid-render.json` are removed. `docs/churn-gold-sufficiency.md` is merged into `docs/renewal-features.md`.
+- `.github/dependabot.yml`: weekly grouped updates for the Python locks, Docker images and GitHub Actions.
+- Every step re-run at `59b08b6` on 2026-10-03 (all 27 exited 0): `docs/graph/results/docker-e2e.md` and the
+  Airflow screenshots come from that run. `scripts/graph_evidence.py` parses Airflow 3 task-state lines again.
+- Docs polish: stale statuses and numbers in `docs/graph/` (status table, recorded runs, research decisions),
+  links to merged branches, and the Airflow port note.
 
 ## 2026-10-03: sample customer, naming and docs (PR #16)
 
