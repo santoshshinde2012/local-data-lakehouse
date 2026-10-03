@@ -86,7 +86,7 @@ date-sensitive fact.
 
 The versions in this page are research-time (2026-10-01): Spark 3.5.3, Iceberg 1.6.1, SILO and a JDBC
 catalog. The stack now runs Spark 4.1.3, Iceberg 1.12.0, the Lakekeeper REST catalog and RustFS (SILO is
-an option), and Airflow 3.3.2 (current pins: the version table in the [README](../../README.md#versions)).
+an option), and Airflow 3.3.2 (current pins: the version table in the [reference](../reference.md#versions)).
 The graph's local Spark harness also moved to pyspark 4.1.3 + Iceberg 1.12.0. psycopg2 is gone from
 every lock; SQLAlchemy remains only in the spark harness lock (PyIceberg's SQLite catalog). Current
 graph pins: ladybug 0.21.2, sqlglot 30.21.0, pydantic-ai-slim 2.53.0.

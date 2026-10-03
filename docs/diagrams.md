@@ -1,6 +1,6 @@
 # Diagrams: palette and rules
 
-Every Mermaid diagram in this repo uses the same palette and syntax. That covers the ```` ```mermaid ```` blocks in the Markdown pages, [`demo/architecture-e2e.mmd`](demo/architecture-e2e.mmd) and the generated diagrams in [`graph/results/mermaid/`](graph/results/mermaid/), which `src/lakehouse_graph/charts.py` writes. `tests/unit/test_mermaid_diagrams.py` (T0) checks every block against this page.
+Every Mermaid diagram in this repo uses the same palette and syntax. That covers the ```` ```mermaid ```` blocks in the Markdown pages, [`demo/architecture-e2e.mmd`](demo/architecture-e2e.mmd) and the generated diagrams in [`graph/results/mermaid/`](graph/results/mermaid/), which `src/lakehouse_graph/charts.py` writes. `tests/unit/test_mermaid_diagrams.py` (T0) checks every block against this page. [retention-radar](https://github.com/santoshshinde2012/retention-radar/blob/main/docs/diagrams.md) uses the same palette and rules, so the lakehouse-to-radar flow in both READMEs looks the same.
 
 ## Palette
 

@@ -159,11 +159,11 @@ def test_init_script_is_posix_and_enables_sts():
         assert needle in text, needle
 
 
-def test_versions_in_readme_match_the_pins():
-    readme = (REPO / "README.md").read_text()
+def test_versions_in_reference_match_the_pins():
+    readme = (REPO / "docs/reference.md").read_text()  # the version table lives in docs/reference.md#versions
     pins = pinned_images()
     for repo, ref in pins.items():
         tag = ref.split("@", 1)[0].rsplit(":", 1)[1]
-        assert tag in readme, f"README version table misses {repo}:{tag}"
+        assert tag in readme, f"docs/reference.md version table misses {repo}:{tag}"
     for needle in ("Iceberg 1.12.0", "Spark 4.1.3", "duckdb 1.5.6", "pyiceberg 0.12.0", "polars 1.44.2"):
         assert needle.lower() in readme.lower(), needle

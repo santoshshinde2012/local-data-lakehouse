@@ -74,7 +74,7 @@ as indicative. Unmeasured rows say "estimate".
 | BUILD (parity) | Spark local mode (2 GB driver) + numpy | about 2.5 GB, estimate; 61 s at seed 42 |
 | SERVE (Claude) | up to 4 stdio servers (128 MB pool each) | graph 283 MiB, lineage 292 MiB, metrics 171 MiB, cohorts 181 MiB after warm calls (latest bench, [tools-bench-s42.json](results/tools-bench-s42.json)) |
 | SERVE (open-source agent, experimental) | + Ollama `qwen3:4b` at `num_ctx` 8192 | about 3.9 GB for the model + 0.2 GB harness; Docker must be stopped |
-| LAKEHOUSE | Postgres + Lakekeeper + RustFS (or SILO) + Spark (+ `ldl-graph`, + Airflow) | measured 2026-10-02: light stack idle about 190 MiB; Spark about 1.2 GiB while a job runs; Airflow overlay about 1.16 GiB; `ldl-graph` builder 576 to 582 MiB (2026-10-01), `mem_limit` 1,536 MiB ([README](../../README.md#prerequisites)) |
+| LAKEHOUSE | Postgres + Lakekeeper + RustFS (or SILO) + Spark (+ `ldl-graph`, + Airflow) | measured 2026-10-02: light stack idle about 190 MiB; Spark about 1.2 GiB while a job runs; Airflow overlay about 1.16 GiB; `ldl-graph` builder 576 to 582 MiB (2026-10-01), `mem_limit` 1,536 MiB ([RESULTS.md](../../RESULTS.md#start-up-and-memory-per-profile)) |
 
 Rule: never run the lakehouse stack, Spark parity and a local LLM at the same time. A preflight that
 refuses `graph-parity` / `graph-eval` when Docker is up, memory pressure is critical or free swap is under
