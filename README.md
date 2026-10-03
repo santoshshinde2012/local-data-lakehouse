@@ -24,7 +24,7 @@ lets an AI agent explain renewals with dated evidence.
 
 **Who it is for:** data engineers, ML engineers and students who want to learn the lakehouse pattern
 hands-on, test an engine change, or build features the way a production team would, all on one machine.
-It is the companion repo to the article *Stop Reading About Lakehouses. Build One Locally.*
+It is the companion repo to the article [Stop Reading About Lakehouses. Build One Locally](https://blog.dataengineerthings.org/stop-reading-about-lakehouses-build-one-locally-10e920e3a673) on Data Engineer Things.
 
 > **Teaching stack, not production.** `.env.example` holds sample local-only credentials, Lakekeeper runs
 > without authentication and the service ports listen on all interfaces. Keep it on your own machine.
