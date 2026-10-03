@@ -132,15 +132,41 @@ Memory (`docker stats`) per phase and the image sizes: [stack-up.excerpt.md](sta
 The graph checks of the same run (tools, sandbox, parity, leakage, bench, lineage):
 [../graph/results/index.md](../graph/results/index.md).
 
-## Airflow 3 UI
+## Snapshots
 
-Headless Chrome screenshots (1600 × 1000, saved at 1024 × 640), taken at 18:25 IST on 2026-10-03 after a re-run of every step
-at `59b08b6` ([docker-e2e.md](../graph/results/docker-e2e.md)). The task states are also in [airflow-e2e.excerpt.md](airflow-e2e.excerpt.md):
+Headless Chrome screenshots of the running services (1600 × 1000 viewport, saved at 1024 × 640, light theme).
+The Airflow run pages show the run-B DAG runs from 18:15–18:22 IST on 2026-10-03 ([docker-e2e.md](../graph/results/docker-e2e.md));
+the other pages were taken at 18:40–18:50 IST on a warm restart of the same volumes. Timings are in
+[benchmarks.md](../benchmarks.md). Task states are also in [airflow-e2e.excerpt.md](airflow-e2e.excerpt.md).
+
+### Airflow 3 (port 8085)
 
 | | |
 |---|---|
-| ![DAG list](img/airflow-dags.png) | ![lakehouse_graph runs](img/airflow-lakehouse_graph.png) |
-| ![lakehouse_retail_medallion runs](img/airflow-lakehouse_retail_medallion.png) | ![lakehouse_churn_features runs](img/airflow-lakehouse_churn_features.png) |
+| ![Airflow DAG list](img/airflow-dags.png) | ![lakehouse_graph run: seven tasks, all success](img/airflow-run-graph-view.png) |
+| The three DAGs | One `lakehouse_graph` run: 7/7 tasks, 126.7 s |
+| ![lakehouse_retail_medallion runs](img/airflow-runs-retail-medallion.png) | ![lakehouse_churn_features runs](img/airflow-runs-churn-features.png) |
+| `lakehouse_retail_medallion` runs | `lakehouse_churn_features` runs |
+| ![lakehouse_graph runs](img/airflow-runs-graph.png) | |
+| `lakehouse_graph` runs | |
+
+### Query engine, catalog and object store
+
+| | |
+|---|---|
+| ![Trino query details](img/trino-query.png) | ![Lakekeeper gold namespace](img/lakekeeper-gold-tables.png) |
+| Trino 483: lapse rate by plan over gold, 392 ms | Lakekeeper: the seven tables in `gold` |
+| ![RustFS buckets](img/rustfs-console.png) | |
+| RustFS console: bucket `lake`, 1,169 objects, 34.7 MiB | |
+
+### Graph view
+
+Standalone Cytoscape.js pages from `scripts/graph_viz.py` (offline, no network).
+
+| | |
+|---|---|
+| ![Evidence graph for sub_santosh](img/graph-renewal-evidence.png) | ![Upstream lineage of limit_hits_14d](img/graph-lineage-upstream.png) |
+| `--renewal sub_santosh:2026-10-07`: point-in-time evidence and the 10 nearest renewals | `--lineage gold.churn_renewal_features.limit_hits_14d`: where the column comes from |
 
 ## How these were made
 

@@ -167,7 +167,8 @@ How the gold is built: [docs/renewal-features.md](docs/renewal-features.md).
 | Doc | What you will find |
 |---|---|
 | [RESULTS.md](RESULTS.md) | Measured start-up, memory, test tiers, pipeline numbers and CI runs |
-| [docs/demo/README.md](docs/demo/README.md) | Every step of the end-to-end run, with its console excerpt and screenshots |
+| [docs/benchmarks.md](docs/benchmarks.md) | Every measured timing in one place: start-up, steps, DAG runs, tests, queries, graph tools, memory, disk, CI |
+| [docs/demo/README.md](docs/demo/README.md) | Every step of the end-to-end run, with its console excerpt, plus [snapshots](docs/demo/README.md#snapshots) of Airflow, Trino, Lakekeeper, RustFS and the graph view |
 | [docs/renewal-features.md](docs/renewal-features.md) | Bronze sources, point-in-time gold rules, the export contract, the no-Docker path |
 | [docs/airflow.md](docs/airflow.md) | The three Airflow 3 DAGs and how the socket proxy keeps Docker access narrow |
 | [docs/graph/README.md](docs/graph/README.md) | The graph on gold: build, contracts, lineage, MCP tools, agents |

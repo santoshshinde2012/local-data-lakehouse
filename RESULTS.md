@@ -11,7 +11,7 @@ One scripted run from empty volumes (`make purge` first) on 2026-10-03, with eve
 | Host engines | DuckDB 1.5.6 · PyIceberg 0.12.0 · Polars 1.44.2 (no JVM) |
 | Consumer | retention-radar `chore/sample-customer-santosh`, merged as [PR #24](https://github.com/santoshshinde2012/retention-radar/pull/24), at `98df572` and `07d8205`, Python 3.12, XGBoost 3.4.1 |
 
-The end-to-end architecture diagram (host engines, profiles, Airflow and graph overlays, export and consumers) is in [docs/demo/README.md](docs/demo/README.md#architecture).
+The end-to-end architecture diagram (host engines, profiles, Airflow and graph overlays, export and consumers) is in [docs/demo/README.md](docs/demo/README.md#architecture). All timings, memory, disk and CI durations side by side, with the re-run: [docs/benchmarks.md](docs/benchmarks.md).
 
 ## Start-up and memory per profile
 
@@ -127,15 +127,16 @@ On 2026-10-03 from 18:01 to 18:22 IST, every step was run again at `59b08b6` (do
 | `make test-t3` | 224.1 s | pass |
 | `make airflow-up` / `make airflow-demo` / `lakehouse_graph` DAG | 34.1 s / 279.7 s / 141.8 s | 0 import errors; 5/5, 4/4 and 7/7 tasks success |
 
-## Airflow 3 UI
+## Snapshots
 
-Headless Chrome screenshots (1600 × 1000, saved at 1024 × 640) taken after the re-run above, at 18:25 IST on 2026-10-03. Each DAG shows its two runs from that day; the task states are also in [airflow-e2e.excerpt.md](docs/demo/airflow-e2e.excerpt.md):
+Headless Chrome screenshots of the running services, all from 2026-10-03; captions and the full set
+(Airflow, Trino, Lakekeeper, RustFS, the graph view) are in [docs/demo/README.md](docs/demo/README.md#snapshots).
 
-| DAG list | Retail medallion |
+| Airflow: one `lakehouse_graph` run | Trino: a query over gold |
 |---|---|
-| ![Airflow DAG list](docs/demo/img/airflow-dags.png) | ![lakehouse_retail_medallion runs](docs/demo/img/airflow-lakehouse_retail_medallion.png) |
-| **Churn features** | **Graph** |
-| ![lakehouse_churn_features runs](docs/demo/img/airflow-lakehouse_churn_features.png) | ![lakehouse_graph runs](docs/demo/img/airflow-lakehouse_graph.png) |
+| ![lakehouse_graph run, 7/7 tasks success](docs/demo/img/airflow-run-graph-view.png) | ![Trino query details](docs/demo/img/trino-query.png) |
+| **Lakekeeper: the gold namespace** | **Graph view: evidence for sub_santosh** |
+| ![Lakekeeper gold tables](docs/demo/img/lakekeeper-gold-tables.png) | ![Evidence graph](docs/demo/img/graph-renewal-evidence.png) |
 
 ## CI
 
@@ -144,9 +145,8 @@ CI ran on every push to [PR #16](https://github.com/santoshshinde2012/local-data
 | Head | Run | t0-unit | t2-light | t3-full | graph |
 |---|---|---|---|---|---|
 | `2fcb92f` (first push) | [37109135526](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37109135526) | [2 min 18 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37109135526/job/111163479310) | [1 min 5 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37109135526/job/111163479346) | [5 min 29 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37109135526/job/111163479265) | [18 min 32 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37109135526/job/111163479150) |
-
 | `3b11ac6` (final head of PR #16) | [37113333382](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37113333382) | [2 min 23 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37113333382/job/111175336072) | [58 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37113333382/job/111175336061) | [5 min 47 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37113333382/job/111175335913) | [14 min 9 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37113333382/job/111175336045) |
-| `ec28a70` (`main`, after the merge) | [37119697670](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37119697670) | pass | pass | pass | pass |
+| `ec28a70` (`main`, after the merge) | [37119697670](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37119697670) | [2 min 29 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37119697670/job/111193259271) | [1 min 5 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37119697670/job/111193259243) | [5 min 31 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37119697670/job/111193259258) | [13 min 40 s](https://github.com/santoshshinde2012/local-data-lakehouse/actions/runs/37119697670/job/111193259364) |
 
 retention-radar CI for the paired branch is on [PR #24](https://github.com/santoshshinde2012/retention-radar/pull/24) (`test` and `e2e-local`; `e2e-local` clones the lakehouse branch of the same name).
 

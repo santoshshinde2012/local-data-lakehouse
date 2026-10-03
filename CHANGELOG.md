@@ -12,6 +12,11 @@ Notable changes, newest first. Dates are when the change was verified. Each entr
 - `.github/dependabot.yml`: weekly grouped updates for the Python locks, Docker images and GitHub Actions.
 - Every step re-run at `59b08b6` on 2026-10-03 (all 27 exited 0): `docs/graph/results/docker-e2e.md` and the
   Airflow screenshots come from that run. `scripts/graph_evidence.py` parses Airflow 3 task-state lines again.
+- `docs/benchmarks.md`: every measured timing in one place (start-up, steps, DAG runs, tests, a Trino query,
+  graph tools, memory, disk, CI), with the machine and date.
+- Snapshots: headless screenshots of Airflow (DAGs, runs, a run's tasks), Trino, Lakekeeper, RustFS and the graph
+  view in `docs/demo/img/`, captioned in `docs/demo/README.md#snapshots`. The Airflow run screenshots now use
+  kebab-case names (`airflow-runs-*.png`).
 - Docs polish: stale statuses and numbers in `docs/graph/` (status table, recorded runs, research decisions),
   links to merged branches, and the Airflow port note.
 
