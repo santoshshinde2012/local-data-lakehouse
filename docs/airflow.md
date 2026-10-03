@@ -37,4 +37,4 @@ make airflow-demo                                # lakehouse_retail_medallion, t
 ./pipelines/airflow_trigger.sh lakehouse_graph   # publish, build, contract, lineage, cohorts, promote
 ```
 
-UI: http://localhost:8080 (127.0.0.1 only). User `admin` (`_AIRFLOW_WWW_USER_USERNAME`), password `_AIRFLOW_WWW_USER_PASSWORD` in `.env`.
+UI: http://localhost:8080 (127.0.0.1 only; `AIRFLOW_API_PORT` changes the port). User `admin` (`_AIRFLOW_WWW_USER_USERNAME`), password `_AIRFLOW_WWW_USER_PASSWORD` in `.env`.

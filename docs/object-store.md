@@ -86,10 +86,10 @@ No `mc` client is needed any more (the old `pgsty/mc` image is gone).
   without the SILO overlay, because `down -v` only removes volumes that a loaded service mounts.
 - Old volumes from the JDBC-catalog era (`silo-data` holding `s3a://lake/warehouse`, Postgres 16
   `postgres-data`) are not readable by the new stack: Postgres 18 refuses a 16 data directory. See
-  [MIGRATION.md](../MIGRATION.md).
+  [migration.md](migration.md).
 
 ## Pin policy
 
 - Immutable release tags plus index digests; never `:latest`.
 - Bump deliberately: change tag + digest together (`docker buildx imagetools inspect <image>:<tag>`),
-  run `make test`, record it in the changelog in [MIGRATION.md](../MIGRATION.md#changelog).
+  run `make test`, record it in [CHANGELOG.md](../CHANGELOG.md).

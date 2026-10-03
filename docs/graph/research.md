@@ -45,17 +45,17 @@ date-sensitive fact.
 | 4 | `renewals_completed` bound documented, not changed (0 rows affected at seed 42) | documented |
 | 5 | The dangling LEAKY `cancel_at_period_end`: `check_repo_contracts.py` warns | built; the fix is the data owner's call |
 | 6 | `check_gold_parity.py` coverage not changed (city, feature_as_of, renewal_date not compared) | noted |
-| 7 | An independent `graph` CI job; the existing radar job untouched | **not added yet** |
+| 7 | An independent `graph` CI job; the existing radar job untouched | built (the `graph` job runs on every PR) |
 | 8 | Commit `.mcp.json` and the skill; ship `graph_ask.sh` as an allowlist launcher; no repo-wide Claude settings deny-list | built |
 | 9 | Lineage in the first release (Tier 0) | built |
 | 10 | LadybugDB accepted despite a bus factor of about 1 | accepted |
 | 11 | DuckDB 1.5.6 only in the eval's SE arm, never a product dependency (1.5.x EOL 2026-11-01) | eval not built |
 | 12 | The Claude-arm eval budget is not spent without approval | not spent |
-| 13 | `config/catalog.md` refresh | **not done yet** |
+| 13 | `docs/catalog.md` refresh | done (lists the current churn tables) |
 | 14 | A strict eval / parity preflight (Docker up, memory pressure, free swap), `FORCE=1` to override | **not built yet** |
 | 15 | A "graph edition" generator (the only honest route to a network-effect lesson) is future work | not scheduled |
 | 16 | Local model `qwen3:4b` (installed, Apache-2.0); `qwen3.5:4b` or the instruct sibling only with approval | researched; harness not built |
-| 17 | The minimal Decimal + atomic-write fix in `src/jobs/churn/04_export_features.py` (a user file) | applied in this branch; review before merge |
+| 17 | The minimal Decimal + atomic-write fix in `src/jobs/churn/04_export_features.py` (a user file) | applied and merged (PR #12) |
 | 18 | The gold rounding patch (Spark `bround` vs numpy) | proposed, not applied |
 
 ## Rejected options

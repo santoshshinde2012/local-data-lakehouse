@@ -3,7 +3,7 @@
 # v2 from iceberg-aws-bundle) reads/writes the files: no hadoop-aws, no aws-java-sdk-bundle, no
 # JDBC driver. Multi-arch base (amd64 + arm64), pinned by tag AND index digest; refresh together:
 #   docker buildx imagetools inspect apache/spark:4.1.3-scala2.13-java21-python3-ubuntu
-# Spark 4.2 has no Iceberg runtime yet; Spark 3.5.9 (LTS) is the fallback line (see MIGRATION.md).
+# Spark 4.2 has no Iceberg runtime yet; Spark 3.5.9 (LTS) is the fallback line (see docs/migration.md).
 ARG SPARK_IMAGE=apache/spark:4.1.3-scala2.13-java21-python3-ubuntu@sha256:bf9d035a7c32a8ca46aa58d6348182ffd7d2dff6409206ecfbb3915ff1fef211
 FROM ${SPARK_IMAGE}
 

@@ -16,7 +16,7 @@ REST catalog, with its state in **Postgres 18.6**. Table data and metadata files
   one-shot `lakekeeper-migrate` service that applies its schema migrations.
 
 The previous design (Iceberg JDBC catalog tables in Postgres 16, root S3 keys in every client) is
-described in [MIGRATION.md](../MIGRATION.md).
+described in [migration.md](migration.md).
 
 ## Wiring
 

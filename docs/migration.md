@@ -38,7 +38,7 @@ volumes that a service of the loaded model mounts.
 
 ## Table names
 
-Unchanged: `bronze.*`, `silver.*`, `gold.*` as listed in [config/catalog.md](config/catalog.md).
+Unchanged: `bronze.*`, `silver.*`, `gold.*` as listed in [catalog.md](catalog.md).
 New: `gold.churn_renewal_features_twin` (pandas twin published by the light demo / T3 via PyIceberg).
 Spark owns `gold.churn_renewal_features`; DuckDB in the light demo writes the retail tables with
 Spark-compatible types (`TIMESTAMPTZ`), so `make e2e` can append to them afterwards.
@@ -103,32 +103,10 @@ Re-run after the Iceberg 1.12.0 / graph dependency bump, except where marked.
 | `make e2e` / `make churn-e2e` | OK in 98 s / 90 s on RustFS, 101 s / 86 s on SILO (`STORE=silo`); export contract `--strict` OK. Full chain from empty volumes (`make purge`, `make up-full` 15 s): 100 s / 87 s, 8,001 renewals, 7,387 routed to the model |
 | `make churn-parity` with pyspark 4.1.3 (no Iceberg) | 8,001 × 27 match in 16.6 s (re-run after the bump; the target now uses `.venv-graph-spark`); tiny 121 × 27 (23.6 s, before the bump) |
 | `make graph-e2e` | OK in 113 s from empty volumes including the overlay build (`run_graph_e2e.sh` 97 s); graph (strict, gold drift 2 cells, info) and lineage contracts pass |
-| `make churn-gold-local` + `make graph-local PROFILE=default` (strict) | OK in 17 s: 40,204 nodes / 130,366 edges, golden s42, export cross-check exact. Against the Spark-written export it fails on the 2 known rounding cells ([lakehouse-twin.md](docs/graph/lakehouse-twin.md#why-gold-drifts-by-1e-4-in-two-cells)), so run `churn-gold-local` first |
+| `make churn-gold-local` + `make graph-local PROFILE=default` (strict) | OK in 17 s: 40,204 nodes / 130,366 edges, golden s42, export cross-check exact. Against the Spark-written export it fails on the 2 known rounding cells ([lakehouse-twin.md](graph/lakehouse-twin.md#why-gold-drifts-by-1e-4-in-two-cells)), so run `churn-gold-local` first |
 | `check_graph_parity.py parity --profile tiny --strict` (pyspark 4.1.3) | OK in 23 s; Spark harness tests 10 passed |
 | `make airflow-up` + `make airflow-demo` (Airflow 3) | healthy in 37 s; 3 DAGs parse, 0 import errors; retail and churn `success` (demo 212 s); `lakehouse_graph` triggered after them: `success` in 122 s |
 | `pipelines/radar_consume.sh` (macOS, radar `feat/local-first-stack-2026` = radar PR #21; re-checked on radar `main` `7e3bec8` after the merge) | fresh clone + venv in 66 s, sync + ingest + batch score 7,387 rows; radar `pytest` 96 passed in 34 s |
-| `make graph-test` | 1,391 passed, 0 failed, 32 skipped in 12 min (the 18 failures that were also on `origin/main` are fixed; see [docs/graph/README.md](docs/graph/README.md#status)) |
+| `make graph-test` | 1,391 passed, 0 failed, 32 skipped in 12 min (the 18 failures that were also on `origin/main` are fixed; see [docs/graph/README.md](graph/README.md#status)) |
 
-## Changelog
-
-### 2026-10-02: local-first stack (`feat/local-first-stack-2026`)
-
-- **Stack:** Lakekeeper v0.13.6 REST catalog on Postgres 18.6; RustFS 1.0.0 (default) or SILO
-  RELEASE.2026-09-16T00-00-00Z (`STORE=silo`); `lakehouse-init` (curl 8.22.0); profiles `light`
-  (no JVM), `full` (+ Spark 4.1.3), `trino` (+ Trino 483). Every image pinned by tag + digest.
-- **Engines:** Spark 4.1.3 (Scala 2.13, Java 21) + Iceberg 1.12.0 with `S3FileIO`; host DuckDB 1.5.6,
-  PyIceberg 0.12.0, Polars 1.44.2, pyarrow 25.0.1 (`requirements.txt`, hash-locked, uv).
-- **Security:** no secrets in tracked files; vended credentials; non-root containers; Airflow behind a
-  socket proxy with generated secrets.
-- **Airflow 3.3.2** overlay (was 2.10.4).
-- **Graph:** PyIceberg REST catalog (was `SqlCatalog` on the JDBC tables); Postgres read-only role removed.
-- **Graph dependencies:** `ldl-graph` on python 3.12.15; ladybug 0.21.2, sqlglot 30.21.0, pydantic-ai-slim
-  2.53.0, openai 3.23.0; the local Spark harness on pyspark 4.1.3 + Iceberg 1.12.0 (was 3.5.3 / 1.6.1),
-  psycopg2 removed from every lock.
-- **Tests and CI:** T0–T3 tiers; CI on Node 24 actions (checkout@v7, setup-python@v7, setup-java@v6), uv 0.12.22, pyspark 4.1.3 parity on Java 21;
-  the Retention Radar step uses radar `main` (v2 reader since radar #21; `RADAR_REF` for a paired change).
-- **Fixes:** nondeterministic silver dedupe; Iceberg 1.11+ time-travel option; lineage extractor
-  resolution of the bronze ingest and the radar step; CI Airflow compose validation; shellcheck SC2015
-  in `scripts/graph_mcp.sh`.
-- **Docs:** README, `config/catalog.md`, `docs/object-store.md`, `docs/graph/*`, demo excerpts; the
-  49 MB demo video removed from the tree (attach it to a GitHub Release).
+The change list for this upgrade is in [CHANGELOG.md](../CHANGELOG.md#2026-10-02-local-first-stack).

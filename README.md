@@ -24,7 +24,7 @@ lets an AI agent explain renewals with dated evidence.
 
 **Who it is for:** data engineers, ML engineers and students who want to learn the lakehouse pattern
 hands-on, test an engine change, or build features the way a production team would, all on one machine.
-It is the companion repo to the article *Stop Reading About Lakehouses. Build One Locally.*
+It is the companion repo to the article [Stop Reading About Lakehouses. Build One Locally](https://blog.dataengineerthings.org/stop-reading-about-lakehouses-build-one-locally-10e920e3a673) on Data Engineer Things.
 
 > **Teaching stack, not production.** `.env.example` holds sample local-only credentials, Lakekeeper runs
 > without authentication and the service ports listen on all interfaces. Keep it on your own machine.
@@ -167,7 +167,8 @@ How the gold is built: [docs/renewal-features.md](docs/renewal-features.md).
 | Doc | What you will find |
 |---|---|
 | [RESULTS.md](RESULTS.md) | Measured start-up, memory, test tiers, pipeline numbers and CI runs |
-| [docs/demo/README.md](docs/demo/README.md) | Every step of the end-to-end run, with its console excerpt and screenshots |
+| [docs/benchmarks.md](docs/benchmarks.md) | Every measured timing in one place: start-up, steps, DAG runs, tests, queries, graph tools, memory, disk, CI |
+| [docs/demo/README.md](docs/demo/README.md) | Every step of the end-to-end run, with its console excerpt, plus [snapshots](docs/demo/README.md#snapshots) of Airflow, Trino, Lakekeeper, RustFS and the graph view |
 | [docs/renewal-features.md](docs/renewal-features.md) | Bronze sources, point-in-time gold rules, the export contract, the no-Docker path |
 | [docs/airflow.md](docs/airflow.md) | The three Airflow 3 DAGs and how the socket proxy keeps Docker access narrow |
 | [docs/graph/README.md](docs/graph/README.md) | The graph on gold: build, contracts, lineage, MCP tools, agents |
@@ -175,8 +176,10 @@ How the gold is built: [docs/renewal-features.md](docs/renewal-features.md).
 | [docs/reference.md](docs/reference.md) | Prerequisites, pinned versions, ports and UIs, all make targets, repo layout |
 | [docs/troubleshooting.md](docs/troubleshooting.md) | Common problems and their fixes |
 | [docs/diagrams.md](docs/diagrams.md) | The diagram palette and rules |
-| [config/catalog.md](config/catalog.md) | Catalog, namespaces and tables |
-| [MIGRATION.md](MIGRATION.md) | Moving from the older JDBC-catalog stack |
+| [docs/catalog.md](docs/catalog.md) | Catalog, namespaces and tables |
+| [docs/migration.md](docs/migration.md) | Moving from the older JDBC-catalog stack |
+| [CHANGELOG.md](CHANGELOG.md) | Notable changes per PR |
+| [CONTRIBUTING.md](CONTRIBUTING.md) · [SECURITY.md](SECURITY.md) · [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) | How to contribute, report a vulnerability, and behave |
 
 ## How the two repos connect
 

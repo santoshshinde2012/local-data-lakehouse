@@ -169,6 +169,12 @@ chain is unchanged). `tests/graph/test_dag_graph.py` checks the chain with stubb
 
 Docker is not started by the docs tooling; these are recorded runs on this Mac (Docker Desktop, seed 42).
 
+**2026-10-03, re-run of every step at `59b08b6`** on existing volumes: `make graph-e2e` passed in 126.6 s
+(`run_graph_e2e.sh` itself 109 s) with 40,204 nodes / 130,366 edges, both contracts passing, 15 Leiden and 15 Louvain
+cohorts, and promote. The Airflow `lakehouse_graph` DAG then ran all 7 tasks `success` in 141.8 s. The record, with
+every step's timing and the summary lines, is [results/docker-e2e.md](results/docker-e2e.md). Earlier the same day,
+from empty volumes, `make graph-e2e` took 118.1 s and 103.1 s ([graph-e2e.excerpt.md](../demo/graph-e2e.excerpt.md)).
+
 **2026-10-02, after the Iceberg 1.12.0 bump** (`ldl-graph` on python 3.12.15, ladybug 0.21.2): `make
 graph-e2e` passed again, 161 s including the overlay build (`run_graph_e2e.sh` itself 97 s), with the same
 40,204 nodes / 130,366 edges and both contracts passing.
@@ -181,8 +187,8 @@ build and lineage contract (golden `core.json`), cohorts (15 Leiden / 15 Louvain
 [graph-e2e.excerpt.md](../demo/graph-e2e.excerpt.md). The Tier-1 overlay
 (`build_lineage_local.py --iceberg`) also reads snapshots and refs through the REST catalog.
 
-**2026-10-01, JDBC catalog stack** (Spark 3.5.3 / Iceberg 1.6.1 / SILO / Airflow 2.10.4). The record,
-with step timings and summary lines, is [results/docker-e2e.md](results/docker-e2e.md):
+**2026-10-01, JDBC catalog stack** (Spark 3.5.3 / Iceberg 1.6.1 / SILO / Airflow 2.10.4). Kept for history;
+`results/docker-e2e.md` now holds the 2026-10-03 run:
 
 | Step | Seconds | Result |
 |---|---:|---|
@@ -206,6 +212,5 @@ afterwards, because `make churn-e2e` rewrites it.
 
 - OpenLineage (Tier 2) has not been re-run on the REST catalog, and there is no OpenLineage loader yet.
 - No packet capture shows that PyIceberg makes no AWS DNS lookup; it is enforced by configuration.
-- The `lakehouse_graph` DAG has not been triggered on Airflow 3.3.2 (its chain is unit-tested).
 - The Make targets `graph-up`, `graph-down`, `airflow-trigger-graph` and `graph-parity` are not in the
   Makefile; `make graph-e2e` and the commands above work today ([operations.md](operations.md#make-targets)).

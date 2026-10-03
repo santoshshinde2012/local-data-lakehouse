@@ -5,8 +5,8 @@
 | | |
 |---|---|
 | Status | **pass** |
-| Commit | `2ad9612` (working tree dirty: no) |
-| Date | 2026-10-02 (UTC) |
+| Commit | `2591911` (working tree dirty: yes) |
+| Date | 2026-10-03 (UTC) |
 | Host | macOS-26.6.2 (macosx_arm64) |
 | Python | 3.12.9 · ladybug 0.21.2 · pandas 3.0.6 · numpy 2.5.3 · pyarrow 25.0.1 · networkx 3.7 · mcp 2.2.0 · pydantic 2.13.5 · sqlglot 30.21.0 |
 | Spark venv | pyiceberg 0.12.0 · pyspark 4.1.3 |
@@ -14,57 +14,65 @@
 
 This file records a run made by an operator (Docker is not started by graph_evidence.py). Reproduce: make up && make wait && make churn-e2e, then the overlay and pipelines/run_graph_e2e.sh (docs/graph/lakehouse-twin.md).
 
-Recorded run: `docker_timings.json` (only step timings and summary lines are copied; full logs stay with the operator).
+Recorded run: `run-2026-10-03-at-59b08b6.json` (only step timings and summary lines are copied; full logs stay with the operator).
 
 | Step | Exit | Seconds | Outcome |
 |---|---:|---:|---|
-| purge | 0 | 0.4 | ok |
-| up_light | 0 | 7.9 | ok |
-| test_t1 | 0 | 6.8 | ok |
-| test_t2 | 0 | 5.0 | ok |
-| demo_light | 0 | 4.8 | ok |
-| up_full | 0 | 11.1 | ok |
-| retail_e2e | 0 | 95.6 | ok |
-| churn_sample | 0 | 2.0 | ok |
-| churn_e2e | 0 | 83.1 | ok |
-| churn_parity | 0 | 14.6 | ok |
-| radar_consume | 0 | 66.6 | ok |
-| radar_pytest | 0 | 40.8 | ok |
-| graph_e2e | 0 | 103.5 | ok |
-| churn_gold_local | 0 | 3.7 | ok |
-| graph_strict_default | 0 | 13.8 | ok |
-| test_t3 | 0 | 203.5 | ok |
-| test_t0 | 0 | 1.3 | ok |
-| airflow_up | 0 | 30.3 | ok |
-| airflow_demo | 0 | 214.8 | ok |
-| airflow_graph_dag | 0 | 132.3 | ok |
-| airflow_dags_list | 0 | 2.5 | ok |
-| airflow_import_errors | 0 | 2.2 | ok |
-| runs_lakehouse_retail_medallion | 0 | 2.5 | ok |
-| tasks_lakehouse_retail_medallion | 0 | 1.9 | ok |
+| up_light | 0 | 7.8 | ok |
+| test_t1 | 0 | 10.9 | ok |
+| test_t2 | 0 | 5.3 | ok |
+| demo_light | 0 | 4.9 | ok |
+| up_full | 0 | 11.8 | ok |
+| retail_e2e | 0 | 110.8 | ok |
+| churn_sample | 0 | 2.1 | ok |
+| churn_e2e | 0 | 92.4 | ok |
+| churn_parity | 0 | 15.8 | ok |
+| radar_consume | 0 | 75.9 | ok |
+| radar_pytest | 0 | 41.7 | ok |
+| graph_e2e | 0 | 126.6 | ok |
+| churn_gold_local | 0 | 4.0 | ok |
+| graph_strict_default | 0 | 14.9 | ok |
+| test_t3 | 0 | 224.1 | ok |
+| test_t0 | 0 | 1.7 | ok |
+| airflow_up | 0 | 34.1 | ok |
+| airflow_dags_list | 0 | 2.2 | ok |
+| airflow_import_errors | 0 | 2.1 | ok |
+| airflow_demo | 0 | 279.7 | ok |
+| airflow_graph_dag | 0 | 141.8 | ok |
+| runs_lakehouse_retail_medallion | 0 | 2.1 | ok |
+| tasks_lakehouse_retail_medallion | 0 | 2.0 | ok |
 | runs_lakehouse_churn_features | 0 | 2.2 | ok |
-| tasks_lakehouse_churn_features | 0 | 2.0 | ok |
-| runs_lakehouse_graph | 0 | 2.1 | ok |
+| tasks_lakehouse_churn_features | 0 | 1.8 | ok |
+| runs_lakehouse_graph | 0 | 2.0 | ok |
 | tasks_lakehouse_graph | 0 | 1.8 | ok |
+
+Airflow task states: 7 of 7 tasks `success` (publish_gold_graph success, build_graph success, check_graph_contract success, build_lineage success, check_lineage_contract success, build_cohorts success, promote success).
 
 ## Summary lines from the logs
 
 ```text
-[13-graph-e2e]
-==> Graph E2E (2026-10-02T15:38Z), profile default
-Graph build OK (renewal-graph/v1, similar_to/renewal-v1) from Iceberg: 40,204 nodes / 130,366 edges; iceberg tag graph_2411f8e92e04 (lakehouse build 2411f8e92e04), lakehouse.gold.churn_renewal_features snapshot 2716826121174203754 (table uuid 01a0fd41-b476-7ea1-a917-98eab1cd6036), identity iceberg i
-Graph contract OK (renewal-graph/v1, profile default, build 361f87a05e8a): 40,204 nodes / 130,366 edges; PIT parity 0 mismatches x 6 features in pandas and Cypher; naive wrong in 1,165 / 681 / 114 renewals; golden s42 (derived); source Iceberg graph_2411f8e92e04; gold drift 2 cell(s), info; strict
-Lineage build OK (metadata-graph/0.1, profile core): 641 nodes / 1,746 edges (322 columns, 346 DERIVED_FROM, 21 graph elements), lineage_build_id 5504679504ed, 64 files hashed, commit None -> /opt/$GRAPH_ROOT/default/builds/361f87a05e8a
-Lineage contract OK (metadata-graph/0.1, profile core, lineage build 5504679504ed): 30 gold SQL columns resolve (137 DERIVED_FROM + 3 COUNTS_ROWS_OF); 20 of 22 features compliant, declared exceptions renewals_completed, first_renewal_after_pricing_change; Cypher = oracle; slowest question Q15_downst
-Graph cohorts OK (cohorts/renewal-v1, networkx 3.7, seed 42, weight 1 / (1 + dist)): leiden 15 cohorts (modularity 0.8056, plan purity 1.00); louvain 15 cohorts (modularity 0.8065, plan purity 1.00); 7,387 reference renewals, 614 assigned by nearest reference neighbour; outside the contract -> /opt/
-Graph promote OK: /opt/$GRAPH_ROOT/current -> /opt/$GRAPH_ROOT/default/builds/361f87a05e8a (under the build lock; temp symlink + os.replace)
-==> Graph E2E complete in 87 s. Promoted build: $GRAPH_ROOT/current
-[20-airflow-graph-dag]
+[airflow_graph_dag]
   [5s] state=running
   [35s] state=running
   [65s] state=running
-[28-tasks-lakehouse_graph]
+[graph_e2e]
+==> Graph E2E (2026-10-03T12:38Z), profile default
+Graph build OK (renewal-graph/v1, similar_to/renewal-v1) from Iceberg: 40,204 nodes / 130,366 edges; iceberg tag graph_9af34e9499f5 (lakehouse build 9af34e9499f5), lakehouse.gold.churn_renewal_features snapshot 5203553568934652353 (table uuid 01a100dd-08d6-70d1-8f50-82c842b195d6), identity iceberg i
+Graph contract OK (renewal-graph/v1, profile default, build 5d67ef434f4c): 40,204 nodes / 130,366 edges; PIT parity 0 mismatches x 6 features in pandas and Cypher; naive wrong in 1,165 / 681 / 114 renewals; golden s42 (derived); source Iceberg graph_9af34e9499f5; gold drift 2 cell(s), info; strict
+Lineage build OK (metadata-graph/0.1, profile core): 647 nodes / 1,753 edges (322 columns, 346 DERIVED_FROM, 21 graph elements), lineage_build_id bcd8ddbb1076, 65 files hashed, commit None -> /opt/$GRAPH_ROOT/default/builds/5d67ef434f4c
+Lineage contract OK (metadata-graph/0.1, profile core, lineage build bcd8ddbb1076): 30 gold SQL columns resolve (137 DERIVED_FROM + 3 COUNTS_ROWS_OF); 20 of 22 features compliant, declared exceptions renewals_completed, first_renewal_after_pricing_change; Cypher = oracle; slowest question Q13_featur
+Graph cohorts OK (cohorts/renewal-v1, networkx 3.7, seed 42, weight 1 / (1 + dist)): leiden 15 cohorts (modularity 0.8056, plan purity 1.00); louvain 15 cohorts (modularity 0.8065, plan purity 1.00); 7,387 reference renewals, 614 assigned by nearest reference neighbour; outside the contract -> /opt/
+Graph promote OK: /opt/$GRAPH_ROOT/current -> /opt/$GRAPH_ROOT/default/builds/5d67ef434f4c (under the build lock; temp symlink + os.replace)
+==> Graph E2E complete in 109 s. Promoted build: $GRAPH_ROOT/current
+[tasks_lakehouse_graph]
 dag_id           logical_date    task_id                 state    start_date                        end_date
+lakehouse_graph                  publish_gold_graph      success  2026-10-03T12:49:44.217601+00:00  2026-10-03T12:50:40.403023+00:00
+lakehouse_graph                  build_graph             success  2026-10-03T12:50:41.663043+00:00  2026-10-03T12:51:06.463822+00:00
+lakehouse_graph                  check_graph_contract    success  2026-10-03T12:51:06.801853+00:00  2026-10-03T12:51:30.999866+00:00
+lakehouse_graph                  build_lineage           success  2026-10-03T12:51:31.809359+00:00  2026-10-03T12:51:38.136231+00:00
+lakehouse_graph                  check_lineage_contract  success  2026-10-03T12:51:38.708766+00:00  2026-10-03T12:51:41.858094+00:00
+lakehouse_graph                  build_cohorts           success  2026-10-03T12:51:42.901263+00:00  2026-10-03T12:51:48.236916+00:00
+lakehouse_graph                  promote                 success  2026-10-03T12:51:48.731170+00:00  2026-10-03T12:51:50.005842+00:00
 ```
 
 [Back to the results index](index.md)
