@@ -100,7 +100,7 @@ MACH_SERVICES = ["com.apple.dnssd.service", "com.apple.pasteboard.1", "com.apple
                  "com.apple.system.opendirectoryd.libinfo", "com.apple.trustd"]
 # toolset -> (tool, arguments) called in the MCP sessions
 MCP_CALLS = {
-    "graph": [("graph_describe", {}), ("graph_find", {"query": "maya", "limit": 2}),
+    "graph": [("graph_describe", {}), ("graph_find", {"query": "santosh", "limit": 2}),
               ("graph_exposure", {"entity_id": "inc-002", "response_format": "detailed"})],   # LAPACK (Accelerate)
     "metrics": [("metric_route_counts", {}), ("metric_feature_card", {"feature": "limit_hits_14d"})],
     "lineage": [("lineage_pit", {}), ("lineage_unused", {})],
@@ -339,7 +339,7 @@ def lakehouse_tools(build: Path, logs: Path, with_ladybug: bool) -> str:
         names += ["graph_describe", "graph_find", "graph_renewal_evidence"]
         if ctx.has_lineage():
             names.append("lineage_pit")
-    args = {"graph_find": {"query": "maya"}, "graph_renewal_evidence": {"renewal_id": "sub_maya:2026-10-07"}}
+    args = {"graph_find": {"query": "santosh"}, "graph_renewal_evidence": {"renewal_id": "sub_santosh:2026-10-07"}}
     answered = []
     for n in names:
         env = tools.call(ctx, n, args.get(n, {}))

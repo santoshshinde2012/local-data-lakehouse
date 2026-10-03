@@ -26,7 +26,7 @@ def call(ctx, name, **args):
 
 # ------------------------------------------------------------------------------------------------ wilson
 @pytest.mark.parametrize(("k", "n", "want"), [
-    (2, 10, [0.057, 0.51]),        # PLAN 3: Maya's 2 of 10 neighbours
+    (2, 10, [0.057, 0.51]),        # PLAN 3: Santosh's 2 of 10 neighbours
     (29, 72, [0.297, 0.518]),      # PLAN 3: pro, 3-5 cap hits, first after a cut
     (227, 2292, [0.087, 0.112]),   # PLAN 2.2: first renewal after a cap cut 9.9% [8.8, 11.2]
     (321, 5095, [0.057, 0.07]),    # ... vs 6.3% [5.7, 7.0]

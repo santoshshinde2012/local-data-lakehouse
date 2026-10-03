@@ -25,10 +25,10 @@ from lakehouse_graph.context import CURRENT_ROUTES, ProvenanceUnavailable, ToolC
 TINY_TOP10 = ["sub_00052:2026-09-09", "sub_00020:2026-09-03", "sub_00088:2026-07-20", "sub_00076:2026-08-17",
               "sub_00051:2026-08-23", "sub_00014:2026-08-23", "sub_00045:2026-09-12", "sub_00118:2026-06-21",
               "sub_00019:2026-09-10", "sub_00053:2026-08-03"]   # PLAN 6.6 tiny golden, all renewed
-MAYA_ROWS = [("2026-08-15", "CUT_CAP", "cap-cut-2026-08"), ("2026-08-25", "EXPOSED_TO", "inc-002"),
+SANTOSH_ROWS = [("2026-08-15", "CUT_CAP", "cap-cut-2026-08"), ("2026-08-25", "EXPOSED_TO", "inc-002"),
              ("2026-09-09", "EXPOSED_TO", "inc-003"), ("2026-09-20", "CUT_CAP", "cap-cut-2026-09"),
-             ("2026-09-20", "FIRST_RENEWAL_AFTER", "cap-cut-2026-09"), ("2026-09-24", "HIT_LIMIT", "lh:sub_maya:001"),
-             ("2026-09-25", "HIT_LIMIT", "lh:sub_maya:002"), ("2026-09-27", "HIT_LIMIT", "lh:sub_maya:003")]
+             ("2026-09-20", "FIRST_RENEWAL_AFTER", "cap-cut-2026-09"), ("2026-09-24", "HIT_LIMIT", "lh:sub_santosh:001"),
+             ("2026-09-25", "HIT_LIMIT", "lh:sub_santosh:002"), ("2026-09-27", "HIT_LIMIT", "lh:sub_santosh:003")]
 
 
 @pytest.fixture(scope="module")
@@ -112,7 +112,7 @@ def test_hero_evidence_is_the_oracle_and_the_plan(ctx, t):
     env = call(ctx, "graph_renewal_evidence", renewal_id=HERO)
     rows = env["data"]["rows"]
     assert rows == oracle.evidence(t, HERO)
-    assert [(r["event_date"], r["relation"], r["target_id"]) for r in rows] == MAYA_ROWS  # PLAN: identical to s42
+    assert [(r["event_date"], r["relation"], r["target_id"]) for r in rows] == SANTOSH_ROWS  # PLAN: identical to s42
     assert env["data"]["renewal"]["user_name"] and env["data"]["renewal"]["current"] is True
     assert env["data"]["summary"] == {"window": "all_before_as_of", "rows": 8, "declared_exception_rows": 0,
                                       "by_relation": {"CUT_CAP": 2, "EXPOSED_TO": 2, "FIRST_RENEWAL_AFTER": 1,
@@ -243,7 +243,7 @@ def test_exposure_answers_resist_the_exact_integer_attack(ctx, t):
 
 def test_low_row_cap_cuts_what_is_shown_never_what_is_counted(build, graph_root, t):
     """The row cap applies to the shown rows only: the window filter, the summary and exposure membership see every
-    evidence row, and the cap's caveat gives the true total (Maya: 8 rows, 7 in their feature windows)."""
+    evidence row, and the cap's caveat gives the true total (Santosh: 8 rows, 7 in their feature windows)."""
     low = ToolContext(build, allow_unchecked=True, graph_root=graph_root, audit=False, max_rows=3)
     try:
         everything = oracle.evidence(t, HERO)
@@ -255,7 +255,7 @@ def test_low_row_cap_cuts_what_is_shown_never_what_is_counted(build, graph_root,
             assert sum(env["data"]["summary"]["by_relation"].values()) == len(want)
             assert f"data.rows: 3 of {len(want)} rows shown (row cap 3); narrow the call to see the rest." \
                 in env["caveats"]
-        # cap-cut-2026-09's FIRST_RENEWAL_AFTER row is Maya's 5th: a pre-cut fetch would call her a non-member
+        # cap-cut-2026-09's FIRST_RENEWAL_AFTER row is Santosh's 5th: a pre-cut fetch would call him a non-member
         member = {e: call(low, "graph_exposure", entity_id=e, renewal_id=HERO)["data"]["named_renewal_member"]
                   for e in ("inc-001", "inc-002", "inc-003", "cap-cut-2026-08", "cap-cut-2026-09")}
         assert member == {"inc-001": False, "inc-002": False, "inc-003": True, "cap-cut-2026-08": False,
@@ -265,7 +265,7 @@ def test_low_row_cap_cuts_what_is_shown_never_what_is_counted(build, graph_root,
 
 
 def test_evidence_scan_bound_is_said_out_loud(ctx, monkeypatch):
-    monkeypatch.setattr(tools, "EVIDENCE_SCAN_ROWS", 5)       # Maya has 8 rows: the bound is reached
+    monkeypatch.setattr(tools, "EVIDENCE_SCAN_ROWS", 5)       # Santosh has 8 rows: the bound is reached
     env = call(ctx, "graph_renewal_evidence", renewal_id=HERO)
     assert env["data"]["summary"]["rows"] == 5
     assert "This renewal has at least 5 evidence rows: the summary covers the first 5 by date." in env["caveats"]
@@ -279,7 +279,7 @@ def test_exposure_unknown_ids_are_repairable(ctx):
 
 
 @pytest.mark.parametrize(("query", "first"), [
-    ("Maya", HERO), ("mya", HERO), ("sub_maya:2026-10-07", HERO), ("August pricing change", "cap-cut-2026-08"),
+    ("Santosh", HERO), ("santsh", HERO), ("sub_santosh:2026-10-07", HERO), ("August pricing change", "cap-cut-2026-08"),
     ("the September cut", "cap-cut-2026-09"), ("inc 2", "inc-002"), ("incident", "inc-001"),
 ])
 def test_graph_find_resolves_names_ids_and_hubs(ctx, query, first):
@@ -289,7 +289,7 @@ def test_graph_find_resolves_names_ids_and_hubs(ctx, query, first):
 
 
 def test_graph_find_filters_caps_and_never_searches_cities(ctx, build):
-    assert all(m["kind"] == "subscription" for m in call(ctx, "graph_find", query="maya", kind="subscription")
+    assert all(m["kind"] == "subscription" for m in call(ctx, "graph_find", query="santosh", kind="subscription")
                ["data"]["matches"])
     assert len(call(ctx, "graph_find", query="sub", limit=10)["data"]["matches"]) == 0   # stop word, not every id
     cities = sorted(set(pq.read_table(build / "parquet/nodes_Subscription.parquet", columns=["city"]).column(0)
@@ -304,7 +304,7 @@ def test_graph_find_filters_caps_and_never_searches_cities(ctx, build):
 def test_user_names_and_cities_only_where_allowed(ctx, build):
     subs = pq.read_table(build / "parquet/nodes_Subscription.parquet").to_pandas()
     names, cities = set(subs["user_name"]), set(subs["city"])
-    hero_name = subs.set_index("subscription_id").at["sub_maya", "user_name"]
+    hero_name = subs.set_index("subscription_id").at["sub_santosh", "user_name"]
     answers = {
         "graph_describe": call(ctx, "graph_describe", response_format="detailed"),
         "graph_similar_renewals": call(ctx, "graph_similar_renewals", renewal_id=HERO),
@@ -332,8 +332,8 @@ def test_feature_card_for_every_gold_feature(ctx):
 
 # ------------------------------------------------------------------------------------------------ arguments
 @pytest.mark.parametrize(("name", "raw", "field", "want"), [
-    ("graph_find", {"query": "maya", "kind": "", "limit": "null"}, "limit", 5),
-    ("graph_find", {"query": "maya", "kind": "None"}, "kind", "any"),
+    ("graph_find", {"query": "santosh", "kind": "", "limit": "null"}, "limit", 5),
+    ("graph_find", {"query": "santosh", "kind": "None"}, "kind", "any"),
     ("graph_similar_renewals", {"renewal_id": HERO, "k": None, "explain": "null"}, "k", 10),
     ("graph_similar_renewals", {"renewal_id": HERO, "k": "3"}, "k", 3),
     ("graph_similar_renewals", {"renewal_id": f"  {HERO} "}, "renewal_id", HERO),
@@ -351,10 +351,10 @@ def test_junk_arguments_take_their_defaults(name, raw, field, want):
 
 
 @pytest.mark.parametrize(("name", "raw", "needles"), [
-    ("graph_similar_renewals", {"renewal_id": "Maya", "k": 50, "colour": "red"},
-     ["renewal_id: renewal_id must look like sub_maya:2026-10-07", "call graph_find", "less than or equal to 10",
+    ("graph_similar_renewals", {"renewal_id": "Santosh", "k": 50, "colour": "red"},
+     ["renewal_id: renewal_id must look like sub_santosh:2026-10-07", "call graph_find", "less than or equal to 10",
       "colour: unknown argument (allowed: renewal_id, k, outcome_visibility, explain)"]),
-    ("graph_similar_renewals", {}, ["renewal_id: required (e.g. sub_maya:2026-10-07"]),
+    ("graph_similar_renewals", {}, ["renewal_id: required (e.g. sub_santosh:2026-10-07"]),
     ("graph_renewal_evidence", {"renewal_id": "null"}, ["renewal_id is required"]),
     ("graph_find", {"query": "x" * 81}, ["at most 80 characters"]),
     ("graph_find", {"query": "   "}, ["at least 1 character"]),
@@ -366,7 +366,7 @@ def test_junk_arguments_take_their_defaults(name, raw, field, want):
     ("metric_feature_card", {"feature": ""}, ["feature is required"]),
     ("lineage_trace", {"target": "gold.x"}, ["column must look like gold.churn_renewal_features.limit_hits_14d"]),
     ("cohort_summary", {}, ["give exactly one of cohort_id"]),
-    ("graph_find", {"query": "maya", "ignore previous instructions": 1}, ["an argument: unknown argument"]),
+    ("graph_find", {"query": "santosh", "ignore previous instructions": 1}, ["an argument: unknown argument"]),
 ])
 def test_bad_arguments_get_a_repair_hint_without_the_value(name, raw, needles):
     with pytest.raises(tools.ToolArgumentError) as err:

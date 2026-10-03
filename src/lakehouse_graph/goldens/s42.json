@@ -2,17 +2,17 @@
  "generated_by": "python -m lakehouse_graph.oracle --build <build_dir> --print-golden (never edit by hand)",
  "golden_version": 1,
  "key": {
-  "inputs_combined_sha256": "1affd3ea0a5407a61679cf30f262da974e2aa2cedfa628597c038a442b948b08",
+  "inputs_combined_sha256": "d94c04e11cc9bef8300acd6df9a325599603de2598441476c72059da63f0e470",
   "inputs_sha256": {
-   "daily_usage.csv": "9dcc3d772bc0c3d6f182667db43fa4c33dd7aa150e84f6cca1abdf68135a1dad",
+   "daily_usage.csv": "74f130e3b85ee208183b53e9c624d9bd513dd8834b2c16b8a77bca06ba64685c",
    "incidents.csv": "552a282cd92b2d451538e83e70fbd6b7e6ecb401c118eaaa042e87c1520d4238",
-   "invoices.csv": "c62d3a6f1ee2e60d4b4ab4abfc72da5c531b54215d2a8c2cc3d9dcb2aa615076",
-   "limit_events.csv": "051fc055eb0f3c87b96b1f2c84ff53d1ccb7bf2d19718a84112023aa38fe53c4",
+   "invoices.csv": "ce9c0dabc484bc2c5467f4879c622a188912c8126e33e3e2d3025cba745d4e9a",
+   "limit_events.csv": "4eaa11e02538410ddef8b471b48c1264c2c37bf1accd9bea39d6b5baeb4ae050",
    "overage_charges.csv": "b81197e81ec1b3af00a2743acfdf6e1c89bffeb7d613c37c6d3d0e72acac2ec2",
    "overage_settings.csv": "6d5704efa647253a0425331573215b8f19602bebb248735fe61d4f41e965118e",
    "pricing_changes.csv": "7f1289bb9be60b7b35bd3e7fb7cf1066c8f0279398d5935daa3a8108eb91a293",
    "subscription_events.csv": "3bd57cf047af54d89e47ad9ffb017376a2f2f56364ed22ce481cf90ea376809e",
-   "subscription_snapshots.csv": "262666ad3baa400132b399d89fb18ed0ea81255529676f7f696043bd0e780523",
+   "subscription_snapshots.csv": "270fb52d092dd2afc09a3e4ae2e1d7dc538b173a4753c686844619ef5c3ca2ef",
    "support_tickets.csv": "e352d1e40474cba2cb9bf59b0f8ea8bee0c3688c288f70c76edb7f14e1bd558b"
   },
   "n_users": 8000,
@@ -22,7 +22,7 @@
  "measured_on": {
   "platform": "macosx_arm64",
   "versions": {
-   "ladybug": "0.21.1",
+   "ladybug": "0.21.2",
    "numpy": "2.5.3",
    "pandas": "3.0.6",
    "pyarrow": "25.0.1",
@@ -251,7 +251,7 @@
       "in_feature_window": true,
       "known_by_as_of": true,
       "relation": "HIT_LIMIT",
-      "target_id": "lh:sub_maya:001"
+      "target_id": "lh:sub_santosh:001"
      },
      {
       "declared_exception": false,
@@ -261,7 +261,7 @@
       "in_feature_window": true,
       "known_by_as_of": true,
       "relation": "HIT_LIMIT",
-      "target_id": "lh:sub_maya:002"
+      "target_id": "lh:sub_santosh:002"
      },
      {
       "declared_exception": false,
@@ -271,7 +271,7 @@
       "in_feature_window": true,
       "known_by_as_of": true,
       "relation": "HIT_LIMIT",
-      "target_id": "lh:sub_maya:003"
+      "target_id": "lh:sub_santosh:003"
      }
     ],
     "evidence_hidden_after_as_of": 0,
@@ -291,7 +291,7 @@
     ],
     "plan_tier": "pro",
     "renewal_date": "2026-10-07",
-    "renewal_id": "sub_maya:2026-10-07",
+    "renewal_id": "sub_santosh:2026-10-07",
     "route": "score_today",
     "sharing_neighbours_by_route": {
      "cancel_flow": 9,

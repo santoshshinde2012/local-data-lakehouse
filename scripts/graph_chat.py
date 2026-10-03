@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Ask the lakehouse graph a question from the terminal: router -> one toolset -> answer, tool calls, provenance.
 
-  .venv-graph-eval/bin/python scripts/graph_chat.py "What could the model see about Maya at T-7?"
+  .venv-graph-eval/bin/python scripts/graph_chat.py "What could the model see about Santosh at T-7?"
   .venv-graph-eval/bin/python scripts/graph_chat.py                 # interactive: one question per line, Ctrl-D ends
   make graph-chat Q="Lapse rate by plan?"
 

@@ -41,7 +41,7 @@ dataset and columns.
 
 The upstream lineage of `gold.churn_renewal_features.limit_hits_14d`, generated from the lineage Parquet:
 
-<!-- graph-evidence:begin mermaid:lineage-limit_hits_14d -->
+<!-- graph-evidence:begin mermaid:lineage-limit-hits-14d -->
 ```mermaid
 %%{init: {"theme": "base", "flowchart": {"wrappingWidth": 360}, "themeVariables": {"primaryColor": "#CCFBF1", "primaryTextColor": "#0F172A", "primaryBorderColor": "#0F766E", "lineColor": "#64748B", "textColor": "#0F172A", "edgeLabelBackground": "#FFFFFF", "clusterBkg": "#FFFFFF", "clusterBorder": "#64748B", "titleColor": "#0F172A", "attributeBackgroundColorOdd": "#FFFFFF", "attributeBackgroundColorEven": "#F0FDFA", "relationColor": "#64748B", "relationLabelBackground": "#FFFFFF", "relationLabelColor": "#0F172A"}}}%%
 flowchart LR
@@ -85,8 +85,8 @@ flowchart LR
   class n0,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10 data
 ```
 
-<sub>Generated from the lineage Parquet of build a2598a28e164 (lineage build 1030de6ac5e1, core profile) by the pure-Python oracle: 10 edges, 9 columns.</sub>
-<!-- graph-evidence:end mermaid:lineage-limit_hits_14d -->
+<sub>Generated from the lineage Parquet of build dde502e2a8e1 (lineage build 3999f2dea0cb, core profile) by the pure-Python oracle: 10 edges, 9 columns.</sub>
+<!-- graph-evidence:end mermaid:lineage-limit-hits-14d -->
 
 The point-in-time window `(as_of-14, as_of]` sits on the gold read of `silver.churn_limit_events.hit_date`.
 Silver `hit_at` is an identity copy that gold never reads: asking what breaks downstream of **silver**
@@ -167,7 +167,7 @@ What building the lineage graph found in the repo (at `3efe31a`, still true at `
    `RADAR_DIR`, full profile).
 4. Nine silver churn columns are never read by gold.
 5. `DUNNING_DAYS = 14` is defined and never read.
-6. `config/CATALOG.md` still lists the old churn tables.
+6. `config/catalog.md` still lists the old churn tables.
 7. `src/jobs/retail/05_query_timetravel.py` sets appName `05_query_and_timetravel` (job-name drift;
    `check_repo_contracts.py` warns).
 

@@ -17,8 +17,8 @@ The source systems of a self-serve AI coding assistant, as raw events:
 
 Usage events keep coming after each subscriber's T-7 date on purpose: the gold
 job must not read them (point-in-time correctness is the thing being taught).
-One extra subscription, `sub_maya`, renews after the data ends; gold scores her
-"today" and exports her as the inference record.
+One extra subscription, `sub_santosh`, renews after the data ends; gold scores him
+"today" and exports him as the inference record.
 
 Usage:
   N_USERS=8000 python scripts/generate_churn_sample.py
@@ -232,37 +232,37 @@ def main() -> None:
         else:
             invoices.append((uid[i], r.strftime("%Y-%m-%d"), PRICE[plan[i]], "paid", 1))
 
-    # --- Maya: renews a week after the data ends; scored "today" --------------
-    maya_t = DATA_END + pd.Timedelta(days=7)
-    maya_start = maya_t - pd.Timedelta(days=120)
+    # --- Santosh: renews a week after the data ends; scored "today" --------------
+    santosh_t = DATA_END + pd.Timedelta(days=7)
+    santosh_start = santosh_t - pd.Timedelta(days=120)
     subs = pd.concat([subs, pd.DataFrame([{
-        "subscription_id": "sub_maya", "snapshot_date": DATA_END.strftime("%Y-%m-%d"),
-        "user_name": "Maya (worked example)", "plan_tier": "pro", "status": "active",
-        "current_period_end": maya_t.strftime("%Y-%m-%d"),
-        "started_at": maya_start.strftime("%Y-%m-%d"), "city": "Pune",
+        "subscription_id": "sub_santosh", "snapshot_date": DATA_END.strftime("%Y-%m-%d"),
+        "user_name": "Santosh (worked example)", "plan_tier": "pro", "status": "active",
+        "current_period_end": santosh_t.strftime("%Y-%m-%d"),
+        "started_at": santosh_start.strftime("%Y-%m-%d"), "city": "Pune",
     }])], ignore_index=True)
     for k in (1, 2, 3):
-        invoices.append(("sub_maya", (maya_start + pd.Timedelta(days=30 * k)).strftime("%Y-%m-%d"), 20.0, "paid", 1))
-    maya_days = []
+        invoices.append(("sub_santosh", (santosh_start + pd.Timedelta(days=30 * k)).strftime("%Y-%m-%d"), 20.0, "paid", 1))
+    santosh_days = []
     for o in range(63, 35, -1):  # the month before: busier, accepting more
         if o % 2 == 1:
-            d = maya_t - pd.Timedelta(days=o)
-            maya_days.append({"subscription_id": "sub_maya", "activity_date": d.strftime("%Y-%m-%d"),
+            d = santosh_t - pd.Timedelta(days=o)
+            santosh_days.append({"subscription_id": "sub_santosh", "activity_date": d.strftime("%Y-%m-%d"),
                               "ide_sessions": 2, "cli_sessions": 0, "agent_requests": 30,
                               "cheap_model_requests": 6, "suggestions_shown": 36, "suggestions_accepted": 12,
                               "agent_tasks": 3, "agent_tasks_kept": 2, "total_requests": 66,
                               "failed_requests": 2})
     for o in range(35, 7, -1):
-        d = maya_t - pd.Timedelta(days=o)
+        d = santosh_t - pd.Timedelta(days=o)
         if (o > 14 and o % 2 == 0) or o in (9, 12):
-            maya_days.append({"subscription_id": "sub_maya", "activity_date": d.strftime("%Y-%m-%d"),
+            santosh_days.append({"subscription_id": "sub_santosh", "activity_date": d.strftime("%Y-%m-%d"),
                               "ide_sessions": 1, "cli_sessions": 1, "agent_requests": 34,
                               "cheap_model_requests": 22, "suggestions_shown": 36, "suggestions_accepted": 10,
                               "agent_tasks": 3, "agent_tasks_kept": 2, "total_requests": 70,
                               "failed_requests": 3})
-    usage = pd.concat([usage, pd.DataFrame(maya_days)], ignore_index=True)
+    usage = pd.concat([usage, pd.DataFrame(santosh_days)], ignore_index=True)
     for o in (10, 12, 13):
-        limits.loc[len(limits)] = ("sub_maya", (maya_t - pd.Timedelta(days=o)).strftime("%Y-%m-%d 14:00:00"), "weekly")
+        limits.loc[len(limits)] = ("sub_santosh", (santosh_t - pd.Timedelta(days=o)).strftime("%Y-%m-%d 14:00:00"), "weekly")
 
     # --- write bronze ---------------------------------------------------------
     subs.to_csv(OUT / "subscription_snapshots.csv", index=False)

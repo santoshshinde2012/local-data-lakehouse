@@ -1,56 +1,53 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="760" height="401" viewBox="0 0 760 401" role="img" font-family="system-ui, -apple-system, &#x27;Segoe UI&#x27;, sans-serif">
-<title>Point-in-time leak surface: event edges dated after their renewal&#x27;s as_of</title>
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="354" viewBox="0 0 760 354" role="img" font-family="system-ui, -apple-system, &#x27;Segoe UI&#x27;, sans-serif">
+<title>Event edges dated after as_of</title>
 <desc>Stacked horizontal bars per event edge type, on or before as_of versus after as_of: HIT_LIMIT 3,000 of 10,602 after as_of (1,165 renewals); BILLED 9,852 of 10,139 after as_of (8,000 renewals); EXPOSED_TO 1,401 of 7,651 after as_of (985 renewals); FIRST_RENEWAL_AFTER 495 of 2,503 after as_of (495 renewals); OPENED 114 of 2,134 after as_of (114 renewals); CHANGED_OVERAGE 0 of 849 after as_of (0 renewals); CHARGED_OVERAGE 0 of 470 after as_of (0 renewals).</desc>
-<rect width="760" height="401" rx="8" fill="#fcfcfb"/>
-<text x="24" y="38" font-size="15" fill="#0b0b0b" font-weight="600">Point-in-time leak surface: event edges dated after their renewal&#x27;s as_of</text>
-<text x="24" y="58" font-size="12" fill="#52514e">14,862 of 34,348 event edges fall after as_of (T-7). The graph keeps them on purpose; every tool template filters event_date</text>
-<text x="24" y="75" font-size="12" fill="#52514e">&lt;= as_of. FIRST_RENEWAL_AFTER edges after as_of are the one declared exception (gold rule), served flagged.</text>
-<rect x="24" y="93" width="12" height="10" fill="#2a78d6" rx="2"/>
-<text x="42" y="102" font-size="11" fill="#52514e">on or before as_of</text>
-<rect x="152.63" y="93" width="12" height="10" fill="#eb6834" rx="2"/>
-<text x="170.63" y="102" font-size="11" fill="#52514e">after as_of</text>
+<rect width="760" height="354" rx="8" fill="#fcfcfb"/>
+<text x="24" y="38" font-size="15" fill="#0b0b0b" font-weight="600">Event edges dated after as_of</text>
+<text x="24" y="58" font-size="12" fill="#52514e">14,862 of 34,348 event edges fall after as_of (T-7)</text>
+<rect x="24" y="76" width="12" height="10" fill="#2a78d6" rx="2"/>
+<text x="42" y="85" font-size="11" fill="#52514e">before as_of</text>
+<rect x="122.82" y="76" width="12" height="10" fill="#eb6834" rx="2"/>
+<text x="140.82" y="85" font-size="11" fill="#52514e">after as_of</text>
 <g><title>HIT_LIMIT: 7,602 on or before as_of, 3,000 after</title>
-<text x="183.49" y="137" font-size="12" fill="#0b0b0b" text-anchor="end">HIT_LIMIT</text>
-<path d="M193.49 125H352.25V141H193.49Z" fill="#2a78d6"/>
-<path d="M354.25 125H410.9A4 4 0 0 1 414.9 129V137A4 4 0 0 1 410.9 141H354.25Z" fill="#eb6834"/>
-<text x="420.9" y="137" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">3,000 of 10,602 after as_of (1,165 renewals)</text>
+<text x="183.49" y="120" font-size="12" fill="#0b0b0b" text-anchor="end">HIT_LIMIT</text>
+<path d="M193.49 108H475.38V124H193.49Z" fill="#2a78d6"/>
+<path d="M477.38 108H582.63A4 4 0 0 1 586.63 112V120A4 4 0 0 1 582.63 124H477.38Z" fill="#eb6834"/>
+<text x="592.63" y="120" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">3,000 of 10,602 after as_of</text>
 </g>
 <g><title>BILLED: 287 on or before as_of, 9,852 after</title>
-<text x="183.49" y="163" font-size="12" fill="#0b0b0b" text-anchor="end">BILLED</text>
-<path d="M193.49 151H199.48V167H193.49Z" fill="#2a78d6"/>
-<path d="M201.48 151H401.23A4 4 0 0 1 405.23 155V163A4 4 0 0 1 401.23 167H201.48Z" fill="#eb6834"/>
-<text x="411.23" y="163" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">9,852 of 10,139 after as_of (8,000 renewals)</text>
+<text x="183.49" y="146" font-size="12" fill="#0b0b0b" text-anchor="end">BILLED</text>
+<path d="M193.49 134H204.13V150H193.49Z" fill="#2a78d6"/>
+<path d="M206.13 134H565.46A4 4 0 0 1 569.46 138V146A4 4 0 0 1 565.46 150H206.13Z" fill="#eb6834"/>
+<text x="575.46" y="146" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">9,852 of 10,139 after as_of</text>
 </g>
 <g><title>EXPOSED_TO: 6,250 on or before as_of, 1,401 after</title>
-<text x="183.49" y="189" font-size="12" fill="#0b0b0b" text-anchor="end">EXPOSED_TO</text>
-<path d="M193.49 177H324.01V193H193.49Z" fill="#2a78d6"/>
-<path d="M326.01 177H349.27A4 4 0 0 1 353.27 181V189A4 4 0 0 1 349.27 193H326.01Z" fill="#eb6834"/>
-<text x="359.27" y="189" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">1,401 of 7,651 after as_of (985 renewals)</text>
+<text x="183.49" y="172" font-size="12" fill="#0b0b0b" text-anchor="end">EXPOSED_TO</text>
+<path d="M193.49 160H425.25V176H193.49Z" fill="#2a78d6"/>
+<path d="M427.25 160H473.2A4 4 0 0 1 477.2 164V172A4 4 0 0 1 473.2 176H427.25Z" fill="#eb6834"/>
+<text x="483.2" y="172" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">1,401 of 7,651 after as_of</text>
 </g>
 <g><title>FIRST_RENEWAL_AFTER: 2,008 on or before as_of, 495 after</title>
-<text x="183.49" y="215" font-size="12" fill="#0b0b0b" text-anchor="end">FIRST_RENEWAL_AFTER</text>
-<path d="M193.49 203H235.42V219H193.49Z" fill="#2a78d6"/>
-<path d="M237.42 203H241.76A4 4 0 0 1 245.76 207V215A4 4 0 0 1 241.76 219H237.42Z" fill="#eb6834"/>
-<text x="251.76" y="215" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">495 of 2,503 after as_of (495 renewals) · declared exception</text>
+<text x="183.49" y="198" font-size="12" fill="#0b0b0b" text-anchor="end">FIRST_RENEWAL_AFTER</text>
+<path d="M193.49 186H267.95V202H193.49Z" fill="#2a78d6"/>
+<path d="M269.95 186H282.3A4 4 0 0 1 286.3 190V198A4 4 0 0 1 282.3 202H269.95Z" fill="#eb6834"/>
+<text x="292.3" y="198" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">495 of 2,503 after as_of</text>
 </g>
 <g><title>OPENED: 2,020 on or before as_of, 114 after</title>
-<text x="183.49" y="241" font-size="12" fill="#0b0b0b" text-anchor="end">OPENED</text>
-<path d="M193.49 229H235.67V245H193.49Z" fill="#2a78d6"/>
-<path d="M237.67 229H237.86A0.19 0.19 0 0 1 238.06 229.19V244.81A0.19 0.19 0 0 1 237.86 245H237.67Z" fill="#eb6834"/>
-<text x="244.06" y="241" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">114 of 2,134 after as_of (114 renewals)</text>
+<text x="183.49" y="224" font-size="12" fill="#0b0b0b" text-anchor="end">OPENED</text>
+<path d="M193.49 212H268.39V228H193.49Z" fill="#2a78d6"/>
+<path d="M270.39 212H271.51A1.11 1.11 0 0 1 272.62 213.11V226.89A1.11 1.11 0 0 1 271.51 228H270.39Z" fill="#eb6834"/>
+<text x="278.62" y="224" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">114 of 2,134 after as_of</text>
 </g>
 <g><title>CHANGED_OVERAGE: 849 on or before as_of, 0 after</title>
-<text x="183.49" y="267" font-size="12" fill="#0b0b0b" text-anchor="end">CHANGED_OVERAGE</text>
-<path d="M193.49 255H207.22A4 4 0 0 1 211.22 259V267A4 4 0 0 1 207.22 271H193.49Z" fill="#2a78d6"/>
-<text x="217.22" y="267" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">0 of 849 after as_of</text>
+<text x="183.49" y="250" font-size="12" fill="#0b0b0b" text-anchor="end">CHANGED_OVERAGE</text>
+<path d="M193.49 238H220.97A4 4 0 0 1 224.97 242V250A4 4 0 0 1 220.97 254H193.49Z" fill="#2a78d6"/>
+<text x="230.97" y="250" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">0 of 849 after as_of</text>
 </g>
 <g><title>CHARGED_OVERAGE: 470 on or before as_of, 0 after</title>
-<text x="183.49" y="293" font-size="12" fill="#0b0b0b" text-anchor="end">CHARGED_OVERAGE</text>
-<path d="M193.49 281H199.3A4 4 0 0 1 203.3 285V293A4 4 0 0 1 199.3 297H193.49Z" fill="#2a78d6"/>
-<text x="209.3" y="293" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">0 of 470 after as_of</text>
+<text x="183.49" y="276" font-size="12" fill="#0b0b0b" text-anchor="end">CHARGED_OVERAGE</text>
+<path d="M193.49 264H206.92A4 4 0 0 1 210.92 268V276A4 4 0 0 1 206.92 280H193.49Z" fill="#2a78d6"/>
+<text x="216.92" y="276" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">0 of 470 after as_of</text>
 </g>
-<line x1="193.49" y1="118" x2="193.49" y2="304" stroke="#c3c2b7" stroke-width="1"/>
-<text x="24" y="324" font-size="11" fill="#52514e">After as_of = event_date &gt; the renewal&#x27;s as_of; for FIRST_RENEWAL_AFTER, known_by_as_of = false (the cut took effect after T-7).</text>
-<text x="24" y="339" font-size="11" fill="#52514e">Source: graph build a2598a28e164 · profile s42 · seed 42, N_USERS 8000 (verified) · data_end 2026-09-30 · renewal-graph/v1 · commit</text>
-<text x="24" y="354" font-size="11" fill="#52514e">013dd4e · regenerate with scripts/graph_evidence.py.</text>
+<line x1="193.49" y1="101" x2="193.49" y2="287" stroke="#c3c2b7" stroke-width="1"/>
+<text x="24" y="307" font-size="10.5" fill="#52514e">Graph build dde502e2a8e1, seed 42</text>
 </svg>

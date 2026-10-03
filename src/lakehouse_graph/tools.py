@@ -132,13 +132,13 @@ def _optional_id(field_name: str, pattern: str, example: str, next_step: str) ->
 
 
 _FIND_FIRST = "If you only have a name, call graph_find first and copy the id from its result."
-_RENEWAL_EXAMPLE = "sub_maya:2026-10-07 (subscription id, colon, renewal date)"
+_RENEWAL_EXAMPLE = "sub_santosh:2026-10-07 (subscription id, colon, renewal date)"
 _COLUMN_EXAMPLE = ("gold.churn_renewal_features.limit_hits_14d (layer.table.column; layer "
                    "source|bronze|silver|gold|export)")
 RenewalId = Annotated[
     str, StringConstraints(pattern=RENEWAL_ID_RE, max_length=MAX_ID_CHARS),
     BeforeValidator(_id_hint("renewal_id", RENEWAL_ID_RE, _RENEWAL_EXAMPLE, _FIND_FIRST)),
-    Field(description="e.g. sub_maya:2026-10-07 (an id from graph_find).")]
+    Field(description="e.g. sub_santosh:2026-10-07 (an id from graph_find).")]
 EntityId = Annotated[
     str, StringConstraints(pattern=ENTITY_ID_RE),
     BeforeValidator(_id_hint("entity_id", ENTITY_ID_RE, "inc-002 (incident) or cap-cut-2026-08 (pricing change)",
@@ -210,7 +210,7 @@ class DescribeArgs(Args):
 
 class FindArgs(Args):
     query: Annotated[str, StringConstraints(min_length=1, max_length=MAX_FIND_QUERY, strip_whitespace=True),
-                     Field(description="A name, id fragment or words, e.g. 'Maya', 'sub_07200', 'August price cut'.")]
+                     Field(description="A name, id fragment or words, e.g. 'Santosh', 'sub_07200', 'August price cut'.")]
     kind: Annotated[Kind, Junk, Field(description="One entity kind (default any).")] = "any"
     limit: Annotated[int, Field(ge=1, le=10, description="1-10, default 5."), Junk] = 5
 
@@ -237,7 +237,7 @@ class ExposureArgs(Args):
     entity_id: EntityId
     renewal_id: Annotated[str | None, _optional_id("renewal_id", RENEWAL_ID_RE, _RENEWAL_EXAMPLE, _FIND_FIRST),
                           _optional({"type": "string", "pattern": RENEWAL_ID_RE,
-                                     "description": "Optional, e.g. sub_maya:2026-10-07: membership only."})] = None
+                                     "description": "Optional, e.g. sub_santosh:2026-10-07: membership only."})] = None
     response_format: Annotated[Fmt, Junk, Field(description="concise (default) or detailed (adds the naive "
                                                             "count).")] = "concise"
 
@@ -307,7 +307,7 @@ class CohortSummaryArgs(Args):
                                                                    "cohort_list)."})] = None
     renewal_id: Annotated[str | None, _optional_id("renewal_id", RENEWAL_ID_RE, _RENEWAL_EXAMPLE, _FIND_FIRST),
                           _optional(
-        {"type": "string", "pattern": RENEWAL_ID_RE, "description": "Or a renewal id, e.g. sub_maya:2026-10-07: its "
+        {"type": "string", "pattern": RENEWAL_ID_RE, "description": "Or a renewal id, e.g. sub_santosh:2026-10-07: its "
                                                                     "cohort."})] = None
     algorithm: Annotated[Algorithm | None, Junk, _optional(
         {"type": "string", "enum": ["leiden", "louvain"], "description": "leiden (default) or louvain."})] = None
@@ -315,7 +315,7 @@ class CohortSummaryArgs(Args):
     @model_validator(mode="after")
     def _exactly_one(self) -> CohortSummaryArgs:
         if (self.cohort_id is None) == (self.renewal_id is None):
-            raise ValueError("give exactly one of cohort_id (e.g. leiden-01) or renewal_id (e.g. sub_maya:2026-10-07)")
+            raise ValueError("give exactly one of cohort_id (e.g. leiden-01) or renewal_id (e.g. sub_santosh:2026-10-07)")
         return self
 
 
@@ -351,7 +351,7 @@ def graph_describe(ctx: ToolContext, *, response_format: str = "concise") -> env
         "data_end": man.get("data_end"), "synthetic": True,
         "honesty": list(HONESTY_RULES),
         "workflow": WORKFLOW,
-        "id_formats": {"renewal": "sub_<id>:<renewal_date>, e.g. sub_maya:2026-10-07",
+        "id_formats": {"renewal": "sub_<id>:<renewal_date>, e.g. sub_santosh:2026-10-07",
                        "subscription": "sub_<id>", "incident": "inc-NNN", "pricing_change": "cap-cut-YYYY-MM",
                        "column": "layer.table.column, e.g. gold.churn_renewal_features.limit_hits_14d",
                        "cohort": "leiden-NN or louvain-NN"},

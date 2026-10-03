@@ -13,7 +13,7 @@ PY_CHECK = @command -v "$(PY)" >/dev/null 2>&1 || { echo "PY=$(PY) not found: ru
 PYTEST = $(PY) -m pytest
 
 .PHONY: help env venv up up-light up-full wait down purge ps logs reset demo-light e2e churn-e2e churn-sample churn-gold-local \
-	churn-check churn-parity demo test test-t0 test-t1 test-t2 test-t3 stats \
+	churn-check churn-parity demo docs-check test test-t0 test-t1 test-t2 test-t3 stats \
 	airflow-up airflow-down airflow-wait airflow-trigger-retail airflow-trigger-churn airflow-demo
 .PHONY: graph-test graph-venv graph-sample graph-build graph-check graph-local graph-promote graph-clean graph-golden graph-e2e \
         lineage-local graph-cohorts graph-evidence
@@ -33,6 +33,7 @@ help:
 	@echo "  make churn-check         Validate data/export/ against the retention-radar contract"
 	@echo "  make churn-parity        Spark SQL (local pyspark 4.1.3, Java 17+) vs pandas gold, row by row"
 	@echo "  make test-t0             T0 unit + static checks, no containers"
+	@echo "  make docs-check          File-naming convention + relative Markdown links"
 	@echo "  make graph-test          graph-layer tests in .venv-graph (no containers)"
 	@echo "  make test-t1             T1 contract: throwaway Postgres + Lakekeeper + RustFS (testcontainers)"
 	@echo "  make test-t2             T2 smoke: brings up light, runs the host engines against it"
@@ -164,8 +165,13 @@ demo: e2e churn-e2e
 
 test: test-t0 test-t1 test-t2 test-t3
 
+# File-naming convention + relative Markdown links (also part of test-t0 and CI t0-unit).
+docs-check:
+	python3 scripts/check_docs.py
+
 test-t0:
 	$(PY_CHECK)
+	python3 scripts/check_docs.py
 	$(PYTEST) -q tests/unit
 
 # The graph layer's own tests run in its own venv (make graph-venv).
@@ -212,6 +218,9 @@ airflow-demo: airflow-trigger-retail airflow-trigger-churn
 graph-e2e: up-full
 	mkdir -p data/graph
 	$(COMPOSE) -f docker-compose.graph.yml $(FULL_PROFILES) up -d --build --wait
+	@# ldl-graph bind-mounts README.md and Makefile as single files; an editor or sed -i that replaces the file
+	@# leaves a running container on the deleted copy, so always start it fresh (a few seconds).
+	$(COMPOSE) -f docker-compose.graph.yml $(FULL_PROFILES) up -d --wait --no-deps --force-recreate graph
 	./pipelines/run_graph_e2e.sh
 
 # ---------------------------------------------------------------------------

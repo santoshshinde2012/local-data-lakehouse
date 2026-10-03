@@ -1,10 +1,10 @@
 # Churn E2E: sample, Spark renewal gold and the export
 
-Captured on 2026-10-02 (IST) on a MacBook Pro (Apple M1 Pro, 16 GB, macOS 26.6.2; Docker Desktop 29.8.1, Compose 5.5.1, VM 10 CPUs / 7.65 GiB), branch `feat/local-first-stack-2026` at `7f5fc43`, in one run from empty volumes (`make purge` first). Real console output; trimmed only for noise (Spark INFO/WARN logs, docker build and container progress lines, pip notices). `<repo>` is the checkout, `~` the home directory; lines longer than 200 characters end in `…`. Index: [README.md](README.md).
+Captured on 2026-10-03 (IST) on a MacBook Pro (Apple M1 Pro, 16 GB, macOS 26.6.2; Docker Desktop 29.8.1, Compose 5.5.1, VM 10 CPUs / 7.65 GiB), branch `chore/sample-customer-santosh` at `2fcb92f`, in one run from empty volumes (`make purge` first). Real console output; trimmed only for noise (Spark INFO/WARN logs, docker build and container progress lines, pip notices, blank lines); long outputs keep their head and tail. `<repo>` is the checkout, `~` the home directory; lines longer than 200 characters end in `…`. Index: [README.md](README.md).
 
 ## `make churn-sample`
 
-Exit 0, 2 s.
+Exit 0, 1.9 s.
 
 ```text
 $ make churn-sample
@@ -16,7 +16,7 @@ Wrote bronze to <repo>/data/sample/churn
 
 ## `make churn-e2e` (Spark bronze → silver → gold → export)
 
-Exit 0, 83.1 s.
+Exit 0, 85 s.
 
 ```text
 $ make churn-e2e
@@ -24,7 +24,7 @@ $ make churn-e2e
 ==> Waiting for: postgres lakekeeper objectstore lakehouse-init spark
 Stack ready (postgres=healthy lakekeeper=healthy objectstore=healthy lakehouse-init=healthy spark=healthy )
 ./pipelines/run_churn_e2e.sh
-==> Churn features E2E (2026-10-02T15:34Z)
+==> Churn features E2E (2026-10-03T08:23Z)
 ======== churn/01_ingest_bronze.py ========
 ==> spark-submit /opt/jobs/churn/01_ingest_bronze.py
 bronze.churn_subscription_snapshots_raw: 8001 rows
@@ -68,17 +68,27 @@ Churn gold features OK.
 ==> spark-submit /opt/jobs/churn/04_export_features.py
 Wrote /opt/data/export/churn_user_features.csv (7387 renewals routed to the model)
 Wrote /opt/data/export/churn_renewals_audit.csv (8001 renewals)
-Wrote /opt/data/export/hero_inference_record.json (sub_maya)
+Wrote /opt/data/export/hero_inference_record.json (sub_santosh)
 ==> Exports:
--rw-r--r--@ 1 santosh  staff  1418788 Oct  2 21:06 churn_renewals_audit.csv
--rw-r--r--@ 1 santosh  staff   831028 Oct  2 21:06 churn_user_features.csv
--rw-r--r--@ 1 santosh  staff      723 Oct  2 21:06 hero_inference_record.json
+-rw-r--r--  1 santosh  staff        0 Sep 30 10:04 .gitkeep
+-rw-r--r--@ 1 santosh  staff  1418794 Oct  3 13:54 churn_renewals_audit.csv
+-rw-r--r--@ 1 santosh  staff   831028 Oct  3 13:54 churn_user_features.csv
+-rw-r--r--@ 1 santosh  staff      729 Oct  3 13:54 hero_inference_record.json
 ==> Churn E2E complete.
+```
+
+## Export contract, strict
+
+Exit 0, 0.7 s.
+
+```text
+$ .venv/bin/python scripts/check_churn_export.py --strict
+Churn export contract OK (7387 renewals, 25 cols) → <repo>/data/export
 ```
 
 ## `make churn-gold-local` (the no-Docker pandas twin; run before the strict default graph contract)
 
-Exit 0, 3.7 s.
+Exit 0, 3.9 s.
 
 ```text
 $ make churn-gold-local
@@ -89,7 +99,7 @@ Wrote bronze to <repo>/data/sample/churn
 .venv/bin/python scripts/build_churn_gold_local.py
 Wrote <repo>/data/export/churn_renewals_audit.csv (8001 renewals; routes {'model': 7387, 'dunning': 326, 'cancel_flow': 287, 'score_today': 1})
 Wrote <repo>/data/export/churn_user_features.csv (7387 rows, voluntary-lapse rate 0.074)
-Wrote <repo>/data/export/hero_inference_record.json (sub_maya, as of 2026-09-30)
+Wrote <repo>/data/export/hero_inference_record.json (sub_santosh, as of 2026-09-30)
 .venv/bin/python scripts/check_churn_export.py
 Churn export contract OK (7387 renewals, 25 cols) → <repo>/data/export
 ```

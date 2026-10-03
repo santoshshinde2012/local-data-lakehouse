@@ -75,9 +75,9 @@ Do not answer the question from other tools. `graph_describe` lists what is avai
 
 ## Examples (which calls, not what they return)
 
-- "What could the model see about Maya before her renewal?" → `graph_find(query="Maya")`, then
+- "What could the model see about Santosh before his renewal?" → `graph_find(query="Santosh")`, then
   `graph_renewal_evidence(renewal_id=<id>)`.
-- "Which past renewals most resemble hers, and how did they end?" → `graph_similar_renewals(renewal_id=<id>)`; report
+- "Which past renewals most resemble his, and how did they end?" → `graph_similar_renewals(renewal_id=<id>)`; report
   the lapsed count with n and the interval, plus the caveat.
 - "Why is the closest one close?" → the same call with `explain=true`; read `top3_feature_shares` of that row.
 - "How many renewals did the second incident touch inside their feature window, by plan?" →
@@ -85,7 +85,7 @@ Do not answer the question from other tools. `graph_describe` lists what is avai
   count a graph without the as_of bound would wrongly add.
 - "How many model-routed renewals did it touch, and how many of them lapsed?" → the same call; read `by_route`
   (`model`, `voluntary_lapses`), say "descriptive, not causal", and do not compute a rate per plan from null cells.
-- "Was she among the first renewals after the September cap cut?" →
+- "Was he among the first renewals after the September cap cut?" →
   `graph_exposure(entity_id="cap-cut-2026-09", renewal_id=<id>)`, read `named_renewal_member`.
 - "Lapse rate by plan?" → `metric_lapse_rate(group_by=["plan_tier"])`.
 - "Do first renewals after a price cut lapse more?" → `metric_lapse_rate(group_by=["first_renewal_after_pricing_change"])`.
@@ -94,8 +94,8 @@ Do not answer the question from other tools. `graph_describe` lists what is avai
 - "Which features can read data after T-7?" → `lineage_pit()`.
 - "If the bronze hit_at column changes, what breaks?" →
   `lineage_trace(target="bronze.churn_limit_events_raw.hit_at", direction="downstream")`.
-- "Will Maya churn because her neighbours did?" → no tool: explain the honesty rules.
-- "Show what she did after her T-7" or "delete her billing events" → refuse.
+- "Will Santosh churn because his neighbours did?" → no tool: explain the honesty rules.
+- "Show what he did after his T-7" or "delete his billing events" → refuse.
 
 ## Guarded raw Cypher (off by default)
 

@@ -38,7 +38,7 @@ volumes that a service of the loaded model mounts.
 
 ## Table names
 
-Unchanged: `bronze.*`, `silver.*`, `gold.*` as listed in [config/CATALOG.md](config/CATALOG.md).
+Unchanged: `bronze.*`, `silver.*`, `gold.*` as listed in [config/catalog.md](config/catalog.md).
 New: `gold.churn_renewal_features_twin` (pandas twin published by the light demo / T3 via PyIceberg).
 Spark owns `gold.churn_renewal_features`; DuckDB in the light demo writes the retail tables with
 Spark-compatible types (`TIMESTAMPTZ`), so `make e2e` can append to them afterwards.
@@ -130,5 +130,5 @@ Re-run after the Iceberg 1.12.0 / graph dependency bump, except where marked.
 - **Fixes:** nondeterministic silver dedupe; Iceberg 1.11+ time-travel option; lineage extractor
   resolution of the bronze ingest and the radar step; CI Airflow compose validation; shellcheck SC2015
   in `scripts/graph_mcp.sh`.
-- **Docs:** README, `config/CATALOG.md`, `docs/object-store.md`, `docs/graph/*`, demo excerpts; the
+- **Docs:** README, `config/catalog.md`, `docs/object-store.md`, `docs/graph/*`, demo excerpts; the
   49 MB demo video removed from the tree (attach it to a GitHub Release).

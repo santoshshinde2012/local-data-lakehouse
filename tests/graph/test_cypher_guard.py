@@ -165,8 +165,8 @@ def test_the_deny_list_covers_the_plan_items():
                                                           "LIMIT 201"),
     ("MATCH (r:Renewal) WHERE EXISTS { MATCH (r)-[:ON_PLAN]->(:Plan) RETURN r } RETURN count(*) AS n",
      "MATCH (r:Renewal) WHERE EXISTS { MATCH (r)-[:ON_PLAN]->(:Plan) RETURN r } RETURN count(*) AS n LIMIT 201"),
-    ("MATCH (s:Subscription {subscription_id: 'sub_maya'}) RETURN s.started_at, 'sub_maya:2026-10-07' AS id",
-     "MATCH (s:Subscription {subscription_id: 'sub_maya'}) RETURN s.started_at, 'sub_maya:2026-10-07' AS id "
+    ("MATCH (s:Subscription {subscription_id: 'sub_santosh'}) RETURN s.started_at, 'sub_santosh:2026-10-07' AS id",
+     "MATCH (s:Subscription {subscription_id: 'sub_santosh'}) RETURN s.started_at, 'sub_santosh:2026-10-07' AS id "
      "LIMIT 201"),
 ])
 def test_read_only_statements_pass_with_a_forced_limit(query, statement):
@@ -192,7 +192,7 @@ def test_the_tool_answers_from_the_evidence_graph_only(ctx):
     assert set(env) == set(envelope.ENVELOPE_KEYS) and env["data"]["rows"] == [{"n": 121}]
     assert env["provenance"]["evidence_db_sha256"] == ctx.record["db"]["sha256"]
     assert env["provenance"]["sandboxed"] is False and "label-free" in env["provenance"]["pit_rule"]
-    env = run(ctx, "MATCH (r:Renewal {renewal_id: 'sub_maya:2026-10-07'})<-[:HAS_RENEWAL]-(s:Subscription)"
+    env = run(ctx, "MATCH (r:Renewal {renewal_id: 'sub_santosh:2026-10-07'})<-[:HAS_RENEWAL]-(s:Subscription)"
                    "-[e:HIT_LIMIT]->(h:LimitHit) RETURN e.event_date AS d, h.event_id AS id ORDER BY d")
     assert [r["d"] for r in env["data"]["rows"]] == sorted(r["d"] for r in env["data"]["rows"])
     flagged = run(ctx, "MATCH (r:Renewal)-[f:FIRST_RENEWAL_AFTER]->(p:PricingChange) WHERE f.declared_exception "

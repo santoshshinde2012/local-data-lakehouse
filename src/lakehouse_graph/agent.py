@@ -6,7 +6,7 @@ sub-agent that sees exactly one toolset, served by the repo's MCP server over st
 Everything is recorded in a replayable trace (schema ``lhg-trace/1``).
 
     from lakehouse_graph.agent import ask
-    r = ask("What could the model see about Maya at T-7?", model="ollama:qwen3:4b", build="<build dir>")
+    r = ask("What could the model see about Santosh at T-7?", model="ollama:qwen3:4b", build="<build dir>")
     r.answer, r.tool_calls, r.provenance, r.timings
 
 Arms (the eval's configurations; the CLI and UI use R):
@@ -328,7 +328,7 @@ BASE_INSTRUCTIONS = (
     "a change to data, say that the tools cannot do that and give only what the tools can show. If the tools cannot "
     "answer, say so.")
 TOOLSET_HINTS = {
-    "graph": "Resolve names with graph_find first and pass ids (e.g. sub_maya:2026-10-07, inc-002, cap-cut-2026-08) "
+    "graph": "Resolve names with graph_find first and pass ids (e.g. sub_santosh:2026-10-07, inc-002, cap-cut-2026-08) "
              "to the other graph tools.",
     "metrics": "Rates are over model-routed renewals: give n and the Wilson interval with every rate.",
     "lineage": "Columns are named layer.table.column, e.g. gold.churn_renewal_features.limit_hits_14d.",
@@ -918,7 +918,7 @@ class Session:
 
             extra = ("You have one tool, sql_query, that runs a single read-only DuckDB SELECT over these tables "
                      "(table(columns)):\n" + self._engine.schema_text() + "\nRenewal ids look like "
-                     "sub_maya:2026-10-07 (subscription id, colon, renewal date); as_of is the renewal's T-7 feature "
+                     "sub_santosh:2026-10-07 (subscription id, colon, renewal date); as_of is the renewal's T-7 feature "
                      "date; outcome and churned are as of data_end; edges have src, dst and event_date.")
             instructions = sub_agent_instructions((), self.rm, honesty=HONESTY_TEXT, extra=extra)
             agent = Agent(self.model, instructions=instructions, toolsets=[ts])

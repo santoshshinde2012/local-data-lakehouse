@@ -15,7 +15,7 @@ from pathlib import Path
 from pyspark.sql import SparkSession
 
 EXPORT_DIR = os.environ.get("CHURN_EXPORT_DIR", "/opt/data/export")
-HERO_ID = os.environ.get("CHURN_HERO_ID", "sub_maya")
+HERO_ID = os.environ.get("CHURN_HERO_ID", "sub_santosh")
 TRAIN_COLUMNS = [
     "user_id", "user_name", "plan_tier", "renewals_completed", "active_days_7d", "active_days_28d",
     "engagement_trend", "last_active_days_ago", "agent_requests_28d", "allowance_used_pct",

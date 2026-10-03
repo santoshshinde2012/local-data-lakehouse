@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# Compose reads AIRFLOW_API_PORT from .env; read it the same way when the shell does not set it.
+if [[ -z "${AIRFLOW_API_PORT:-}" && -f "$ROOT/.env" ]]; then
+  AIRFLOW_API_PORT="$(sed -n 's/^AIRFLOW_API_PORT=//p' "$ROOT/.env" | tail -n 1)"
+fi
 PORT="${AIRFLOW_API_PORT:-8080}"
 echo "==> Waiting for the Airflow API server…"
 for _ in $(seq 1 90); do

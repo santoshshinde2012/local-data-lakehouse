@@ -111,11 +111,11 @@ def test_parse_toolsets():
 async def test_server_object_lists_and_calls(server):
     listed = await server.list_tools()
     assert [t.name for t in listed] == EXPECTED["graph"] + EXPECTED["metrics"]
-    r = await server.call_tool("graph_find", {"query": "maya"})
+    r = await server.call_tool("graph_find", {"query": "santosh"})
     assert r.is_error is False and r.structured_content["data"]["matches"][0]["id"] == HERO
     assert json.loads(r.content[0].text) == r.structured_content and "\n" not in r.content[0].text
     with pytest.raises(ToolError, match="unknown argument"):
-        await server.call_tool("graph_find", {"query": "maya", "colour": "red"})
+        await server.call_tool("graph_find", {"query": "santosh", "colour": "red"})
     with pytest.raises(ToolError, match="Unknown tool"):
         await server.call_tool("lineage_pit", {})
 

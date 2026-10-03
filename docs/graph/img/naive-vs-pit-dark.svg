@@ -1,47 +1,43 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="760" height="392" viewBox="0 0 760 392" role="img" font-family="system-ui, -apple-system, &#x27;Segoe UI&#x27;, sans-serif">
-<title>A traversal without the as_of bound gets features wrong</title>
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="328" viewBox="0 0 760 328" role="img" font-family="system-ui, -apple-system, &#x27;Segoe UI&#x27;, sans-serif">
+<title>Without the as_of bound, features go wrong</title>
 <desc>Grouped horizontal bars per feature: limit_hits_14d point in time 0 wrong, naive 1,165 wrong; incident_exposed_28d point in time 0 wrong, naive 681 wrong; support_tickets_90d point in time 0 wrong, naive 114 wrong, out of 8,001 renewals.</desc>
-<rect width="760" height="392" rx="8" fill="#1a1a19"/>
-<text x="24" y="38" font-size="15" fill="#ffffff" font-weight="600">A traversal without the as_of bound gets features wrong</text>
-<text x="24" y="58" font-size="12" fill="#c3c2b7">Renewals (of 8,001) whose feature, recomputed from graph edges, differs from gold. Point in time: event_date in</text>
-<text x="24" y="75" font-size="12" fill="#c3c2b7">(as_of-window, as_of]. Naive: event_date &gt; as_of-window, with no upper bound. The contract requires both numbers exactly.</text>
-<text x="24" y="92" font-size="12" fill="#c3c2b7">A hollow ring marks a zero.</text>
-<rect x="24" y="110" width="12" height="10" fill="#3987e5" rx="2"/>
-<text x="42" y="119" font-size="11" fill="#c3c2b7">point in time: event_date in (as_of-window, as_of]</text>
-<rect x="314" y="110" width="12" height="10" fill="#d95926" rx="2"/>
-<text x="332" y="119" font-size="11" fill="#c3c2b7">naive: no as_of upper bound</text>
-<text x="155.28" y="154" font-size="12" fill="#ffffff" text-anchor="end">limit_hits_14d</text>
-<text x="155.28" y="170" font-size="11" fill="#c3c2b7" text-anchor="end">(as_of-14, as_of]</text>
+<rect width="760" height="328" rx="8" fill="#1a1a19"/>
+<text x="24" y="38" font-size="15" fill="#ffffff" font-weight="600">Without the as_of bound, features go wrong</text>
+<text x="24" y="58" font-size="12" fill="#c3c2b7">Renewals (of 8,001) whose recomputed feature differs from gold</text>
+<rect x="24" y="76" width="12" height="10" fill="#3987e5" rx="2"/>
+<text x="42" y="85" font-size="11" fill="#c3c2b7">point in time</text>
+<rect x="120.86" y="76" width="12" height="10" fill="#d95926" rx="2"/>
+<text x="138.86" y="85" font-size="11" fill="#c3c2b7">naive (no upper bound)</text>
+<text x="155.28" y="120" font-size="12" fill="#ffffff" text-anchor="end">limit_hits_14d</text>
+<text x="155.28" y="136" font-size="11" fill="#c3c2b7" text-anchor="end">(as_of-14, as_of]</text>
 <g><title>limit_hits_14d: point in time 0 wrong</title>
-<circle cx="172.78" cy="148" r="5.5" fill="#1a1a19" stroke="#3987e5" stroke-width="2"/>
-<text x="186.28" y="152" font-size="11" fill="#c3c2b7" font-variant-numeric="tabular-nums">0 wrong</text>
+<circle cx="172.78" cy="114" r="5.5" fill="#1a1a19" stroke="#3987e5" stroke-width="2"/>
+<text x="186.28" y="118" font-size="11" fill="#c3c2b7" font-variant-numeric="tabular-nums">0 wrong</text>
 </g>
 <g><title>limit_hits_14d: naive 1,165 wrong</title>
-<path d="M165.28 161H646A4 4 0 0 1 650 165V171A4 4 0 0 1 646 175H165.28Z" fill="#d95926"/>
-<text x="656" y="172" font-size="11" fill="#c3c2b7" font-variant-numeric="tabular-nums">1,165 wrong</text>
+<path d="M165.28 127H646A4 4 0 0 1 650 131V137A4 4 0 0 1 646 141H165.28Z" fill="#d95926"/>
+<text x="656" y="138" font-size="11" fill="#c3c2b7" font-variant-numeric="tabular-nums">1,165 wrong</text>
 </g>
-<text x="155.28" y="208" font-size="12" fill="#ffffff" text-anchor="end">incident_exposed_28d</text>
-<text x="155.28" y="224" font-size="11" fill="#c3c2b7" text-anchor="end">(as_of-28, as_of]</text>
+<text x="155.28" y="174" font-size="12" fill="#ffffff" text-anchor="end">incident_exposed_28d</text>
+<text x="155.28" y="190" font-size="11" fill="#c3c2b7" text-anchor="end">(as_of-28, as_of]</text>
 <g><title>incident_exposed_28d: point in time 0 wrong</title>
-<circle cx="172.78" cy="202" r="5.5" fill="#1a1a19" stroke="#3987e5" stroke-width="2"/>
-<text x="186.28" y="206" font-size="11" fill="#c3c2b7" font-variant-numeric="tabular-nums">0 wrong</text>
+<circle cx="172.78" cy="168" r="5.5" fill="#1a1a19" stroke="#3987e5" stroke-width="2"/>
+<text x="186.28" y="172" font-size="11" fill="#c3c2b7" font-variant-numeric="tabular-nums">0 wrong</text>
 </g>
 <g><title>incident_exposed_28d: naive 681 wrong</title>
-<path d="M165.28 215H444.62A4 4 0 0 1 448.62 219V225A4 4 0 0 1 444.62 229H165.28Z" fill="#d95926"/>
-<text x="454.62" y="226" font-size="11" fill="#c3c2b7" font-variant-numeric="tabular-nums">681 wrong</text>
+<path d="M165.28 181H444.62A4 4 0 0 1 448.62 185V191A4 4 0 0 1 444.62 195H165.28Z" fill="#d95926"/>
+<text x="454.62" y="192" font-size="11" fill="#c3c2b7" font-variant-numeric="tabular-nums">681 wrong</text>
 </g>
-<text x="155.28" y="262" font-size="12" fill="#ffffff" text-anchor="end">support_tickets_90d</text>
-<text x="155.28" y="278" font-size="11" fill="#c3c2b7" text-anchor="end">(as_of-90, as_of]</text>
+<text x="155.28" y="228" font-size="12" fill="#ffffff" text-anchor="end">support_tickets_90d</text>
+<text x="155.28" y="244" font-size="11" fill="#c3c2b7" text-anchor="end">(as_of-90, as_of]</text>
 <g><title>support_tickets_90d: point in time 0 wrong</title>
-<circle cx="172.78" cy="256" r="5.5" fill="#1a1a19" stroke="#3987e5" stroke-width="2"/>
-<text x="186.28" y="260" font-size="11" fill="#c3c2b7" font-variant-numeric="tabular-nums">0 wrong</text>
+<circle cx="172.78" cy="222" r="5.5" fill="#1a1a19" stroke="#3987e5" stroke-width="2"/>
+<text x="186.28" y="226" font-size="11" fill="#c3c2b7" font-variant-numeric="tabular-nums">0 wrong</text>
 </g>
 <g><title>support_tickets_90d: naive 114 wrong</title>
-<path d="M165.28 269H208.71A4 4 0 0 1 212.71 273V279A4 4 0 0 1 208.71 283H165.28Z" fill="#d95926"/>
-<text x="218.71" y="280" font-size="11" fill="#c3c2b7" font-variant-numeric="tabular-nums">114 wrong</text>
+<path d="M165.28 235H208.71A4 4 0 0 1 212.71 239V245A4 4 0 0 1 208.71 249H165.28Z" fill="#d95926"/>
+<text x="218.71" y="246" font-size="11" fill="#c3c2b7" font-variant-numeric="tabular-nums">114 wrong</text>
 </g>
-<line x1="165.28" y1="135" x2="165.28" y2="289" stroke="#383835" stroke-width="1"/>
-<text x="24" y="311" font-size="11" fill="#c3c2b7">Recomputed for every renewal by the pandas oracle and in Cypher by scripts/check_graph_contract.py (invariants #2 and #3). Source:</text>
-<text x="24" y="326" font-size="11" fill="#c3c2b7">graph build a2598a28e164 · profile s42 · seed 42, N_USERS 8000 (verified) · data_end 2026-09-30 · renewal-graph/v1 · commit 013dd4e</text>
-<text x="24" y="341" font-size="11" fill="#c3c2b7">· regenerate with scripts/graph_evidence.py.</text>
+<line x1="165.28" y1="101" x2="165.28" y2="255" stroke="#383835" stroke-width="1"/>
+<text x="24" y="277" font-size="10.5" fill="#c3c2b7">Graph build dde502e2a8e1, seed 42</text>
 </svg>

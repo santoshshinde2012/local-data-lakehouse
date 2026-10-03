@@ -16,6 +16,10 @@ a 2 px surface ring, one hairline axis, no dual axis. Each SVG has a <title> and
 mark a <title> (a tooltip when the file is opened directly); every figure also carries the same
 numbers as a markdown table, which the docs print next to the picture.
 
+Text inside an image stays short: a title, at most one subtitle line, a minimal legend and one small
+footer (the build id and seed, at most 8 words; see short_footer). The longer explanation is the
+figure's caption and the full provenance note is the <sub> line under it in the docs.
+
 The module has three layers:
 
   1. the writer and the figure builders: ``*_figure(data) -> Figure`` take plain dicts / lists and
@@ -32,6 +36,7 @@ from __future__ import annotations
 
 import html
 import math
+import re
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from datetime import date, timedelta
@@ -352,15 +357,26 @@ def _header_height(subtitle: str, legend: list[LegendItem] | None = None) -> flo
     return h + 6
 
 
+def short_footer(note: str) -> str:
+    """The one provenance line drawn in a chart (at most 8 words): the build id and seed. The full
+    note (profile, N_USERS, spec, commit, how to regenerate) is the doc caption under the image."""
+    b = re.search(r"graph build ([0-9a-f]{6,})", note)
+    if not b:
+        return ""
+    sd = re.search(r"seed (\d+)", note)
+    return f"Graph build {b.group(1)}" + (f", seed {sd.group(1)}" if sd else "")
+
+
 def _footer(svg: Svg, y: float, note: str) -> float:
-    for line in wrap(note, W - 2 * PAD, 11):
-        svg.text(PAD, y, line, 11, svg.t.ink2)
+    line = short_footer(note)
+    if line:
+        svg.text(PAD, y, line, 10.5, svg.t.ink2)
         y += 15
     return y
 
 
 def _footer_height(note: str) -> float:
-    return 15 * len(wrap(note, W - 2 * PAD, 11))
+    return 15 if short_footer(note) else 0
 
 
 def _x_axis(svg: Svg, x0: float, plot_w: float, y_top: float, y_bot: float, vmax: float, step: float,
@@ -381,9 +397,10 @@ def composition_figure(d: dict) -> Figure:
     nodes = sorted(d["nodes"].items(), key=lambda kv: (-kv[1], kv[0]))
     edges = sorted(d["edges"].items(), key=lambda kv: (-kv[1], kv[0]))
     tn, te = sum(v for _, v in nodes), sum(v for _, v in edges)
-    title = "Graph composition: nodes and edges by type"
-    subtitle = (f"{fmt_int(tn)} nodes and {fmt_int(te)} edges. SIMILAR_TO (k = 10 per renewal) is the largest "
-                "edge type; Plan, Incident and PricingChange are small hubs.")
+    title = "Graph composition"
+    subtitle = f"{fmt_int(tn)} nodes and {fmt_int(te)} edges, by type"
+    caption = (f"{fmt_int(tn)} nodes and {fmt_int(te)} edges. SIMILAR_TO (k = 10 per renewal) is the largest "
+               "edge type; Plan, Incident and PricingChange are small hubs.")
     alt = ("Horizontal bar charts. Nodes by label: " + ", ".join(f"{k} {fmt_int(v)}" for k, v in nodes) +
            f" (total {fmt_int(tn)}). Edges by type: " + ", ".join(f"{k} {fmt_int(v)}" for k, v in edges) +
            f" (total {fmt_int(te)}).")
@@ -418,7 +435,7 @@ def composition_figure(d: dict) -> Figure:
         _footer(svg, y + 16, d["note"])
         return svg.render()
 
-    return Figure("graph-composition", title, alt, ["kind", "type", "count"], rows, d["note"], draw)
+    return Figure("graph-composition", title, alt, ["kind", "type", "count"], rows, d["note"], draw, caption)
 
 
 # --------------------------------------------------------------------------- 2 leak surface
@@ -428,11 +445,12 @@ def leak_surface_figure(d: dict) -> Figure:
     items = sorted(d["by_type"].items(), key=lambda kv: (-kv[1]["edges"], kv[0]))
     total = sum(v["edges"] for _, v in items)
     post = sum(v["post_as_of"] for _, v in items)
-    title = "Point-in-time leak surface: event edges dated after their renewal's as_of"
-    subtitle = (f"{fmt_int(post)} of {fmt_int(total)} event edges fall after as_of (T-7). The graph keeps them on "
-                f"purpose; every tool template filters event_date <= as_of. {exc} edges after as_of are the one "
-                "declared exception (gold rule), served flagged.")
-    legend = [LegendItem("on or before as_of", 0), LegendItem("after as_of", 1)]
+    title = "Event edges dated after as_of"
+    subtitle = f"{fmt_int(post)} of {fmt_int(total)} event edges fall after as_of (T-7)"
+    caption = (f"{fmt_int(post)} of {fmt_int(total)} event edges fall after as_of (T-7). The graph keeps them on "
+               f"purpose; every tool template filters event_date <= as_of. {exc} edges after as_of are the one "
+               "declared exception (gold rule), served flagged.")
+    legend = [LegendItem("before as_of", 0), LegendItem("after as_of", 1)]
     alt = ("Stacked horizontal bars per event edge type, on or before as_of versus after as_of: " +
            "; ".join(f"{k} {fmt_int(v['post_as_of'])} of {fmt_int(v['edges'])} after as_of "
                      f"({fmt_int(v['renewals'])} renewals)" for k, v in items) + ".")
@@ -443,9 +461,7 @@ def leak_surface_figure(d: dict) -> Figure:
 
     def draw(theme: Theme) -> str:
         label_w = max(text_width(k, 12) for k, _ in items) + 14
-        tips = [f"{fmt_int(v['post_as_of'])} of {fmt_int(v['edges'])} after as_of"
-                + (f" ({fmt_int(v['renewals'])} renewals)" if v["post_as_of"] else "")
-                + (" · declared exception" if k == exc and v["post_as_of"] else "") for k, v in items]
+        tips = [f"{fmt_int(v['post_as_of'])} of {fmt_int(v['edges'])} after as_of" for _k, v in items]
         tip_w = max(text_width(s, 11) for s in tips) + 10
         plot_w = W - 2 * PAD - label_w - tip_w
         x0 = PAD + label_w
@@ -474,7 +490,7 @@ def leak_surface_figure(d: dict) -> Figure:
 
     return Figure("leak-surface", title, alt,
                   ["edge type", "edges", "on or before as_of", "after as_of", "renewals with one after as_of", "note"],
-                  rows, d["note"], draw)
+                  rows, d["note"], draw, caption)
 
 
 # --------------------------------------------------------------------------- 3 naive vs point in time
@@ -482,12 +498,12 @@ def naive_pit_figure(d: dict) -> Figure:
     """d: {"renewals": N, "features": [{"feature", "window", "pit_mismatches", "naive_wrong"}], "note": str}."""
     feats = list(d["features"])
     n = d["renewals"]
-    title = "A traversal without the as_of bound gets features wrong"
-    subtitle = (f"Renewals (of {fmt_int(n)}) whose feature, recomputed from graph edges, differs from gold. "
-                "Point in time: event_date in (as_of-window, as_of]. Naive: event_date > as_of-window, with no "
-                "upper bound. The contract requires both numbers exactly. A hollow ring marks a zero.")
-    legend = [LegendItem("point in time: event_date in (as_of-window, as_of]", 0),
-              LegendItem("naive: no as_of upper bound", 1)]
+    title = "Without the as_of bound, features go wrong"
+    subtitle = f"Renewals (of {fmt_int(n)}) whose recomputed feature differs from gold"
+    caption = (f"Renewals (of {fmt_int(n)}) whose feature, recomputed from graph edges, differs from gold. "
+               "Point in time: event_date in (as_of-window, as_of]. Naive: event_date > as_of-window, with no "
+               "upper bound. The contract requires both numbers exactly. A hollow ring marks a zero.")
+    legend = [LegendItem("point in time", 0), LegendItem("naive (no upper bound)", 1)]
     alt = ("Grouped horizontal bars per feature: " +
            "; ".join(f"{f['feature']} point in time {fmt_int(f['pit_mismatches'])} wrong, naive "
                      f"{fmt_int(f['naive_wrong'])} wrong" for f in feats) + f", out of {fmt_int(n)} renewals.")
@@ -522,7 +538,7 @@ def naive_pit_figure(d: dict) -> Figure:
 
     return Figure("naive-vs-pit", title, alt,
                   ["feature", "window", "point in time: renewals wrong", "naive: renewals wrong"], rows, d["note"],
-                  draw)
+                  draw, caption)
 
 
 # --------------------------------------------------------------------------- 4 evidence timeline
@@ -567,17 +583,17 @@ def timeline_figure(d: dict) -> Figure:
     n_exc = sum(1 for r in rows_in if r.get("declared_exception"))
     hidden = d.get("hidden_after_as_of", 0)
     title = f"What the model could see: {who} at T-7"
-    subtitle = (f"{len(rows_in)} evidence rows on or before as_of {as_of.isoformat()} (renewal {rdate.isoformat()}). "
-                f"Events after as_of are never served ({fmt_int(hidden)} exist for this renewal). Shaded: each "
-                "feature's window. FIRST_RENEWAL_AFTER follows the gold rule, the one declared exception"
-                + (f"; {n_exc} row(s) here took effect after as_of." if n_exc
-                   else "; here the cut was known by as_of."))
-    legend = [LegendItem("inside its feature window", 0, "dot"),
-              LegendItem("on or before as_of, outside the window", 0, "hollow"),
-              LegendItem("FIRST_RENEWAL_AFTER (gold rule)", 0, "diamond")]
+    subtitle = f"{len(rows_in)} evidence rows on or before as_of. Nothing after it is served."
+    caption = (f"{len(rows_in)} evidence rows on or before as_of {as_of.isoformat()} (renewal {rdate.isoformat()}). "
+               f"Events after as_of are never served ({fmt_int(hidden)} exist for this renewal). Shaded: each "
+               "feature's window. FIRST_RENEWAL_AFTER follows the gold rule, the one declared exception"
+               + (f"; {n_exc} row(s) here took effect after as_of." if n_exc
+                  else "; here the cut was known by as_of."))
+    legend = [LegendItem("in window", 0, "dot"), LegendItem("outside window", 0, "hollow"),
+              LegendItem("first renewal after a cut", 0, "diamond")]
     if n_exc:
-        legend.append(LegendItem("declared exception: after as_of", 1, "diamond"))
-    legend.append(LegendItem("feature window (ends at as_of)", None, "band"))
+        legend.append(LegendItem("after as_of (exception)", 1, "diamond"))
+    legend.append(LegendItem("feature window", None, "band"))
     alt = (f"Timeline of {who}'s evidence before as_of {as_of.isoformat()}: " +
            "; ".join(f"{r['event_date']} {r['relation']} {r['target_id']}"
                      f"{' (in window)' if r.get('in_feature_window') else ' (outside window)'}" for r in rows_in) + ".")
@@ -622,10 +638,10 @@ def timeline_figure(d: dict) -> Figure:
                 a = as_of - timedelta(days=windows[rel] - 1)
                 band = (X(a) - half, X(as_of) + half, f"{windows[rel]}-day window")
             elif rel in cumulative:   # no start: every event on or before as_of counts (e.g. cuts so far)
-                band = (x0 + 1, X(as_of) + half, "window: everything on or before as_of")
+                band = (x0 + 1, X(as_of) + half, "all before as_of")
             elif rel == "FIRST_RENEWAL_AFTER":
                 a = rdate - timedelta(days=gold_days)
-                band = (X(a) - half, X(rdate) - half, f"gold rule: the {gold_days} days before renewal")
+                band = (X(a) - half, X(rdate) - half, f"{gold_days} days before renewal")
             if band:
                 svg.rect(band[0], ly + 5, band[1] - band[0], lane_h - 10, theme.band, rx=3)
                 lw = text_width(band[2], 9.5)
@@ -638,7 +654,7 @@ def timeline_figure(d: dict) -> Figure:
         # as_of and renewal date: labels on two rows above the plot, never past the right edge
         xa, xr = X(as_of), X(rdate)
         svg.line(xa, y_top - 30, xa, y_bot, theme.ink, 1.5)
-        svg.text(xa - 5, y_top - 22, f"as_of {as_of.isoformat()} (T-7)", 11, theme.ink, anchor="end", weight="600")
+        svg.text(xa - 5, y_top - 22, f"as_of {as_of.isoformat()}", 11, theme.ink, anchor="end", weight="600")
         svg.line(xr, y_top - 12, xr, y_bot, theme.ink2, 1)
         if xr + 5 + text_width(rl, 11) <= W - PAD:
             svg.text(xr + 5, y_top - 4, rl, 11, theme.ink2)
@@ -660,7 +676,7 @@ def timeline_figure(d: dict) -> Figure:
                 prev_right = -1e9
                 for r, dy in zip(lane_rows, dys, strict=True):
                     x = X(_d(r["event_date"]))
-                    label = r["target_id"] + (" (after as_of)" if r.get("declared_exception") else "")
+                    label = r["target_id"]
                     lw = text_width(label, 10.5)
                     right = x + 10 + lw
                     crosses = x < xa < right + 2 and r["event_date"] <= as_of.isoformat()
@@ -671,19 +687,17 @@ def timeline_figure(d: dict) -> Figure:
                     svg.text(lx, cy + dy + 4, label, 10.5, theme.ink2, anchor=anchor)
                     prev_right = max(prev_right, right if anchor == "start" else x)
             elif lane_rows:
-                inw = sum(1 for r in lane_rows if r.get("in_feature_window"))
                 noun = EVENT_NOUN[rel] + ("" if len(lane_rows) == 1 else "s")
-                detail = sorted({r.get("detail") for r in lane_rows if r.get("detail")})
-                label = f"{len(lane_rows)} {noun}, {inw} in window" + (f" ({', '.join(detail)})" if detail else "")
+                label = f"{len(lane_rows)} {noun}"
                 svg.text(X(_d(lane_rows[0]["event_date"])) - 10, cy + 4, label, 10.5, theme.ink2, anchor="end")
         svg.line(x0, y_top, x0, y_bot, theme.axis, 1)
         svg.line(x0, y_bot, x0 + plot_w, y_bot, theme.axis, 1)
         _footer(svg, y_bot + 40, d["note"])
         return svg.render()
 
-    return Figure("maya-timeline", title, alt,
+    return Figure("santosh-timeline", title, alt,
                   ["event_date", "relation", "target", "feeds feature", "in feature window", "known by as_of",
-                   "declared exception"], trows, d["note"], draw)
+                   "declared exception"], trows, d["note"], draw, caption)
 
 
 # --------------------------------------------------------------------------- 5 neighbour graph (static render)
@@ -693,14 +707,15 @@ def neighbours_figure(d: dict) -> Figure:
     nb = sorted(d["neighbours"], key=lambda r: r["rank"])
     who = d.get("label") or d["renewal_id"]
     lo, hi = d["wilson"]
-    title = f"The {len(nb)} renewals most similar to {who}, and how they ended"
-    subtitle = (f"{d['lapsed']} of {d['n']} lapsed (Wilson 95% {lo:.3f}-{hi:.3f}); outcomes visible "
-                f"{'today (a current renewal)' if d['visibility'] == 'today' else 'as of ' + d['as_of']}. "
-                "Edges are labelled by rank; distance from the centre is the SIMILAR_TO distance (feature space, "
-                "same plan; the rings start above 0). Narrative evidence, not a risk estimate.")
-    legend = [LegendItem("renewed", 0, "dot"), LegendItem("voluntary lapse", 1, "square")]
+    title = f"The {len(nb)} past renewals most like {who}"
+    subtitle = f"{d['lapsed']} of {d['n']} lapsed. Evidence, not a risk score."
+    caption = (f"{d['lapsed']} of {d['n']} lapsed (Wilson 95% {lo:.3f}-{hi:.3f}); outcomes visible "
+               f"{'today (a current renewal)' if d['visibility'] == 'today' else 'as of ' + d['as_of']}. "
+               "Edges are labelled by rank; distance from the centre is the SIMILAR_TO distance (feature space, "
+               "same plan; the rings start above 0). Narrative evidence, not a risk estimate.")
+    legend = [LegendItem("renewed", 0, "dot"), LegendItem("lapsed", 1, "square")]
     if any(r["outcome"] not in ("renewed", "voluntary_lapse") for r in nb):
-        legend.append(LegendItem("not yet observed (after the source's as_of)", None, "hollow"))
+        legend.append(LegendItem("not yet observed", None, "hollow"))
     alt = (f"Radial graph: {who} at the centre and its {len(nb)} nearest renewals by SIMILAR_TO rank. " +
            "; ".join(f"rank {r['rank']} {r['renewal_id']} distance {r['dist']:.3f} {r['outcome']}" for r in nb) +
            f". {d['lapsed']} of {d['n']} lapsed.")
@@ -773,7 +788,8 @@ def neighbours_figure(d: dict) -> Figure:
         _footer(svg, y + plot_h + 22, d["note"])
         return svg.render()
 
-    return Figure("maya-neighbours", title, alt, ["rank", "renewal", "dist", "d2_q", "outcome"], rows, d["note"], draw)
+    return Figure("santosh-neighbours", title, alt, ["rank", "renewal", "dist", "d2_q", "outcome"], rows, d["note"], draw,
+                  caption)
 
 
 # --------------------------------------------------------------------------- 6 exposure (stacked by plan)
@@ -789,10 +805,11 @@ def exposure_figure(d: dict) -> Figure:
     segs = [(k, lab) for k, lab in SEGMENTS if any(d["by_plan"][p].get(k, 0) for p in plans)]
     total = sum(d["by_plan"][p]["exposed"] for p in plans)
     ent = d["entity_id"]
-    title = f"Blast radius of {ent} by plan: who was active inside the feature window"
-    subtitle = (f"{fmt_int(total)} renewals were active during {ent} inside their {d.get('window_days', 28)}-day "
-                f"window before as_of. A graph without the as_of bound would add {fmt_int(d['naive_additional'])} "
-                "more. Descriptive, not causal.")
+    title = f"Who was active during {ent}, by plan"
+    subtitle = f"{fmt_int(total)} renewals inside their {d.get('window_days', 28)}-day window. Descriptive, not causal."
+    caption = (f"{fmt_int(total)} renewals were active during {ent} inside their {d.get('window_days', 28)}-day "
+               f"window before as_of. A graph without the as_of bound would add {fmt_int(d['naive_additional'])} "
+               "more. Descriptive, not causal.")
     legend = [LegendItem(lab, i) for i, (_, lab) in enumerate(segs)]
     alt = (f"Stacked horizontal bars of renewals exposed to {ent} by plan: " +
            "; ".join(f"{p} {fmt_int(d['by_plan'][p]['exposed'])} (" +
@@ -865,7 +882,8 @@ def exposure_figure(d: dict) -> Figure:
         _footer(svg, y + 22, d["note"])
         return svg.render()
 
-    return Figure(f"{ent}-exposure", title, alt, ["plan", "exposed"] + [lab for _, lab in segs], rows, d["note"], draw)
+    return Figure(f"{ent}-exposure", title, alt, ["plan", "exposed"] + [lab for _, lab in segs], rows, d["note"], draw,
+                  caption)
 
 
 # --------------------------------------------------------------------------- dot + whisker (rates with CI)
@@ -912,14 +930,15 @@ def _dot_rows(svg: Svg, dots: list[Dot], x0: float, plot_w: float, y: float, vmi
 def lapse_rate_figure(d: dict) -> Figure:
     """d: {"groups": [{"label", "without": {"n","lapses","wilson"}, "with": {...}}], "note"}."""
     groups = d["groups"]
-    title = "Lapse rate of first renewals after a cap cut, by plan"
+    title = "Lapse rate after a cap cut, by plan"
     first = groups[0]
-    subtitle = (f"Model-routed renewals (voluntary lapse label), Wilson 95% intervals. {first['label'].capitalize()}: "
-                f"{fmt_pct(first['with']['lapses'] / first['with']['n'])} first after a cut vs "
-                f"{fmt_pct(first['without']['lapses'] / first['without']['n'])} otherwise. The generator plants this "
-                "association; it is a metric question, not a graph result.")
-    legend = [LegendItem("not the first renewal after a cut", 0, "dot"),
-              LegendItem("first renewal after a cap cut", 1, "diamond")]
+    subtitle = (f"{first['label'].capitalize()}: {fmt_pct(first['with']['lapses'] / first['with']['n'])} first after "
+                f"a cut vs {fmt_pct(first['without']['lapses'] / first['without']['n'])} otherwise (95% intervals)")
+    caption = (f"Model-routed renewals (voluntary lapse label), Wilson 95% intervals. {first['label'].capitalize()}: "
+               f"{fmt_pct(first['with']['lapses'] / first['with']['n'])} first after a cut vs "
+               f"{fmt_pct(first['without']['lapses'] / first['without']['n'])} otherwise. The generator plants this "
+               "association; it is a metric question, not a graph result.")
+    legend = [LegendItem("other renewals", 0, "dot"), LegendItem("first after a cut", 1, "diamond")]
     dots: list[Dot] = []
     rows: list[list[str]] = []
     for g in groups:
@@ -928,8 +947,9 @@ def lapse_rate_figure(d: dict) -> Figure:
             c = g[key]
             rate = c["lapses"] / c["n"] if c["n"] else 0.0
             lo, hi = c["wilson"]
-            right = f"{fmt_pct(rate)}  {fmt_int(c['lapses'])}/{fmt_int(c['n'])}  [{fmt_pct(lo)}, {fmt_pct(hi)}]"
-            dots.append(Dot("", g["label"], rate, lo, hi, slot, shape, right, f"{g['label']}, {lab}: {right}"))
+            right = f"{fmt_pct(rate)}  {fmt_int(c['lapses'])}/{fmt_int(c['n'])}"
+            dots.append(Dot("", g["label"], rate, lo, hi, slot, shape, right,
+                            f"{g['label']}, {lab}: {right} [{fmt_pct(lo)}, {fmt_pct(hi)}]"))
             rows.append([g["label"], lab, fmt_int(c["n"]), fmt_int(c["lapses"]), fmt_pct(rate),
                          f"[{fmt_pct(lo)}, {fmt_pct(hi)}]"])
     alt = ("Dot and whisker chart of voluntary-lapse rates with Wilson 95% intervals: " +
@@ -952,7 +972,7 @@ def lapse_rate_figure(d: dict) -> Figure:
         return svg.render()
 
     return Figure("lapse-first-after-cut", title, alt, ["group", "renewals", "n", "lapses", "rate", "Wilson 95%"],
-                  rows, d["note"], draw)
+                  rows, d["note"], draw, caption)
 
 
 PLAN_SLOT = {"pro": 0, "pro_plus": 1, "ultra": 2}
@@ -965,14 +985,15 @@ def cohorts_figure(d: dict) -> Figure:
     withheld = sorted(c["cohort_id"] for c in d["cohorts"] if c["suppressed"])
     pub.sort(key=lambda c: (-(c["lapses"] / c["n"]), c["cohort_id"]))
     overall = d["overall"]["lapses"] / d["overall"]["n"]
-    title = f"Feature cohorts ({d['algorithm'].capitalize()}): voluntary-lapse rate with 95% intervals"
-    subtitle = (f"{len(d['cohorts'])} cohorts over SIMILAR_TO ({d.get('library', 'networkx')}, modularity "
-                f"{d.get('modularity', 0):.4f}), sorted by rate; model renewals only. Cohorts rediscover feature "
-                "segments: labels, not structure. Plan purity is 1.0 by construction."
-                + (f" Withheld (small cells): {', '.join(withheld)}." if withheld else ""))
+    title = f"Feature cohorts ({d['algorithm'].capitalize()}): lapse rate"
+    subtitle = f"{len(d['cohorts'])} cohorts, sorted by rate, with 95% intervals. Model renewals only."
+    caption = (f"{len(d['cohorts'])} cohorts over SIMILAR_TO ({d.get('library', 'networkx')}, modularity "
+               f"{d.get('modularity', 0):.4f}), sorted by rate; model renewals only. Cohorts rediscover feature "
+               "segments: labels, not structure. Plan purity is 1.0 by construction."
+               + (f" Withheld (small cells): {', '.join(withheld)}." if withheld else ""))
     plans = sorted({c["plan"] for c in pub}, key=lambda p: PLAN_SLOT.get(p, 9))
     legend = [LegendItem(p, PLAN_SLOT.get(p, 3), "dot") for p in plans] + \
-        [LegendItem(f"all model renewals {fmt_pct(overall)}", None, "line")]
+        [LegendItem(f"all renewals {fmt_pct(overall)}", None, "line")]
     dots, rows = [], []
     for c in pub:
         rate = c["lapses"] / c["n"]
@@ -1006,7 +1027,7 @@ def cohorts_figure(d: dict) -> Figure:
         return svg.render()
 
     return Figure("cohort-lapse-rates", title, alt, ["cohort", "plan", "n", "lapses", "rate", "Wilson 95%", "name"],
-                  rows, d["note"], draw)
+                  rows, d["note"], draw, caption)
 
 
 # --------------------------------------------------------------------------- tool latency
@@ -1019,10 +1040,12 @@ def latency_figure(d: dict) -> Figure:
     worst = max(tools, key=lambda r: (r["p95"], r["tool"]))
     gtools = [r for r in tools if r["toolset"] == "graph"]
     gworst = max((r["p95"] for r in gtools), default=0)
-    title = "Tool latency: warm p50 and p95 per tool"
-    subtitle = (f"{d.get('calls', '?')} warm calls per tool {mode}. Slowest p95: {worst['tool']} "
-                f"{worst['p95']:.1f} ms. Graph tools p95 at most {gworst:.1f} ms (gate: below {gate} ms). "
-                "One Mac under load: indicative, not a benchmark.")
+    title = "Tool latency: warm p50 and p95"
+    subtitle = (f"{d.get('calls', '?')} calls per tool {'over MCP stdio' if d['mode'] == 'stdio' else 'in process'}"
+                f". Gate: {gate} ms.")
+    caption = (f"{d.get('calls', '?')} warm calls per tool {mode}. Slowest p95: {worst['tool']} "
+               f"{worst['p95']:.1f} ms. Graph tools p95 at most {gworst:.1f} ms (gate: below {gate} ms). "
+               "One Mac under load: indicative, not a benchmark.")
     # two thin bars per tool (p50 above p95, a 2 px surface gap between them): p95 >= p50 always, so a
     # dot pair would hide the p50 under the p95 marker whenever they are close
     legend = [LegendItem("p50", 0), LegendItem("p95", 1)]
@@ -1071,7 +1094,7 @@ def latency_figure(d: dict) -> Figure:
         _footer(svg, yy + 34, d["note"])
         return svg.render()
 
-    return Figure("tool-latency", title, alt, ["toolset", "tool", "p50 ms", "p95 ms"], rows, d["note"], draw)
+    return Figure("tool-latency", title, alt, ["toolset", "tool", "p50 ms", "p95 ms"], rows, d["note"], draw, caption)
 
 
 # --------------------------------------------------------------------------- eval pass^3 (when a report exists)
@@ -1079,9 +1102,10 @@ def eval_figure(d: dict) -> Figure:
     """d: {"model", "arms": [..<=4], "shapes": [...], "pass3": {arm: {shape: [passed, cases]}}, "note"}."""
     arms = list(d["arms"])[:4]
     shapes = list(d["shapes"])
-    title = f"Agent eval: pass^3 by arm and question shape ({d.get('model', 'model')})"
-    subtitle = ("Share of cases answered correctly in all 3 trials (pass^3). A hollow ring marks a zero. LLM "
-                "results gate article claims, never merges.")
+    title = f"Agent eval: pass^3 by arm ({d.get('model', 'model')})"
+    subtitle = "Share of cases answered correctly in all 3 trials"
+    caption = ("Share of cases answered correctly in all 3 trials (pass^3). A hollow ring marks a zero. LLM "
+               "results gate article claims, never merges.")
     legend = [LegendItem(a, i) for i, a in enumerate(arms)]
     rows = [[s, a, f"{d['pass3'][a][s][0]}/{d['pass3'][a][s][1]}"] for s in shapes for a in arms if s in d["pass3"][a]]
     alt = "Grouped bars of pass^3 by question shape and arm: " + "; ".join(f"{r[0]} {r[1]} {r[2]}" for r in rows) + "."
@@ -1112,17 +1136,18 @@ def eval_figure(d: dict) -> Figure:
         _footer(svg, y + 26, d["note"])
         return svg.render()
 
-    return Figure("eval-pass3", title, alt, ["shape", "arm", "pass^3"], rows, d["note"], draw)
+    return Figure("eval-pass3", title, alt, ["shape", "arm", "pass^3"], rows, d["note"], draw, caption)
 
 
 # --------------------------------------------------------------------------- leakage demo AUCs (when a report exists)
 def leakage_figure(d: dict) -> Figure:
     """d: {"variants": [{"label", "single_feature": auc|None, "lr": auc|None}], "note"}."""
     vs = list(d["variants"])
-    title = "Leakage demo: AUC of a neighbour lapse-rate feature, by how it was built"
-    subtitle = ("A dataset with zero network effect. A self-inclusive or as-of-today neighbour rate looks "
-                "predictive; the temporally safe one does not. 0.5 is chance.")
-    legend = [LegendItem("single feature", 0, "dot"), LegendItem("logistic regression (all features)", 1, "diamond")]
+    title = "Leakage demo: neighbour lapse-rate AUC"
+    subtitle = "No network effect exists in this data. 0.5 is chance."
+    caption = ("A dataset with zero network effect. A self-inclusive or as-of-today neighbour rate looks "
+               "predictive; the temporally safe one does not. 0.5 is chance.")
+    legend = [LegendItem("single feature", 0, "dot"), LegendItem("logistic regression", 1, "diamond")]
     rows = [[v["label"], "-" if v.get("single_feature") is None else f"{v['single_feature']:.4f}",
              "-" if v.get("lr") is None else f"{v['lr']:.4f}"] for v in vs]
     alt = "Dot chart of AUCs: " + "; ".join(f"{r[0]} single feature {r[1]}, LR {r[2]}" for r in rows) + "."
@@ -1157,7 +1182,7 @@ def leakage_figure(d: dict) -> Figure:
         _footer(svg, y + 34, d["note"])
         return svg.render()
 
-    return Figure("leakage-aucs", title, alt, ["variant", "single-feature AUC", "LR AUC"], rows, d["note"], draw)
+    return Figure("leakage-aucs", title, alt, ["variant", "single-feature AUC", "LR AUC"], rows, d["note"], draw, caption)
 
 
 # --------------------------------------------------------------------------- writing figures
@@ -1227,7 +1252,7 @@ def _hero(t: dict, renewal_id: str | None) -> str:
 
     rid = renewal_id or oracle.hero_renewal(t)
     if not rid:
-        raise ValueError("this build has no hero renewal (sub_maya); pass a renewal id")
+        raise ValueError("this build has no hero renewal (sub_santosh); pass a renewal id")
     if rid not in set(t["Renewal"]["renewal_id"]):
         raise ValueError(f"unknown renewal {rid!r} in this build")
     return rid

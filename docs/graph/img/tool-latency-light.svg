@@ -1,142 +1,140 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="760" height="584" viewBox="0 0 760 584" role="img" font-family="system-ui, -apple-system, &#x27;Segoe UI&#x27;, sans-serif">
-<title>Tool latency: warm p50 and p95 per tool</title>
-<desc>Paired bar chart of warm tool latency over MCP stdio (client round trip), p50 and p95 per tool: graph_describe p50 1.93 ms, p95 2.30 ms; graph_find p50 1.42 ms, p95 1.78 ms; graph_renewal_evidence p50 5.60 ms, p95 6.17 ms; graph_similar_renewals p50 14.89 ms, p95 15.34 ms; graph_exposure p50 4.17 ms, p95 4.42 ms; metric_lapse_rate p50 1.64 ms, p95 2.06 ms; metric_route_counts p50 1.60 ms, p95 2.08 ms; metric_feature_card p50 1.46 ms, p95 1.77 ms; lineage_trace p50 4.67 ms, p95 5.17 ms; lineage_pit p50 3.52 ms, p95 4.15 ms; lineage_guards p50 3.24 ms, p95 3.76 ms; lineage_unused p50 3.39 ms, p95 4.32 ms; cohort_summary p50 4.77 ms, p95 6.12 ms; cohort_list p50 24.10 ms, p95 26.39 ms.</desc>
-<rect width="760" height="584" rx="8" fill="#fcfcfb"/>
-<text x="24" y="38" font-size="15" fill="#0b0b0b" font-weight="600">Tool latency: warm p50 and p95 per tool</text>
-<text x="24" y="58" font-size="12" fill="#52514e">20 warm calls per tool over MCP stdio (client round trip). Slowest p95: cohort_list 26.4 ms. Graph tools p95 at most 15.3 ms</text>
-<text x="24" y="75" font-size="12" fill="#52514e">(gate: below 50 ms). One Mac under load: indicative, not a benchmark.</text>
-<rect x="24" y="93" width="12" height="10" fill="#2a78d6" rx="2"/>
-<text x="42" y="102" font-size="11" fill="#52514e">p50</text>
-<rect x="77.45" y="93" width="12" height="10" fill="#eb6834" rx="2"/>
-<text x="95.45" y="102" font-size="11" fill="#52514e">p95</text>
-<text x="664.59" y="126" font-size="10.5" fill="#52514e">p50 / p95 ms</text>
-<line x1="244.27" y1="130" x2="244.27" y2="502" stroke="#e1e0d9" stroke-width="1"/>
-<text x="244.27" y="516" font-size="10.5" fill="#52514e" text-anchor="middle" font-variant-numeric="tabular-nums">0 ms</text>
-<line x1="380.37" y1="130" x2="380.37" y2="502" stroke="#e1e0d9" stroke-width="1"/>
-<text x="380.37" y="516" font-size="10.5" fill="#52514e" text-anchor="middle" font-variant-numeric="tabular-nums">20 ms</text>
-<line x1="516.48" y1="130" x2="516.48" y2="502" stroke="#e1e0d9" stroke-width="1"/>
-<text x="516.48" y="516" font-size="10.5" fill="#52514e" text-anchor="middle" font-variant-numeric="tabular-nums">40 ms</text>
-<line x1="652.59" y1="130" x2="652.59" y2="502" stroke="#e1e0d9" stroke-width="1"/>
-<text x="652.59" y="516" font-size="10.5" fill="#52514e" text-anchor="middle" font-variant-numeric="tabular-nums">60 ms</text>
-<line x1="584.54" y1="130" x2="584.54" y2="502" stroke="#52514e" stroke-width="1.5"/>
-<text x="580.54" y="142" font-size="10" fill="#52514e" text-anchor="end">50 ms gate</text>
-<text x="24" y="150" font-size="12" fill="#0b0b0b" font-weight="600">graph</text>
-<text x="234.27" y="150" font-size="11" fill="#52514e" text-anchor="end">graph_describe</text>
-<g><title>graph_describe p50: 1.93 ms</title>
-<path d="M244.27 137H253.4A4 4 0 0 1 257.4 141V141A4 4 0 0 1 253.4 145H244.27Z" fill="#2a78d6"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="552" viewBox="0 0 760 552" role="img" font-family="system-ui, -apple-system, &#x27;Segoe UI&#x27;, sans-serif">
+<title>Tool latency: warm p50 and p95</title>
+<desc>Paired bar chart of warm tool latency over MCP stdio (client round trip), p50 and p95 per tool: graph_describe p50 2.00 ms, p95 2.40 ms; graph_find p50 1.54 ms, p95 1.90 ms; graph_renewal_evidence p50 6.57 ms, p95 7.03 ms; graph_similar_renewals p50 15.98 ms, p95 16.65 ms; graph_exposure p50 4.33 ms, p95 5.26 ms; metric_lapse_rate p50 1.65 ms, p95 2.24 ms; metric_route_counts p50 1.61 ms, p95 1.96 ms; metric_feature_card p50 1.48 ms, p95 1.81 ms; lineage_trace p50 4.34 ms, p95 4.84 ms; lineage_pit p50 3.47 ms, p95 4.01 ms; lineage_guards p50 3.44 ms, p95 4.65 ms; lineage_unused p50 3.44 ms, p95 5.15 ms; cohort_summary p50 4.95 ms, p95 5.60 ms; cohort_list p50 24.81 ms, p95 29.84 ms.</desc>
+<rect width="760" height="552" rx="8" fill="#fcfcfb"/>
+<text x="24" y="38" font-size="15" fill="#0b0b0b" font-weight="600">Tool latency: warm p50 and p95</text>
+<text x="24" y="58" font-size="12" fill="#52514e">20 calls per tool over MCP stdio. Gate: 50 ms.</text>
+<rect x="24" y="76" width="12" height="10" fill="#2a78d6" rx="2"/>
+<text x="42" y="85" font-size="11" fill="#52514e">p50</text>
+<rect x="77.45" y="76" width="12" height="10" fill="#eb6834" rx="2"/>
+<text x="95.45" y="85" font-size="11" fill="#52514e">p95</text>
+<text x="664.59" y="109" font-size="10.5" fill="#52514e">p50 / p95 ms</text>
+<line x1="244.27" y1="113" x2="244.27" y2="485" stroke="#e1e0d9" stroke-width="1"/>
+<text x="244.27" y="499" font-size="10.5" fill="#52514e" text-anchor="middle" font-variant-numeric="tabular-nums">0 ms</text>
+<line x1="380.37" y1="113" x2="380.37" y2="485" stroke="#e1e0d9" stroke-width="1"/>
+<text x="380.37" y="499" font-size="10.5" fill="#52514e" text-anchor="middle" font-variant-numeric="tabular-nums">20 ms</text>
+<line x1="516.48" y1="113" x2="516.48" y2="485" stroke="#e1e0d9" stroke-width="1"/>
+<text x="516.48" y="499" font-size="10.5" fill="#52514e" text-anchor="middle" font-variant-numeric="tabular-nums">40 ms</text>
+<line x1="652.59" y1="113" x2="652.59" y2="485" stroke="#e1e0d9" stroke-width="1"/>
+<text x="652.59" y="499" font-size="10.5" fill="#52514e" text-anchor="middle" font-variant-numeric="tabular-nums">60 ms</text>
+<line x1="584.54" y1="113" x2="584.54" y2="485" stroke="#52514e" stroke-width="1.5"/>
+<text x="580.54" y="125" font-size="10" fill="#52514e" text-anchor="end">50 ms gate</text>
+<text x="24" y="133" font-size="12" fill="#0b0b0b" font-weight="600">graph</text>
+<text x="234.27" y="133" font-size="11" fill="#52514e" text-anchor="end">graph_describe</text>
+<g><title>graph_describe p50: 2.0 ms</title>
+<path d="M244.27 120H253.88A4 4 0 0 1 257.88 124V124A4 4 0 0 1 253.88 128H244.27Z" fill="#2a78d6"/>
 </g>
-<g><title>graph_describe p95: 2.3 ms</title>
-<path d="M244.27 147H255.92A4 4 0 0 1 259.92 151V151A4 4 0 0 1 255.92 155H244.27Z" fill="#eb6834"/>
+<g><title>graph_describe p95: 2.4 ms</title>
+<path d="M244.27 130H256.6A4 4 0 0 1 260.6 134V134A4 4 0 0 1 256.6 138H244.27Z" fill="#eb6834"/>
 </g>
-<text x="664.59" y="150" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">1.9 / 2.3</text>
-<text x="234.27" y="174" font-size="11" fill="#52514e" text-anchor="end">graph_find</text>
-<g><title>graph_find p50: 1.42 ms</title>
-<path d="M244.27 161H249.93A4 4 0 0 1 253.93 165V165A4 4 0 0 1 249.93 169H244.27Z" fill="#2a78d6"/>
+<text x="664.59" y="133" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">2.0 / 2.4</text>
+<text x="234.27" y="157" font-size="11" fill="#52514e" text-anchor="end">graph_find</text>
+<g><title>graph_find p50: 1.54 ms</title>
+<path d="M244.27 144H250.75A4 4 0 0 1 254.75 148V148A4 4 0 0 1 250.75 152H244.27Z" fill="#2a78d6"/>
 </g>
-<g><title>graph_find p95: 1.78 ms</title>
-<path d="M244.27 171H252.38A4 4 0 0 1 256.38 175V175A4 4 0 0 1 252.38 179H244.27Z" fill="#eb6834"/>
+<g><title>graph_find p95: 1.9 ms</title>
+<path d="M244.27 154H253.2A4 4 0 0 1 257.2 158V158A4 4 0 0 1 253.2 162H244.27Z" fill="#eb6834"/>
 </g>
-<text x="664.59" y="174" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">1.4 / 1.8</text>
-<text x="234.27" y="198" font-size="11" fill="#52514e" text-anchor="end">graph_renewal_evidence</text>
-<g><title>graph_renewal_evidence p50: 5.6 ms</title>
-<path d="M244.27 185H278.38A4 4 0 0 1 282.38 189V189A4 4 0 0 1 278.38 193H244.27Z" fill="#2a78d6"/>
+<text x="664.59" y="157" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">1.5 / 1.9</text>
+<text x="234.27" y="181" font-size="11" fill="#52514e" text-anchor="end">graph_renewal_evidence</text>
+<g><title>graph_renewal_evidence p50: 6.57 ms</title>
+<path d="M244.27 168H284.98A4 4 0 0 1 288.98 172V172A4 4 0 0 1 284.98 176H244.27Z" fill="#2a78d6"/>
 </g>
-<g><title>graph_renewal_evidence p95: 6.17 ms</title>
-<path d="M244.27 195H282.26A4 4 0 0 1 286.26 199V199A4 4 0 0 1 282.26 203H244.27Z" fill="#eb6834"/>
+<g><title>graph_renewal_evidence p95: 7.03 ms</title>
+<path d="M244.27 178H288.11A4 4 0 0 1 292.11 182V182A4 4 0 0 1 288.11 186H244.27Z" fill="#eb6834"/>
 </g>
-<text x="664.59" y="198" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">5.6 / 6.2</text>
-<text x="234.27" y="222" font-size="11" fill="#52514e" text-anchor="end">graph_similar_renewals</text>
-<g><title>graph_similar_renewals p50: 14.89 ms</title>
-<path d="M244.27 209H341.6A4 4 0 0 1 345.6 213V213A4 4 0 0 1 341.6 217H244.27Z" fill="#2a78d6"/>
+<text x="664.59" y="181" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">6.6 / 7.0</text>
+<text x="234.27" y="205" font-size="11" fill="#52514e" text-anchor="end">graph_similar_renewals</text>
+<g><title>graph_similar_renewals p50: 15.98 ms</title>
+<path d="M244.27 192H349.02A4 4 0 0 1 353.02 196V196A4 4 0 0 1 349.02 200H244.27Z" fill="#2a78d6"/>
 </g>
-<g><title>graph_similar_renewals p95: 15.34 ms</title>
-<path d="M244.27 219H344.66A4 4 0 0 1 348.66 223V223A4 4 0 0 1 344.66 227H244.27Z" fill="#eb6834"/>
+<g><title>graph_similar_renewals p95: 16.65 ms</title>
+<path d="M244.27 202H353.58A4 4 0 0 1 357.58 206V206A4 4 0 0 1 353.58 210H244.27Z" fill="#eb6834"/>
 </g>
-<text x="664.59" y="222" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">14.9 / 15.3</text>
-<text x="234.27" y="246" font-size="11" fill="#52514e" text-anchor="end">graph_exposure</text>
-<g><title>graph_exposure p50: 4.17 ms</title>
-<path d="M244.27 233H268.64A4 4 0 0 1 272.64 237V237A4 4 0 0 1 268.64 241H244.27Z" fill="#2a78d6"/>
+<text x="664.59" y="205" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">16.0 / 16.6</text>
+<text x="234.27" y="229" font-size="11" fill="#52514e" text-anchor="end">graph_exposure</text>
+<g><title>graph_exposure p50: 4.33 ms</title>
+<path d="M244.27 216H269.73A4 4 0 0 1 273.73 220V220A4 4 0 0 1 269.73 224H244.27Z" fill="#2a78d6"/>
 </g>
-<g><title>graph_exposure p95: 4.42 ms</title>
-<path d="M244.27 243H270.35A4 4 0 0 1 274.35 247V247A4 4 0 0 1 270.35 251H244.27Z" fill="#eb6834"/>
+<g><title>graph_exposure p95: 5.26 ms</title>
+<path d="M244.27 226H276.06A4 4 0 0 1 280.06 230V230A4 4 0 0 1 276.06 234H244.27Z" fill="#eb6834"/>
 </g>
-<text x="664.59" y="246" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">4.2 / 4.4</text>
-<text x="24" y="280" font-size="12" fill="#0b0b0b" font-weight="600">metrics</text>
-<text x="234.27" y="280" font-size="11" fill="#52514e" text-anchor="end">metric_lapse_rate</text>
-<g><title>metric_lapse_rate p50: 1.64 ms</title>
-<path d="M244.27 267H251.43A4 4 0 0 1 255.43 271V271A4 4 0 0 1 251.43 275H244.27Z" fill="#2a78d6"/>
+<text x="664.59" y="229" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">4.3 / 5.3</text>
+<text x="24" y="263" font-size="12" fill="#0b0b0b" font-weight="600">metrics</text>
+<text x="234.27" y="263" font-size="11" fill="#52514e" text-anchor="end">metric_lapse_rate</text>
+<g><title>metric_lapse_rate p50: 1.65 ms</title>
+<path d="M244.27 250H251.49A4 4 0 0 1 255.49 254V254A4 4 0 0 1 251.49 258H244.27Z" fill="#2a78d6"/>
 </g>
-<g><title>metric_lapse_rate p95: 2.06 ms</title>
-<path d="M244.27 277H254.28A4 4 0 0 1 258.28 281V281A4 4 0 0 1 254.28 285H244.27Z" fill="#eb6834"/>
+<g><title>metric_lapse_rate p95: 2.24 ms</title>
+<path d="M244.27 260H255.51A4 4 0 0 1 259.51 264V264A4 4 0 0 1 255.51 268H244.27Z" fill="#eb6834"/>
 </g>
-<text x="664.59" y="280" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">1.6 / 2.1</text>
-<text x="234.27" y="304" font-size="11" fill="#52514e" text-anchor="end">metric_route_counts</text>
-<g><title>metric_route_counts p50: 1.6 ms</title>
-<path d="M244.27 291H251.15A4 4 0 0 1 255.15 295V295A4 4 0 0 1 251.15 299H244.27Z" fill="#2a78d6"/>
+<text x="664.59" y="263" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">1.6 / 2.2</text>
+<text x="234.27" y="287" font-size="11" fill="#52514e" text-anchor="end">metric_route_counts</text>
+<g><title>metric_route_counts p50: 1.61 ms</title>
+<path d="M244.27 274H251.22A4 4 0 0 1 255.22 278V278A4 4 0 0 1 251.22 282H244.27Z" fill="#2a78d6"/>
 </g>
-<g><title>metric_route_counts p95: 2.08 ms</title>
-<path d="M244.27 301H254.42A4 4 0 0 1 258.42 305V305A4 4 0 0 1 254.42 309H244.27Z" fill="#eb6834"/>
+<g><title>metric_route_counts p95: 1.96 ms</title>
+<path d="M244.27 284H253.6A4 4 0 0 1 257.6 288V288A4 4 0 0 1 253.6 292H244.27Z" fill="#eb6834"/>
 </g>
-<text x="664.59" y="304" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">1.6 / 2.1</text>
-<text x="234.27" y="328" font-size="11" fill="#52514e" text-anchor="end">metric_feature_card</text>
-<g><title>metric_feature_card p50: 1.46 ms</title>
-<path d="M244.27 315H250.2A4 4 0 0 1 254.2 319V319A4 4 0 0 1 250.2 323H244.27Z" fill="#2a78d6"/>
+<text x="664.59" y="287" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">1.6 / 2.0</text>
+<text x="234.27" y="311" font-size="11" fill="#52514e" text-anchor="end">metric_feature_card</text>
+<g><title>metric_feature_card p50: 1.48 ms</title>
+<path d="M244.27 298H250.34A4 4 0 0 1 254.34 302V302A4 4 0 0 1 250.34 306H244.27Z" fill="#2a78d6"/>
 </g>
-<g><title>metric_feature_card p95: 1.77 ms</title>
-<path d="M244.27 325H252.31A4 4 0 0 1 256.31 329V329A4 4 0 0 1 252.31 333H244.27Z" fill="#eb6834"/>
+<g><title>metric_feature_card p95: 1.81 ms</title>
+<path d="M244.27 308H252.58A4 4 0 0 1 256.58 312V312A4 4 0 0 1 252.58 316H244.27Z" fill="#eb6834"/>
 </g>
-<text x="664.59" y="328" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">1.5 / 1.8</text>
-<text x="24" y="362" font-size="12" fill="#0b0b0b" font-weight="600">lineage</text>
-<text x="234.27" y="362" font-size="11" fill="#52514e" text-anchor="end">lineage_trace</text>
-<g><title>lineage_trace p50: 4.67 ms</title>
-<path d="M244.27 349H272.05A4 4 0 0 1 276.05 353V353A4 4 0 0 1 272.05 357H244.27Z" fill="#2a78d6"/>
+<text x="664.59" y="311" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">1.5 / 1.8</text>
+<text x="24" y="345" font-size="12" fill="#0b0b0b" font-weight="600">lineage</text>
+<text x="234.27" y="345" font-size="11" fill="#52514e" text-anchor="end">lineage_trace</text>
+<g><title>lineage_trace p50: 4.34 ms</title>
+<path d="M244.27 332H269.8A4 4 0 0 1 273.8 336V336A4 4 0 0 1 269.8 340H244.27Z" fill="#2a78d6"/>
 </g>
-<g><title>lineage_trace p95: 5.17 ms</title>
-<path d="M244.27 359H275.45A4 4 0 0 1 279.45 363V363A4 4 0 0 1 275.45 367H244.27Z" fill="#eb6834"/>
+<g><title>lineage_trace p95: 4.84 ms</title>
+<path d="M244.27 342H273.2A4 4 0 0 1 277.2 346V346A4 4 0 0 1 273.2 350H244.27Z" fill="#eb6834"/>
 </g>
-<text x="664.59" y="362" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">4.7 / 5.2</text>
-<text x="234.27" y="386" font-size="11" fill="#52514e" text-anchor="end">lineage_pit</text>
-<g><title>lineage_pit p50: 3.52 ms</title>
-<path d="M244.27 373H264.22A4 4 0 0 1 268.22 377V377A4 4 0 0 1 264.22 381H244.27Z" fill="#2a78d6"/>
+<text x="664.59" y="345" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">4.3 / 4.8</text>
+<text x="234.27" y="369" font-size="11" fill="#52514e" text-anchor="end">lineage_pit</text>
+<g><title>lineage_pit p50: 3.47 ms</title>
+<path d="M244.27 356H263.88A4 4 0 0 1 267.88 360V360A4 4 0 0 1 263.88 364H244.27Z" fill="#2a78d6"/>
 </g>
-<g><title>lineage_pit p95: 4.15 ms</title>
-<path d="M244.27 383H268.51A4 4 0 0 1 272.51 387V387A4 4 0 0 1 268.51 391H244.27Z" fill="#eb6834"/>
+<g><title>lineage_pit p95: 4.01 ms</title>
+<path d="M244.27 366H267.56A4 4 0 0 1 271.56 370V370A4 4 0 0 1 267.56 374H244.27Z" fill="#eb6834"/>
 </g>
-<text x="664.59" y="386" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">3.5 / 4.2</text>
-<text x="234.27" y="410" font-size="11" fill="#52514e" text-anchor="end">lineage_guards</text>
-<g><title>lineage_guards p50: 3.24 ms</title>
-<path d="M244.27 397H262.32A4 4 0 0 1 266.32 401V401A4 4 0 0 1 262.32 405H244.27Z" fill="#2a78d6"/>
+<text x="664.59" y="369" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">3.5 / 4.0</text>
+<text x="234.27" y="393" font-size="11" fill="#52514e" text-anchor="end">lineage_guards</text>
+<g><title>lineage_guards p50: 3.44 ms</title>
+<path d="M244.27 380H263.68A4 4 0 0 1 267.68 384V384A4 4 0 0 1 263.68 388H244.27Z" fill="#2a78d6"/>
 </g>
-<g><title>lineage_guards p95: 3.76 ms</title>
-<path d="M244.27 407H265.85A4 4 0 0 1 269.85 411V411A4 4 0 0 1 265.85 415H244.27Z" fill="#eb6834"/>
+<g><title>lineage_guards p95: 4.65 ms</title>
+<path d="M244.27 390H271.91A4 4 0 0 1 275.91 394V394A4 4 0 0 1 271.91 398H244.27Z" fill="#eb6834"/>
 </g>
-<text x="664.59" y="410" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">3.2 / 3.8</text>
-<text x="234.27" y="434" font-size="11" fill="#52514e" text-anchor="end">lineage_unused</text>
-<g><title>lineage_unused p50: 3.39 ms</title>
-<path d="M244.27 421H263.34A4 4 0 0 1 267.34 425V425A4 4 0 0 1 263.34 429H244.27Z" fill="#2a78d6"/>
+<text x="664.59" y="393" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">3.4 / 4.7</text>
+<text x="234.27" y="417" font-size="11" fill="#52514e" text-anchor="end">lineage_unused</text>
+<g><title>lineage_unused p50: 3.44 ms</title>
+<path d="M244.27 404H263.68A4 4 0 0 1 267.68 408V408A4 4 0 0 1 263.68 412H244.27Z" fill="#2a78d6"/>
 </g>
-<g><title>lineage_unused p95: 4.32 ms</title>
-<path d="M244.27 431H269.67A4 4 0 0 1 273.67 435V435A4 4 0 0 1 269.67 439H244.27Z" fill="#eb6834"/>
+<g><title>lineage_unused p95: 5.15 ms</title>
+<path d="M244.27 414H275.31A4 4 0 0 1 279.31 418V418A4 4 0 0 1 275.31 422H244.27Z" fill="#eb6834"/>
 </g>
-<text x="664.59" y="434" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">3.4 / 4.3</text>
-<text x="24" y="468" font-size="12" fill="#0b0b0b" font-weight="600">cohorts</text>
-<text x="234.27" y="468" font-size="11" fill="#52514e" text-anchor="end">cohort_summary</text>
-<g><title>cohort_summary p50: 4.77 ms</title>
-<path d="M244.27 455H272.73A4 4 0 0 1 276.73 459V459A4 4 0 0 1 272.73 463H244.27Z" fill="#2a78d6"/>
+<text x="664.59" y="417" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">3.4 / 5.2</text>
+<text x="24" y="451" font-size="12" fill="#0b0b0b" font-weight="600">cohorts</text>
+<text x="234.27" y="451" font-size="11" fill="#52514e" text-anchor="end">cohort_summary</text>
+<g><title>cohort_summary p50: 4.95 ms</title>
+<path d="M244.27 438H273.95A4 4 0 0 1 277.95 442V442A4 4 0 0 1 273.95 446H244.27Z" fill="#2a78d6"/>
 </g>
-<g><title>cohort_summary p95: 6.12 ms</title>
-<path d="M244.27 465H281.91A4 4 0 0 1 285.91 469V469A4 4 0 0 1 281.91 473H244.27Z" fill="#eb6834"/>
+<g><title>cohort_summary p95: 5.6 ms</title>
+<path d="M244.27 448H278.38A4 4 0 0 1 282.38 452V452A4 4 0 0 1 278.38 456H244.27Z" fill="#eb6834"/>
 </g>
-<text x="664.59" y="468" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">4.8 / 6.1</text>
-<text x="234.27" y="492" font-size="11" fill="#52514e" text-anchor="end">cohort_list</text>
-<g><title>cohort_list p50: 24.1 ms</title>
-<path d="M244.27 479H404.28A4 4 0 0 1 408.28 483V483A4 4 0 0 1 404.28 487H244.27Z" fill="#2a78d6"/>
+<text x="664.59" y="451" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">5.0 / 5.6</text>
+<text x="234.27" y="475" font-size="11" fill="#52514e" text-anchor="end">cohort_list</text>
+<g><title>cohort_list p50: 24.81 ms</title>
+<path d="M244.27 462H409.11A4 4 0 0 1 413.11 466V466A4 4 0 0 1 409.11 470H244.27Z" fill="#2a78d6"/>
 </g>
-<g><title>cohort_list p95: 26.39 ms</title>
-<path d="M244.27 489H419.86A4 4 0 0 1 423.86 493V493A4 4 0 0 1 419.86 497H244.27Z" fill="#eb6834"/>
+<g><title>cohort_list p95: 29.84 ms</title>
+<path d="M244.27 472H443.34A4 4 0 0 1 447.34 476V476A4 4 0 0 1 443.34 480H244.27Z" fill="#eb6834"/>
 </g>
-<text x="664.59" y="492" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">24.1 / 26.4</text>
-<line x1="244.27" y1="130" x2="244.27" y2="502" stroke="#c3c2b7" stroke-width="1"/>
-<text x="24" y="534" font-size="11" fill="#52514e">Source: scripts/check_graph_tools.py --bench on graph build a2598a28e164 (profile s42); macOS arm64, warm calls, sandboxed stdio</text>
-<text x="24" y="549" font-size="11" fill="#52514e">servers. Regenerate with scripts/graph_evidence.py.</text>
+<text x="664.59" y="475" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">24.8 / 29.8</text>
+<line x1="244.27" y1="113" x2="244.27" y2="485" stroke="#c3c2b7" stroke-width="1"/>
+<text x="24" y="517" font-size="10.5" fill="#52514e">Graph build dde502e2a8e1</text>
 </svg>

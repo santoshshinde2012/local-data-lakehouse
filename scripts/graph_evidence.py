@@ -534,13 +534,13 @@ def main(argv: list[str] | None = None) -> int:
             else:
                 parts, rcs, secs = [], [], 0.0
                 for extra in (["list", "--algorithm", "leiden"], ["list", "--algorithm", "louvain"],
-                              ["summary", "--renewal", "sub_maya:2026-10-07"]):
+                              ["summary", "--renewal", "sub_santosh:2026-10-07"]):
                     r = run(Result("x", "x", "cohorts"), [py, "scripts/build_graph_cohorts.py", *extra, "--profile",
                                                           a.chart_profile, "--graph-root", gr], red, a.timeout)
                     parts.append(f"$ {r.command}\n{r.output}")
                     rcs.append(r.rc or 0)
                     secs += r.seconds or 0
-                res.command = "scripts/build_graph_cohorts.py list (leiden, louvain) + summary --renewal sub_maya"
+                res.command = "scripts/build_graph_cohorts.py list (leiden, louvain) + summary --renewal sub_santosh"
                 res.rc, res.seconds = max(rcs), round(secs, 1)
                 res.status = "pass" if res.rc == 0 else "FAIL"
                 res.output = "\n\n".join(parts)

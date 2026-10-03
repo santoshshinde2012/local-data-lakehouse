@@ -19,7 +19,7 @@ from conftest import REPO
 
 LAUNCH = REPO / "scripts" / "graph_mcp.sh"
 ASK = REPO / "scripts" / "graph_ask.sh"
-HERO = "sub_maya:2026-10-07"
+HERO = "sub_santosh:2026-10-07"
 
 
 def _run(*args: str, env: dict | None = None) -> subprocess.CompletedProcess:

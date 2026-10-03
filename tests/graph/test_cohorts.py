@@ -40,7 +40,7 @@ def run(script: str, *args: str, env: dict | None = None) -> subprocess.Complete
 
 # --------------------------------------------------------------------------- pure functions
 def test_wilson_matches_the_plan_golden_and_stays_in_bounds():
-    assert cohorts.wilson(2, 10) == [0.0567, 0.5098]            # PLAN: Maya's neighbours [0.057, 0.510]
+    assert cohorts.wilson(2, 10) == [0.0567, 0.5098]            # PLAN: Santosh's neighbours [0.057, 0.510]
     assert [round(x, 3) for x in cohorts.wilson(29, 72)] == [0.297, 0.518]   # PLAN: 29/72 [29.7, 51.8]
     assert cohorts.wilson(0, 0) is None
     for n in (1, 5, 37, 1000):
@@ -867,7 +867,7 @@ def test_cohort_summary_for_a_renewal_follows_the_outcome_visibility_rule(cohort
     assert o["excluded_named_renewal"] is True
     assert any("never the named renewal's own outcome" in c for c in caveats)
     # the current hero: today's view, not a member itself (assigned through its rank-1 neighbour)
-    data, caveats = cohorts.cohort_summary(bdir, renewal_id="sub_maya:2026-10-07")
+    data, caveats = cohorts.cohort_summary(bdir, renewal_id="sub_santosh:2026-10-07")
     assert data["outcomes"]["visibility"] == "today" and data["named_renewal"]["assigned_via"] == "nearest_reference"
     assert data["named_renewal"]["via_renewal_id"] is not None
     assert any("nearest reference renewal" in c for c in caveats)
@@ -875,16 +875,16 @@ def test_cohort_summary_for_a_renewal_follows_the_outcome_visibility_rule(cohort
 
 @pytest.mark.parametrize("kwargs, message", [
     ({}, "exactly one"),
-    ({"cohort_id": "leiden-01", "renewal_id": "sub_maya:2026-10-07"}, "exactly one"),
+    ({"cohort_id": "leiden-01", "renewal_id": "sub_santosh:2026-10-07"}, "exactly one"),
     ({"cohort_id": "null", "renewal_id": "None"}, "exactly one"),
     ({"cohort_id": "leiden-1"}, "invalid cohort_id"),
     ({"cohort_id": "kmeans-01"}, "invalid cohort_id"),
     ({"cohort_id": "leiden-01; DROP"}, "invalid cohort_id"),
     ({"cohort_id": "leiden-99"}, "unknown cohort_id"),
     ({"cohort_id": "leiden-01", "algorithm": "louvain"}, "is a leiden cohort"),
-    ({"renewal_id": "sub_maya"}, "invalid renewal_id"),
+    ({"renewal_id": "sub_santosh"}, "invalid renewal_id"),
     ({"renewal_id": "sub_nobody:2026-10-07"}, "unknown renewal_id"),
-    ({"renewal_id": "sub_maya:2026-10-07", "algorithm": "kmeans"}, "invalid algorithm"),
+    ({"renewal_id": "sub_santosh:2026-10-07", "algorithm": "kmeans"}, "invalid algorithm"),
 ])
 def test_invalid_input_is_a_clear_error(cohort_build, kwargs, message):
     with pytest.raises(ValueError, match=message):
@@ -924,10 +924,10 @@ def test_cli_build_list_summary(cohort_build):
     assert "outside the contract" in p.stdout
     p = run("build_graph_cohorts.py", "list", "--build", str(bdir))
     assert p.returncode == 0 and "leiden-01" in p.stdout and "suppressed (small cell)" in p.stdout
-    p = run("build_graph_cohorts.py", "summary", "--renewal", "sub_maya:2026-10-07", "--build", str(bdir), "--json")
+    p = run("build_graph_cohorts.py", "summary", "--renewal", "sub_santosh:2026-10-07", "--build", str(bdir), "--json")
     assert p.returncode == 0, p.stderr
     out = json.loads(p.stdout)
-    assert out["data"]["named_renewal"]["renewal_id"] == "sub_maya:2026-10-07" and out["caveats"][0] == cohorts.CAVEAT
+    assert out["data"]["named_renewal"]["renewal_id"] == "sub_santosh:2026-10-07" and out["caveats"][0] == cohorts.CAVEAT
     p = run("build_graph_cohorts.py", "summary", "--cohort", "leiden-99", "--build", str(bdir))
     assert p.returncode == 1 and "unknown cohort_id" in p.stderr
     p = run("build_graph_cohorts.py", "--profile", "s7", "--graph-root", str(root))

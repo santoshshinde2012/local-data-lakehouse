@@ -6,8 +6,8 @@ Every file here was written by `scripts/graph_evidence.py` from the checks it ra
 
 | | |
 |---|---|
-| Commit | `2ad9612` (working tree dirty: no) |
-| Date | 2026-10-02 (UTC) |
+| Commit | `5d8e09f` (working tree dirty: yes) |
+| Date | 2026-10-03 (UTC) |
 | Host | macOS-26.6.2 (macosx_arm64) |
 | Python | 3.12.9 · ladybug 0.21.2 · pandas 3.0.6 · numpy 2.5.3 · pyarrow 25.0.1 · networkx 3.7 · mcp 2.2.0 · pydantic 2.13.5 · sqlglot 30.21.0 |
 | Spark venv | pyiceberg 0.12.0 · pyspark 4.1.3 |
@@ -16,19 +16,19 @@ Every file here was written by `scripts/graph_evidence.py` from the checks it ra
 
 | Check | Profile | Status | Result | Summary |
 |---|---|---|---|---|
-| Graph contract (tiny) | tiny | pass | [graph-contract-tiny.md](graph-contract-tiny.md) | Graph contract OK (renewal-graph/v1, profile tiny, build 6c8fea296d84): 616 nodes / 1,949 edges; PIT parity 0 mismatches x 6 features in pandas and Cypher; naive wrong in 16 / 12 / 4 renewals; golden tiny; strict |
-| Graph contract (s42) | s42 | pass | [graph-contract-s42.md](graph-contract-s42.md) | Graph contract OK (renewal-graph/v1, profile s42, build a2598a28e164): 40,204 nodes / 130,366 edges; PIT parity 0 mismatches x 6 features in pandas and Cypher; naive wrong in 1,165 / 681 / 114 renewals; golden s42; strict |
-| Graph contract (default) | default | pass | [graph-contract-default.md](graph-contract-default.md) | Graph contract OK (renewal-graph/v1, profile default, build a2598a28e164): 40,204 nodes / 130,366 edges; PIT parity 0 mismatches x 6 features in pandas and Cypher; naive wrong in 1,165 / 681 / 114 renewals; golden s42; strict |
-| Graph contract (Iceberg-sourced build) | - | not run | [graph-contract-iceberg.md](graph-contract-iceberg.md) | The newest Iceberg-sourced build (e74f42fea9c6) was built on manylinux_aarch64, this host is macosx_arm64: the platform is part of its business_build_id, so a strict host re-check reports it stale. Its strict contract ran in ldl-graph; the recorded Docker run is in docker-e2e.md. |
-| Lineage contract (core profile) | default | pass | [lineage-contract.md](lineage-contract.md) | Lineage contract OK (metadata-graph/0.1, profile core, lineage build cd69f7f940ff): 30 gold SQL columns resolve (137 DERIVED_FROM + 3 COUNTS_ROWS_OF); 20 of 22 features compliant, declared exceptions renewals_completed, first_renewal_after_pricing_change; Cypher = oracle; slowest question Q15_dow... |
+| Graph contract (tiny) | tiny | pass | [graph-contract-tiny.md](graph-contract-tiny.md) | Graph contract OK (renewal-graph/v1, profile tiny, build e2b501f9dbe9): 616 nodes / 1,949 edges; PIT parity 0 mismatches x 6 features in pandas and Cypher; naive wrong in 16 / 12 / 4 renewals; golden tiny; strict |
+| Graph contract (s42) | s42 | pass | [graph-contract-s42.md](graph-contract-s42.md) | Graph contract OK (renewal-graph/v1, profile s42, build dde502e2a8e1): 40,204 nodes / 130,366 edges; PIT parity 0 mismatches x 6 features in pandas and Cypher; naive wrong in 1,165 / 681 / 114 renewals; golden s42; strict |
+| Graph contract (default) | default | pass | [graph-contract-default.md](graph-contract-default.md) | Graph contract OK (renewal-graph/v1, profile default, build dde502e2a8e1): 40,204 nodes / 130,366 edges; PIT parity 0 mismatches x 6 features in pandas and Cypher; naive wrong in 1,165 / 681 / 114 renewals; golden s42; strict |
+| Graph contract (Iceberg-sourced build) | - | not run | [graph-contract-iceberg.md](graph-contract-iceberg.md) | The newest Iceberg-sourced build (b7591b1d7e0a) was built on manylinux_aarch64, this host is macosx_arm64: the platform is part of its business_build_id, so a strict host re-check reports it stale. Its strict contract ran in ldl-graph; the recorded Docker run is in docker-e2e.md. |
+| Lineage contract (core profile) | default | pass | [lineage-contract.md](lineage-contract.md) | Lineage contract OK (metadata-graph/0.1, profile core, lineage build 3999f2dea0cb): 30 gold SQL columns resolve (137 DERIVED_FROM + 3 COUNTS_ROWS_OF); 20 of 22 features compliant, declared exceptions renewals_completed, first_renewal_after_pricing_change; Cypher = oracle; slowest question Q15_dow... |
 | Repo contracts (Tier-0 mini) | - | pass | [repo-contracts.md](repo-contracts.md) | Repo contracts OK: 0 errors, 2 warnings |
-| Agent tools check (tiny) | tiny | pass | [graph-tools-tiny.md](graph-tools-tiny.md) | check_graph_tools: OK (61/61 checks, 0 warning(s), 17.8 s) |
-| Agent tools check (s42) | s42 | pass | [graph-tools-s42.md](graph-tools-s42.md), [tools-bench-s42.json](tools-bench-s42.json) | check_graph_tools: OK (97/97 checks, 0 warning(s), 275.4 s) |
+| Agent tools check (tiny) | tiny | pass | [graph-tools-tiny.md](graph-tools-tiny.md) | check_graph_tools: OK (59/59 checks, 1 warning(s), 17.4 s) |
+| Agent tools check (s42) | s42 | pass | [graph-tools-s42.md](graph-tools-s42.md), [tools-bench-s42.json](tools-bench-s42.json) | check_graph_tools: OK (97/97 checks, 0 warning(s), 188.4 s) |
 | macOS sandbox check | - | pass | [sandbox-check.md](sandbox-check.md) | graph_sandbox_check: OK (47/47 checks passed) |
-| Spark SQL twin parity (tiny) | tiny | pass | [graph-parity-tiny.md](graph-parity-tiny.md) | Graph parity OK (similar_to/renewal-v1): 21 tables equal and SIMILAR_TO 1,182 edges identical with the persisted scaler on the same input; reported configurations tie-only; 24.38 s |
-| Spark SQL twin parity (s42) | s42 | pass | [graph-parity-s42.md](graph-parity-s42.md) | Graph parity OK (similar_to/renewal-v1): 21 tables equal and SIMILAR_TO 80,010 edges identical with the persisted scaler on the same input; reported configurations tie-only; 74.51 s |
+| Spark SQL twin parity (tiny) | tiny | pass | [graph-parity-tiny.md](graph-parity-tiny.md) | Graph parity OK (similar_to/renewal-v1): 21 tables equal and SIMILAR_TO 1,182 edges identical with the persisted scaler on the same input; reported configurations tie-only; 25.28 s |
+| Spark SQL twin parity (s42) | s42 | pass | [graph-parity-s42.md](graph-parity-s42.md) | Graph parity OK (similar_to/renewal-v1): 21 tables equal and SIMILAR_TO 80,010 edges identical with the persisted scaler on the same input; reported configurations tie-only; 73.6 s |
 | Feature cohorts (s42) | s42 | pass | [cohorts.md](cohorts.md) | outside the graph contract; 15 leiden cohorts (modularity 0.805592, seed 42, networkx 3.7); 15 louvain cohorts (modularity 0.806498, seed 42, networkx 3.7) |
-| Build and serve benchmark | - | pass | [bench.md](bench.md) | graph_bench: OK (profile s42, build a2598a28e164) |
+| Build and serve benchmark | - | pass | [bench.md](bench.md) | graph_bench: OK (profile s42, build dde502e2a8e1) |
 | Agent eval report | - | not available | [eval.md](eval.md) | No eval report given (--eval-json): run scripts/graph_eval.py on evals/graph_cases.yaml and pass its report. LLM results gate article claims, never merges. |
 | Leakage demo (AUCs) | - | pass | [leakage.md](leakage.md) | The data has no relationships between subscriptions: any lift from a neighbour feature is leakage (self-inclusive, as of today) or noise. Reported, never pinned. |
 | Docker end-to-end run (recorded) | - | pass | [docker-e2e.md](docker-e2e.md) | recorded run; every step exited as expected |

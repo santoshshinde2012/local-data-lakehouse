@@ -51,7 +51,7 @@ date-sensitive fact.
 | 10 | LadybugDB accepted despite a bus factor of about 1 | accepted |
 | 11 | DuckDB 1.5.6 only in the eval's SE arm, never a product dependency (1.5.x EOL 2026-11-01) | eval not built |
 | 12 | The Claude-arm eval budget is not spent without approval | not spent |
-| 13 | `config/CATALOG.md` refresh | **not done yet** |
+| 13 | `config/catalog.md` refresh | **not done yet** |
 | 14 | A strict eval / parity preflight (Docker up, memory pressure, free swap), `FORCE=1` to override | **not built yet** |
 | 15 | A "graph edition" generator (the only honest route to a network-effect lesson) is future work | not scheduled |
 | 16 | Local model `qwen3:4b` (installed, Apache-2.0); `qwen3.5:4b` or the instruct sibling only with approval | researched; harness not built |
@@ -86,7 +86,7 @@ date-sensitive fact.
 
 The versions in this page are research-time (2026-10-01): Spark 3.5.3, Iceberg 1.6.1, SILO and a JDBC
 catalog. The stack now runs Spark 4.1.3, Iceberg 1.12.0, the Lakekeeper REST catalog and RustFS (SILO is
-an option), and Airflow 3.3.2 (current pins: the version table in the [README](../../README.md#versions)).
+an option), and Airflow 3.3.2 (current pins: the version table in the [reference](../reference.md#versions)).
 The graph's local Spark harness also moved to pyspark 4.1.3 + Iceberg 1.12.0. psycopg2 is gone from
 every lock; SQLAlchemy remains only in the spark harness lock (PyIceberg's SQLite catalog). Current
 graph pins: ladybug 0.21.2, sqlglot 30.21.0, pydantic-ai-slim 2.53.0.

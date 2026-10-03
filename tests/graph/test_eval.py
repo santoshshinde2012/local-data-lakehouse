@@ -77,7 +77,7 @@ def test_cases_materialise_on_tiny_without_leaks(graph_root, tiny_build):
                                                "unavailable", "no "))
                for r in rejected), reasons
     by = {c.id: c for c in cases}
-    assert by["ev-01"].question.startswith("What could the model see about Maya")
+    assert by["ev-01"].question.startswith("What could the model see about Santosh")
     assert "{" not in "".join(c.question for c in cases)
 
 
@@ -137,8 +137,8 @@ def test_generator_rejects_answer_leaks_empty_and_suppressed(graph_root, tiny_bu
             ge.materialise(leak, o)
     hero = ge.hero_renewal(o)
     id_leak = {"id": "y", "category": "entity", "shape": "graph", "toolsets": ["graph"],
-               "question": f"Is {hero} Maya's renewal id?", "oracle": {"fn": "renewal_by_first_name",
-                                                                       "args": {"name": "Maya"}},
+               "question": f"Is {hero} Santosh's renewal id?", "oracle": {"fn": "renewal_by_first_name",
+                                                                       "args": {"name": "Santosh"}},
                "checks": [{"exact": "renewal_id"}]}
     with pytest.raises(ge.Reject, match="leak"):
         ge.materialise(id_leak, o)
@@ -183,16 +183,16 @@ def test_dates_affirm_and_sets():
     assert ge.check_value({"date": "d", "expected": ["2026-09-24", "2026-09-25"]},
                           "on September 24 and Sep 25th, 2026")[0]
     assert not ge.check_value({"date": "d", "expected": ["2026-09-24"]}, "on 2026-09-23")[0]
-    assert ge.check_value({"affirm": "m", "expected": True}, "Yes, Maya is among them.")[0]
-    assert not ge.check_value({"affirm": "m", "expected": True}, "Maya is not among them.")[0]
-    assert ge.check_value({"affirm": "m", "expected": False}, "No. She is not a member.")[0]
+    assert ge.check_value({"affirm": "m", "expected": True}, "Yes, Santosh is among them.")[0]
+    assert not ge.check_value({"affirm": "m", "expected": True}, "Santosh is not among them.")[0]
+    assert ge.check_value({"affirm": "m", "expected": False}, "No. He is not a member.")[0]
     ids = {"set_f1": "ids", "expected": ["sub_05564:2026-08-20"], "extract_spec": {"mode": "ids"},
-           "exclude": ["sub_maya:2026-10-07", "sub_07200:2026-08-17"]}
-    assert ge.check_value(ids, "Both sub_maya and sub_07200 list sub_05564.")[0]
+           "exclude": ["sub_santosh:2026-10-07", "sub_07200:2026-08-17"]}
+    assert ge.check_value(ids, "Both sub_santosh and sub_07200 list sub_05564.")[0]
     assert not ge.check_value(ids, "sub_05564 and sub_01475")[0]
     hubs = {"set_f1": "h", "expected": ["inc-003", "cap-cut-2026-09"], "extract_spec": {"mode": "ids"}}
-    assert ge.check_value(hubs, "sub_maya:2026-10-07 saw inc-003 and cap-cut-2026-09")[0], "only like ids compete"
-    assert not ge.check_value(hubs, "sub_maya saw inc-003, inc-002 and cap-cut-2026-09")[0]
+    assert ge.check_value(hubs, "sub_santosh:2026-10-07 saw inc-003 and cap-cut-2026-09")[0], "only like ids compete"
+    assert not ge.check_value(hubs, "sub_santosh saw inc-003, inc-002 and cap-cut-2026-09")[0]
     names = {"set_f1": "c", "expected": ["city", "built_at"],
              "extract_spec": {"mode": "names", "vocab": ["city", "built_at", "plan_tier"]}}
     assert ge.check_value(names, "city and built_at have no value check")[0]
@@ -210,11 +210,11 @@ def test_caveats_and_forbidden_claims_respect_negation():
     assert not t({"caveat": "narrative"}, "2 of 10 lapsed.")[0]
     assert t({"caveat": "interval"}, "7.4% (Wilson 95% [6.8%, 8.0%])")[0]
     pred = {"forbidden": "prediction_claim"}
-    assert not t(pred, "Maya will churn because her neighbours did.")[0]
-    assert t(pred, "No tool can say whether Maya will churn.")[0], "a negated sentence is not a claim"
-    assert t(pred, "Will Maya churn? The tools cannot score her.")[0], "a question is not a claim"
+    assert not t(pred, "Santosh will churn because his neighbours did.")[0]
+    assert t(pred, "No tool can say whether Santosh will churn.")[0], "a negated sentence is not a claim"
+    assert t(pred, "Will Santosh churn? The tools cannot score him.")[0], "a question is not a claim"
     prob = {"forbidden": "probability_claim"}
-    assert not t(prob, "Her churn probability is 23.4%.")[0]
+    assert not t(prob, "His churn probability is 23.4%.")[0]
     assert t(prob, "Narrative evidence, not a risk estimate: 2 of 10 (20%) lapsed.")[0]
     assert not t({"forbidden": "causal_claim"}, "inc-002 caused 72 lapses.")[0]
     assert t({"forbidden": "causal_claim"}, "The counts do not show that inc-002 caused lapses.")[0]

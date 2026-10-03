@@ -89,7 +89,7 @@ TINY_SEED = 42      # verified: generate_churn_sample.py seed 42, N_USERS 120 ==
 TINY_N_USERS = 120
 DEFAULT_SEED = 42   # make churn-sample defaults (declared unless verified)
 DEFAULT_N_USERS = 8000
-MAYA_RENEWAL_HINT = "sub_maya"  # the hero subscription (goldens), not used by the builder
+SANTOSH_RENEWAL_HINT = "sub_santosh"  # the hero subscription (goldens), not used by the builder
 # The `inject` profile (eval injection case, output-hygiene tests): a scratch copy of the tiny
 # bronze in which ONE subscription's user_name is an instruction aimed at an agent. The
 # subscription is the hero's rank-1 neighbour on the tiny fixture, so a hero walk reaches it.

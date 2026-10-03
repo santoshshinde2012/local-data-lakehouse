@@ -5,19 +5,19 @@
 | | |
 |---|---|
 | Status | **pass** (exit 0) |
-| Command | `python scripts/graph_sandbox_check.py --build $GRAPH_ROOT/s42/builds/a2598a28e164 --graph-root $GRAPH_ROOT --control --log-check` |
-| Commit | `2ad9612` (working tree dirty: no) |
-| Date | 2026-10-02 (UTC) |
+| Command | `python scripts/graph_sandbox_check.py --build $GRAPH_ROOT/s42/builds/dde502e2a8e1 --graph-root $GRAPH_ROOT --control --log-check` |
+| Commit | `5d8e09f` (working tree dirty: yes) |
+| Date | 2026-10-03 (UTC) |
 | Host | macOS-26.6.2 (macosx_arm64) |
 | Python | 3.12.9 · ladybug 0.21.2 · pandas 3.0.6 · numpy 2.5.3 · pyarrow 25.0.1 · networkx 3.7 · mcp 2.2.0 · pydantic 2.13.5 · sqlglot 30.21.0 |
 | Spark venv | pyiceberg 0.12.0 · pyspark 4.1.3 |
-| Duration | 22.0 s |
+| Duration | 23.2 s |
 | Summary | graph_sandbox_check: OK (47/47 checks passed) |
 
 ## Output
 
 ```text
-macOS 26.6.2 (arm64); python 3.12.9; GRAPH_ROOT=$GRAPH_ROOT; build=a2598a28e164
+macOS 26.6.2 (arm64); python 3.12.9; GRAPH_ROOT=$GRAPH_ROOT; build=dde502e2a8e1
 [1] static
   PASS  /usr/bin/sandbox-exec is present and executable
   PASS  profile present: config/graph/sandbox.sb
@@ -55,18 +55,18 @@ macOS 26.6.2 (arm64); python 3.12.9; GRAPH_ROOT=$GRAPH_ROOT; build=a2598a28e164
   PASS  fake credentials denied: 17 probes {'denied': 17}
   PASS  network denied: 8 probes {'denied': 8}
 [5] MCP client -> scripts/graph_mcp.sh -> sandbox-exec -> server (legacy and 2026-07-28)
-  PASS  graph/legacy: 5 tools listed, 3 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2025-11-25, list 825.6 ms, total 1425.3 ms
-  PASS  graph/2026-07-28: 5 tools listed, 3 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2026-07-28, list 794.5 ms, total 1362.9 ms
-  PASS  metrics/legacy: 3 tools listed, 2 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2025-11-25, list 791.2 ms, total 1067.0 ms
-  PASS  metrics/2026-07-28: 3 tools listed, 2 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2026-07-28, list 798.8 ms, total 1073.8 ms
-  PASS  lineage/legacy: 4 tools listed, 2 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2025-11-25, list 798.1 ms, total 992.4 ms
-  PASS  lineage/2026-07-28: 4 tools listed, 2 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2026-07-28, list 816.8 ms, total 1030.1 ms
-  PASS  cohorts/legacy: 2 tools listed, 1 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2025-11-25, list 796.6 ms, total 1090.8 ms
-  PASS  cohorts/2026-07-28: 2 tools listed, 1 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2026-07-28, list 811.8 ms, total 1102.6 ms
+  PASS  graph/legacy: 5 tools listed, 3 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2025-11-25, list 898.8 ms, total 1583.9 ms
+  PASS  graph/2026-07-28: 5 tools listed, 3 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2026-07-28, list 841.5 ms, total 1462.9 ms
+  PASS  metrics/legacy: 3 tools listed, 2 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2025-11-25, list 828.5 ms, total 1102.7 ms
+  PASS  metrics/2026-07-28: 3 tools listed, 2 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2026-07-28, list 856.2 ms, total 1144.7 ms
+  PASS  lineage/legacy: 4 tools listed, 2 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2025-11-25, list 866.1 ms, total 1139.3 ms
+  PASS  lineage/2026-07-28: 4 tools listed, 2 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2026-07-28, list 861.1 ms, total 1085.7 ms
+  PASS  cohorts/legacy: 2 tools listed, 1 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2025-11-25, list 835.2 ms, total 1182.4 ms
+  PASS  cohorts/2026-07-28: 2 tools listed, 1 called (provenance sandboxed=true), readOnlyHint on all  -- protocol 2026-07-28, list 822.0 ms, total 1128.3 ms
   PASS  unified log: 0 reported sandbox denials during the normal MCP sessions
 [6] fail closed
-  PASS  sandbox-exec missing (simulated): exit 78, nothing on stdout, message on stderr  -- rc=78 in 9 ms; stderr=graph_mcp.sh: sandbox-exec not available at /usr/bin/sandbox-exec; refusing to start unsandboxed (fail closed)
-  PASS  an MCP client against a fail-closed launcher errors out instead of hanging  -- ExceptionGroup after 10 ms
+  PASS  sandbox-exec missing (simulated): exit 78, nothing on stdout, message on stderr  -- rc=78 in 8 ms; stderr=graph_mcp.sh: sandbox-exec not available at /usr/bin/sandbox-exec; refusing to start unsandboxed (fail closed)
+  PASS  an MCP client against a fail-closed launcher errors out instead of hanging  -- ExceptionGroup after 7 ms
   PASS  GRAPH_SANDBOX=0 is the only opt-out and prints the banner on stderr
 [7] control: the same probe UNSANDBOXED (safe subset) -- these must SUCCEED
   PASS  control probe ran  -- rc=0

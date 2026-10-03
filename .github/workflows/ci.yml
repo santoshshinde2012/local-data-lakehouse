@@ -35,6 +35,8 @@ jobs:
         run: |
           .venv/bin/python -m py_compile $(git ls-files '*.py')
           for f in $(git ls-files '*.sh'); do bash -n "$f"; done
+      - name: File names and relative links (CONTRIBUTING.md, "File names")
+        run: python scripts/check_docs.py
       - name: T0 unit tests
         run: .venv/bin/python -m pytest -q tests/unit
       - name: Tiny fixture -> gold -> contract

@@ -1,7 +1,7 @@
 """Entity search for ``graph_find``: a standard-library inverted token index plus difflib typo repair.
 
 What is indexed (and what is not):
-  renewal          its id (whole, and the parts: ``sub_maya``, ``maya``, the renewal date), the
+  renewal          its id (whole, and the parts: ``sub_santosh``, ``santosh``, the renewal date), the
                    subscription id and the subscription's user_name words
   subscription     its id and user_name words
   incident         its id (``inc-002``, ``inc``, ``002`` / ``2``), the word "incident", every day of its
@@ -14,7 +14,7 @@ The city is never indexed (and never loaded: context.ToolContext reads Subscript
 Scoring (deterministic): every query token adds idf = ln(1 + N / df) for each entity whose tokens hold
 it exactly; a token with no exact hit counts 0.7 x idf for each indexed token it is a prefix of (3+
 characters), else 0.6 x similarity x idf for its closest words by ``difflib.get_close_matches``
-(alphabetic tokens of 3+ characters, cutoff 0.75): "Mya" still finds Maya. A query equal to an entity
+(alphabetic tokens of 3+ characters, cutoff 0.75): "Mya" still finds Santosh. A query equal to an entity
 id scores on top. Ties order by kind (renewal, subscription, pricing_change, incident), then id.
 Stop words (articles, "find", "show", "renewal", "user", ...) are dropped; a query of stop words only
 matches nothing.

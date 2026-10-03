@@ -19,7 +19,7 @@ the two agree. For every subscription snapshot taken seven days before a renewal
 Writes:
   data/export/churn_user_features.csv   model rows: 24-field contract + churned
   data/export/churn_renewals_audit.csv  every renewal with outcome, route, dates
-  data/export/hero_inference_record.json  today's T-7 record for sub_maya (no label)
+  data/export/hero_inference_record.json  today's T-7 record for sub_santosh (no label)
 """
 from __future__ import annotations
 
@@ -34,7 +34,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 SAMPLE = Path(os.environ.get("CHURN_SAMPLE_DIR", ROOT / "data/sample/churn"))
 EXPORT = Path(os.environ.get("CHURN_EXPORT_DIR", ROOT / "data/export"))
-HERO_ID = os.environ.get("CHURN_HERO_ID", "sub_maya")
+HERO_ID = os.environ.get("CHURN_HERO_ID", "sub_santosh")
 
 PLANS = ["pro", "pro_plus", "ultra"]
 ALLOWANCE = {"pro": 550, "pro_plus": 1650, "ultra": 11000}

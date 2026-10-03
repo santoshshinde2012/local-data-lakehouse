@@ -341,7 +341,7 @@ def test_radar_public_reads_github_only_through_gh_when_asked(monkeypatch, tiny_
             old_schema = json.dumps({"required": ["user_id"], "properties": {}})
             body = {"content": base64.b64encode(old_schema.encode()).decode()}
         else:
-            body = {"content": base64.b64encode(b'"maya_inference_record.json"').decode()}
+            body = {"content": base64.b64encode(b'"santosh_inference_record.json"').decode()}
         return subprocess.CompletedProcess(cmd, 0, json.dumps(body), "")
 
     monkeypatch.setattr(subprocess, "run", fake_run)

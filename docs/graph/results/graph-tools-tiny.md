@@ -7,18 +7,18 @@
 | Status | **pass** (exit 0) |
 | Profile | tiny |
 | Command | `python scripts/check_graph_tools.py --profile tiny --graph-root $GRAPH_ROOT --json <tmp>` |
-| Commit | `2ad9612` (working tree dirty: no) |
-| Date | 2026-10-02 (UTC) |
+| Commit | `5d8e09f` (working tree dirty: yes) |
+| Date | 2026-10-03 (UTC) |
 | Host | macOS-26.6.2 (macosx_arm64) |
 | Python | 3.12.9 · ladybug 0.21.2 · pandas 3.0.6 · numpy 2.5.3 · pyarrow 25.0.1 · networkx 3.7 · mcp 2.2.0 · pydantic 2.13.5 · sqlglot 30.21.0 |
 | Spark venv | pyiceberg 0.12.0 · pyspark 4.1.3 |
-| Duration | 18.5 s |
-| Summary | check_graph_tools: OK (61/61 checks, 0 warning(s), 17.8 s) |
+| Duration | 18.0 s |
+| Summary | check_graph_tools: OK (59/59 checks, 1 warning(s), 17.4 s) |
 
 ## Output
 
 ```text
-check_graph_tools: build 6c8fea296d84 (profile tiny, seed 42, N 120), contract strict_pass, GRAPH_ROOT $GRAPH_ROOT
+check_graph_tools: build e2b501f9dbe9 (profile tiny, seed 42, N 120), contract strict_pass, GRAPH_ROOT $GRAPH_ROOT
 == 1 goldens (tool answers vs the oracle of this build)
   ok    hero evidence: 8 rows equal the oracle, in order
   ok    hero top-10: rank, renewal, d2_q and outcome equal the oracle
@@ -53,23 +53,22 @@ check_graph_tools: build 6c8fea296d84 (profile tiny, seed 42, N 120), contract s
   ok    a planted string loses control / bidi / zero-width / tag characters and is cut to 200 (truncated set)
   ok    forced caps (3 rows, 4,000 chars), window all_before_as_of: the first 3 of 8 rows shown, summary.rows = 8 (counted before the cap), the caveat gives the true total
   ok    forced caps (3 rows, 4,000 chars), window feature_windows: the first 3 of 7 rows shown, summary.rows = 7 (counted before the cap), the caveat gives the true total
-  ok    named_renewal_member under a 3-row cap equals the uncapped answer for every incident and pricing change (sub_maya:2026-10-07)
-  ok    forced 4,000-char cap on a long lineage trace: 3753 chars, truncated
-  ok    at the minimum cap (4,000 chars) all 14 largest everyday answers fit (max 3,970) and keep their answer and summary
-  ok    no string over 200 characters in 42 answers
+  ok    named_renewal_member under a 3-row cap equals the uncapped answer for every incident and pricing change (sub_santosh:2026-10-07)
+  ok    at the minimum cap (4,000 chars) all 10 largest everyday answers fit (max 3,908) and keep their answer and summary
+  ok    no string over 200 characters in 38 answers
   ok    user_name appears only in graph_find and in the named renewal's own evidence
   ok    no city (6 values) and no 'city' key in any answer
   ok    graph_find never indexes a city: none of the 6 cities is a search token (except inside a user name)
 == 2 schema (every answer of this run)
-  ok    42 answers of 12 tools validate (envelope + data schema)
-  note  tools without an answer in this run: ['cohort_list', 'cohort_summary']
+  ok    38 answers of 8 tools validate (envelope + data schema)
+  note  tools without an answer in this run: ['cohort_list', 'cohort_summary', 'lineage_guards', 'lineage_pit', 'lineage_trace', 'lineage_unused']
 == 3 leak sweep (every renewal)
   ok    121 renewals: 0 Subscription->event / CUT_CAP rows after as_of
   ok    FIRST_RENEWAL_AFTER rows after as_of: exactly 5, every one known_by_as_of=false and declared_exception=true
   ok    0 BILLED outcome-evidence rows served
   ok    auto / source_as_of: 0 neighbour outcomes observed after a historical source's as_of (1116 visible outcomes checked; nearest lapses too)
   ok    'today' rejected for all 120 historical sources, accepted for 1 current
-  note  sweep took 1.3 s
+  note  sweep took 1.4 s
 == 5 audit log
   ok    one line per call: 7 lines for 7 calls (3 failed)
   ok    every line has exactly ('ts', 'session', 'pid', 'toolset', 'tool', 'args_hash', 'args_key', 'latency_ms', 'rows', 'chars', 'truncated', 'outcome', 'build_id')
@@ -82,21 +81,21 @@ check_graph_tools: build 6c8fea296d84 (profile tiny, seed 42, N 120), contract s
   ok    tool modules name no contract-only template, never the contract row limit, and only mcp_server imports mcp
 == 8 junk arguments
   ok    junk -> defaults for every optional argument of every tool; unknown and Cypher-shaped arguments rejected without echoing them
-  ok    5 unknown-but-well-formed ids (graph, lineage, cohorts): a repairable error that never repeats the id sent
+  ok    2 unknown-but-well-formed ids (graph, lineage, cohorts): a repairable error that never repeats the id sent
 == 9 MCP stdio smoke through scripts/graph_mcp.sh (GRAPH_PY=.venv-graph/bin/python)
   note  GRAPH_PY is the repo's .venv-graph interpreter
-  ok    graph/legacy: protocol 2025-11-25, 5 tools, read-only hints, call + resources ok, sandboxed=True (1030 ms)
-  ok    graph/2026-07-28: protocol 2026-07-28, 5 tools, read-only hints, call + resources ok, sandboxed=True (957 ms)
-  ok    metrics/legacy: protocol 2025-11-25, 3 tools, read-only hints, call + resources ok, sandboxed=True (2288 ms)
-  ok    metrics/2026-07-28: protocol 2026-07-28, 3 tools, read-only hints, call + resources ok, sandboxed=True (2295 ms)
-  ok    lineage/legacy: protocol 2025-11-25, 4 tools, read-only hints, call + resources ok, sandboxed=True (1101 ms)
-  ok    lineage/2026-07-28: protocol 2026-07-28, 4 tools, read-only hints, call + resources ok, sandboxed=True (1041 ms)
-== 9b MCP smoke of the optional toolsets this build lacks (cohorts)
+  ok    graph/legacy: protocol 2025-11-25, 5 tools, read-only hints, call + resources ok, sandboxed=True (1083 ms)
+  ok    graph/2026-07-28: protocol 2026-07-28, 5 tools, read-only hints, call + resources ok, sandboxed=True (994 ms)
+  ok    metrics/legacy: protocol 2025-11-25, 3 tools, read-only hints, call + resources ok, sandboxed=True (2469 ms)
+  ok    metrics/2026-07-28: protocol 2026-07-28, 3 tools, read-only hints, call + resources ok, sandboxed=True (2412 ms)
+== 9b MCP smoke of the optional toolsets this build lacks (lineage, cohorts)
+  ok    lineage: the server starts, lists 4 tools and answers unavailable with the fix
   ok    cohorts: the server starts, lists 2 tools and answers unavailable with the fix
 == 9c guarded raw Cypher (opt-in: graph_mcp.sh --enable-cypher, evidence graph only)
   ok    graph_cypher is in no default toolset (the default servers never offer it)
   note  skipped: needs macOS (its sandbox) and the build's evidence graph (scripts/build_evidence_graph.py)
-check_graph_tools: OK (61/61 checks, 0 warning(s), 17.8 s)
+WARN no lineage.lbdb in this build: the lineage toolset is only smoke-checked (listed, answers unavailable)
+check_graph_tools: OK (59/59 checks, 1 warning(s), 17.4 s)
 ```
 
 [Back to the results index](index.md)

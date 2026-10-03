@@ -197,7 +197,7 @@ def first_name(o: Oracle, renewal_id: str) -> str:
 
 @oracle_fn
 def name_typo(o: Oracle, name: str) -> str:
-    """A deterministic one-transposition typo (Maya -> Myaa)."""
+    """A deterministic one-transposition typo (Santosh -> Myaa)."""
     if len(name) < 3 or name[1] == name[2]:
         raise Reject("name too short for a transposition typo")
     return name[0] + name[2] + name[1] + name[3:]

@@ -1,119 +1,117 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="760" height="690" viewBox="0 0 760 690" role="img" font-family="system-ui, -apple-system, &#x27;Segoe UI&#x27;, sans-serif">
-<title>Graph composition: nodes and edges by type</title>
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="658" viewBox="0 0 760 658" role="img" font-family="system-ui, -apple-system, &#x27;Segoe UI&#x27;, sans-serif">
+<title>Graph composition</title>
 <desc>Horizontal bar charts. Nodes by label: LimitHit 10,602, BillingEvent 10,139, Renewal 8,001, Subscription 8,001, Ticket 2,134, OverageChange 849, OverageCharge 470, Incident 3, Plan 3, PricingChange 2 (total 40,204). Edges by type: SIMILAR_TO 80,010, HIT_LIMIT 10,602, BILLED 10,139, HAS_RENEWAL 8,001, ON_PLAN 8,001, EXPOSED_TO 7,651, FIRST_RENEWAL_AFTER 2,503, OPENED 2,134, CHANGED_OVERAGE 849, CHARGED_OVERAGE 470, CUT_CAP 6 (total 130,366).</desc>
-<rect width="760" height="690" rx="8" fill="#fcfcfb"/>
-<text x="24" y="38" font-size="15" fill="#0b0b0b" font-weight="600">Graph composition: nodes and edges by type</text>
-<text x="24" y="58" font-size="12" fill="#52514e">40,204 nodes and 130,366 edges. SIMILAR_TO (k = 10 per renewal) is the largest edge type; Plan, Incident and</text>
-<text x="24" y="75" font-size="12" fill="#52514e">PricingChange are small hubs.</text>
-<text x="24" y="112" font-size="12" fill="#0b0b0b" font-weight="600">Nodes by label (40,204)</text>
+<rect width="760" height="658" rx="8" fill="#fcfcfb"/>
+<text x="24" y="38" font-size="15" fill="#0b0b0b" font-weight="600">Graph composition</text>
+<text x="24" y="58" font-size="12" fill="#52514e">40,204 nodes and 130,366 edges, by type</text>
+<text x="24" y="95" font-size="12" fill="#0b0b0b" font-weight="600">Nodes by label (40,204)</text>
 <g><title>LimitHit: 10,602</title>
-<text x="183.49" y="139" font-size="12" fill="#0b0b0b" text-anchor="end">LimitHit</text>
-<path d="M193.49 127H668A4 4 0 0 1 672 131V139A4 4 0 0 1 668 143H193.49Z" fill="#2a78d6"/>
-<text x="678" y="139" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">10,602</text>
+<text x="183.49" y="122" font-size="12" fill="#0b0b0b" text-anchor="end">LimitHit</text>
+<path d="M193.49 110H668A4 4 0 0 1 672 114V122A4 4 0 0 1 668 126H193.49Z" fill="#2a78d6"/>
+<text x="678" y="122" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">10,602</text>
 </g>
 <g><title>BillingEvent: 10,139</title>
-<text x="183.49" y="161" font-size="12" fill="#0b0b0b" text-anchor="end">BillingEvent</text>
-<path d="M193.49 149H647.1A4 4 0 0 1 651.1 153V161A4 4 0 0 1 647.1 165H193.49Z" fill="#2a78d6"/>
-<text x="657.1" y="161" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">10,139</text>
+<text x="183.49" y="144" font-size="12" fill="#0b0b0b" text-anchor="end">BillingEvent</text>
+<path d="M193.49 132H647.1A4 4 0 0 1 651.1 136V144A4 4 0 0 1 647.1 148H193.49Z" fill="#2a78d6"/>
+<text x="657.1" y="144" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">10,139</text>
 </g>
 <g><title>Renewal: 8,001</title>
-<text x="183.49" y="183" font-size="12" fill="#0b0b0b" text-anchor="end">Renewal</text>
-<path d="M193.49 171H550.61A4 4 0 0 1 554.61 175V183A4 4 0 0 1 550.61 187H193.49Z" fill="#2a78d6"/>
-<text x="560.61" y="183" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">8,001</text>
+<text x="183.49" y="166" font-size="12" fill="#0b0b0b" text-anchor="end">Renewal</text>
+<path d="M193.49 154H550.61A4 4 0 0 1 554.61 158V166A4 4 0 0 1 550.61 170H193.49Z" fill="#2a78d6"/>
+<text x="560.61" y="166" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">8,001</text>
 </g>
 <g><title>Subscription: 8,001</title>
-<text x="183.49" y="205" font-size="12" fill="#0b0b0b" text-anchor="end">Subscription</text>
-<path d="M193.49 193H550.61A4 4 0 0 1 554.61 197V205A4 4 0 0 1 550.61 209H193.49Z" fill="#2a78d6"/>
-<text x="560.61" y="205" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">8,001</text>
+<text x="183.49" y="188" font-size="12" fill="#0b0b0b" text-anchor="end">Subscription</text>
+<path d="M193.49 176H550.61A4 4 0 0 1 554.61 180V188A4 4 0 0 1 550.61 192H193.49Z" fill="#2a78d6"/>
+<text x="560.61" y="188" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">8,001</text>
 </g>
 <g><title>Ticket: 2,134</title>
-<text x="183.49" y="227" font-size="12" fill="#0b0b0b" text-anchor="end">Ticket</text>
-<path d="M193.49 215H285.81A4 4 0 0 1 289.81 219V227A4 4 0 0 1 285.81 231H193.49Z" fill="#2a78d6"/>
-<text x="295.81" y="227" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">2,134</text>
+<text x="183.49" y="210" font-size="12" fill="#0b0b0b" text-anchor="end">Ticket</text>
+<path d="M193.49 198H285.81A4 4 0 0 1 289.81 202V210A4 4 0 0 1 285.81 214H193.49Z" fill="#2a78d6"/>
+<text x="295.81" y="210" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">2,134</text>
 </g>
 <g><title>OverageChange: 849</title>
-<text x="183.49" y="249" font-size="12" fill="#0b0b0b" text-anchor="end">OverageChange</text>
-<path d="M193.49 237H227.81A4 4 0 0 1 231.81 241V249A4 4 0 0 1 227.81 253H193.49Z" fill="#2a78d6"/>
-<text x="237.81" y="249" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">849</text>
+<text x="183.49" y="232" font-size="12" fill="#0b0b0b" text-anchor="end">OverageChange</text>
+<path d="M193.49 220H227.81A4 4 0 0 1 231.81 224V232A4 4 0 0 1 227.81 236H193.49Z" fill="#2a78d6"/>
+<text x="237.81" y="232" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">849</text>
 </g>
 <g><title>OverageCharge: 470</title>
-<text x="183.49" y="271" font-size="12" fill="#0b0b0b" text-anchor="end">OverageCharge</text>
-<path d="M193.49 259H210.7A4 4 0 0 1 214.7 263V271A4 4 0 0 1 210.7 275H193.49Z" fill="#2a78d6"/>
-<text x="220.7" y="271" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">470</text>
+<text x="183.49" y="254" font-size="12" fill="#0b0b0b" text-anchor="end">OverageCharge</text>
+<path d="M193.49 242H210.7A4 4 0 0 1 214.7 246V254A4 4 0 0 1 210.7 258H193.49Z" fill="#2a78d6"/>
+<text x="220.7" y="254" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">470</text>
 </g>
 <g><title>Incident: 3</title>
-<text x="183.49" y="293" font-size="12" fill="#0b0b0b" text-anchor="end">Incident</text>
-<path d="M193.49 281H194.24A0.75 0.75 0 0 1 194.99 281.75V296.25A0.75 0.75 0 0 1 194.24 297H193.49Z" fill="#2a78d6"/>
-<text x="199.62" y="293" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">3</text>
+<text x="183.49" y="276" font-size="12" fill="#0b0b0b" text-anchor="end">Incident</text>
+<path d="M193.49 264H194.24A0.75 0.75 0 0 1 194.99 264.75V279.25A0.75 0.75 0 0 1 194.24 280H193.49Z" fill="#2a78d6"/>
+<text x="199.62" y="276" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">3</text>
 </g>
 <g><title>Plan: 3</title>
-<text x="183.49" y="315" font-size="12" fill="#0b0b0b" text-anchor="end">Plan</text>
-<path d="M193.49 303H194.24A0.75 0.75 0 0 1 194.99 303.75V318.25A0.75 0.75 0 0 1 194.24 319H193.49Z" fill="#2a78d6"/>
-<text x="199.62" y="315" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">3</text>
+<text x="183.49" y="298" font-size="12" fill="#0b0b0b" text-anchor="end">Plan</text>
+<path d="M193.49 286H194.24A0.75 0.75 0 0 1 194.99 286.75V301.25A0.75 0.75 0 0 1 194.24 302H193.49Z" fill="#2a78d6"/>
+<text x="199.62" y="298" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">3</text>
 </g>
 <g><title>PricingChange: 2</title>
-<text x="183.49" y="337" font-size="12" fill="#0b0b0b" text-anchor="end">PricingChange</text>
-<path d="M193.49 325H194.24A0.75 0.75 0 0 1 194.99 325.75V340.25A0.75 0.75 0 0 1 194.24 341H193.49Z" fill="#2a78d6"/>
-<text x="199.58" y="337" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">2</text>
+<text x="183.49" y="320" font-size="12" fill="#0b0b0b" text-anchor="end">PricingChange</text>
+<path d="M193.49 308H194.24A0.75 0.75 0 0 1 194.99 308.75V323.25A0.75 0.75 0 0 1 194.24 324H193.49Z" fill="#2a78d6"/>
+<text x="199.58" y="320" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">2</text>
 </g>
-<line x1="193.49" y1="122" x2="193.49" y2="346" stroke="#c3c2b7" stroke-width="1"/>
-<text x="24" y="364" font-size="12" fill="#0b0b0b" font-weight="600">Edges by type (130,366)</text>
+<line x1="193.49" y1="105" x2="193.49" y2="329" stroke="#c3c2b7" stroke-width="1"/>
+<text x="24" y="347" font-size="12" fill="#0b0b0b" font-weight="600">Edges by type (130,366)</text>
 <g><title>SIMILAR_TO: 80,010</title>
-<text x="183.49" y="391" font-size="12" fill="#0b0b0b" text-anchor="end">SIMILAR_TO</text>
-<path d="M193.49 379H668A4 4 0 0 1 672 383V391A4 4 0 0 1 668 395H193.49Z" fill="#2a78d6"/>
-<text x="678" y="391" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">80,010</text>
+<text x="183.49" y="374" font-size="12" fill="#0b0b0b" text-anchor="end">SIMILAR_TO</text>
+<path d="M193.49 362H668A4 4 0 0 1 672 366V374A4 4 0 0 1 668 378H193.49Z" fill="#2a78d6"/>
+<text x="678" y="374" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">80,010</text>
 </g>
 <g><title>HIT_LIMIT: 10,602</title>
-<text x="183.49" y="413" font-size="12" fill="#0b0b0b" text-anchor="end">HIT_LIMIT</text>
-<path d="M193.49 401H252.9A4 4 0 0 1 256.9 405V413A4 4 0 0 1 252.9 417H193.49Z" fill="#2a78d6"/>
-<text x="262.9" y="413" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">10,602</text>
+<text x="183.49" y="396" font-size="12" fill="#0b0b0b" text-anchor="end">HIT_LIMIT</text>
+<path d="M193.49 384H252.9A4 4 0 0 1 256.9 388V396A4 4 0 0 1 252.9 400H193.49Z" fill="#2a78d6"/>
+<text x="262.9" y="396" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">10,602</text>
 </g>
 <g><title>BILLED: 10,139</title>
-<text x="183.49" y="435" font-size="12" fill="#0b0b0b" text-anchor="end">BILLED</text>
-<path d="M193.49 423H250.13A4 4 0 0 1 254.13 427V435A4 4 0 0 1 250.13 439H193.49Z" fill="#2a78d6"/>
-<text x="260.13" y="435" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">10,139</text>
+<text x="183.49" y="418" font-size="12" fill="#0b0b0b" text-anchor="end">BILLED</text>
+<path d="M193.49 406H250.13A4 4 0 0 1 254.13 410V418A4 4 0 0 1 250.13 422H193.49Z" fill="#2a78d6"/>
+<text x="260.13" y="418" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">10,139</text>
 </g>
 <g><title>HAS_RENEWAL: 8,001</title>
-<text x="183.49" y="457" font-size="12" fill="#0b0b0b" text-anchor="end">HAS_RENEWAL</text>
-<path d="M193.49 445H237.34A4 4 0 0 1 241.34 449V457A4 4 0 0 1 237.34 461H193.49Z" fill="#2a78d6"/>
-<text x="247.34" y="457" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">8,001</text>
+<text x="183.49" y="440" font-size="12" fill="#0b0b0b" text-anchor="end">HAS_RENEWAL</text>
+<path d="M193.49 428H237.34A4 4 0 0 1 241.34 432V440A4 4 0 0 1 237.34 444H193.49Z" fill="#2a78d6"/>
+<text x="247.34" y="440" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">8,001</text>
 </g>
 <g><title>ON_PLAN: 8,001</title>
-<text x="183.49" y="479" font-size="12" fill="#0b0b0b" text-anchor="end">ON_PLAN</text>
-<path d="M193.49 467H237.34A4 4 0 0 1 241.34 471V479A4 4 0 0 1 237.34 483H193.49Z" fill="#2a78d6"/>
-<text x="247.34" y="479" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">8,001</text>
+<text x="183.49" y="462" font-size="12" fill="#0b0b0b" text-anchor="end">ON_PLAN</text>
+<path d="M193.49 450H237.34A4 4 0 0 1 241.34 454V462A4 4 0 0 1 237.34 466H193.49Z" fill="#2a78d6"/>
+<text x="247.34" y="462" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">8,001</text>
 </g>
 <g><title>EXPOSED_TO: 7,651</title>
-<text x="183.49" y="501" font-size="12" fill="#0b0b0b" text-anchor="end">EXPOSED_TO</text>
-<path d="M193.49 489H235.25A4 4 0 0 1 239.25 493V501A4 4 0 0 1 235.25 505H193.49Z" fill="#2a78d6"/>
-<text x="245.25" y="501" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">7,651</text>
+<text x="183.49" y="484" font-size="12" fill="#0b0b0b" text-anchor="end">EXPOSED_TO</text>
+<path d="M193.49 472H235.25A4 4 0 0 1 239.25 476V484A4 4 0 0 1 235.25 488H193.49Z" fill="#2a78d6"/>
+<text x="245.25" y="484" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">7,651</text>
 </g>
 <g><title>FIRST_RENEWAL_AFTER: 2,503</title>
-<text x="183.49" y="523" font-size="12" fill="#0b0b0b" text-anchor="end">FIRST_RENEWAL_AFTER</text>
-<path d="M193.49 511H204.46A4 4 0 0 1 208.46 515V523A4 4 0 0 1 204.46 527H193.49Z" fill="#2a78d6"/>
-<text x="214.46" y="523" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">2,503</text>
+<text x="183.49" y="506" font-size="12" fill="#0b0b0b" text-anchor="end">FIRST_RENEWAL_AFTER</text>
+<path d="M193.49 494H204.46A4 4 0 0 1 208.46 498V506A4 4 0 0 1 204.46 510H193.49Z" fill="#2a78d6"/>
+<text x="214.46" y="506" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">2,503</text>
 </g>
 <g><title>OPENED: 2,134</title>
-<text x="183.49" y="545" font-size="12" fill="#0b0b0b" text-anchor="end">OPENED</text>
-<path d="M193.49 533H202.25A4 4 0 0 1 206.25 537V545A4 4 0 0 1 202.25 549H193.49Z" fill="#2a78d6"/>
-<text x="212.25" y="545" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">2,134</text>
+<text x="183.49" y="528" font-size="12" fill="#0b0b0b" text-anchor="end">OPENED</text>
+<path d="M193.49 516H202.25A4 4 0 0 1 206.25 520V528A4 4 0 0 1 202.25 532H193.49Z" fill="#2a78d6"/>
+<text x="212.25" y="528" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">2,134</text>
 </g>
 <g><title>CHANGED_OVERAGE: 849</title>
-<text x="183.49" y="567" font-size="12" fill="#0b0b0b" text-anchor="end">CHANGED_OVERAGE</text>
-<path d="M193.49 555H196.03A2.54 2.54 0 0 1 198.57 557.54V568.46A2.54 2.54 0 0 1 196.03 571H193.49Z" fill="#2a78d6"/>
-<text x="204.57" y="567" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">849</text>
+<text x="183.49" y="550" font-size="12" fill="#0b0b0b" text-anchor="end">CHANGED_OVERAGE</text>
+<path d="M193.49 538H196.03A2.54 2.54 0 0 1 198.57 540.54V551.46A2.54 2.54 0 0 1 196.03 554H193.49Z" fill="#2a78d6"/>
+<text x="204.57" y="550" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">849</text>
 </g>
 <g><title>CHARGED_OVERAGE: 470</title>
-<text x="183.49" y="589" font-size="12" fill="#0b0b0b" text-anchor="end">CHARGED_OVERAGE</text>
-<path d="M193.49 577H194.89A1.41 1.41 0 0 1 196.3 578.41V591.59A1.41 1.41 0 0 1 194.89 593H193.49Z" fill="#2a78d6"/>
-<text x="202.3" y="589" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">470</text>
+<text x="183.49" y="572" font-size="12" fill="#0b0b0b" text-anchor="end">CHARGED_OVERAGE</text>
+<path d="M193.49 560H194.89A1.41 1.41 0 0 1 196.3 561.41V574.59A1.41 1.41 0 0 1 194.89 576H193.49Z" fill="#2a78d6"/>
+<text x="202.3" y="572" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">470</text>
 </g>
 <g><title>CUT_CAP: 6</title>
-<text x="183.49" y="611" font-size="12" fill="#0b0b0b" text-anchor="end">CUT_CAP</text>
-<path d="M193.49 599H194.24A0.75 0.75 0 0 1 194.99 599.75V614.25A0.75 0.75 0 0 1 194.24 615H193.49Z" fill="#2a78d6"/>
-<text x="199.53" y="611" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">6</text>
+<text x="183.49" y="594" font-size="12" fill="#0b0b0b" text-anchor="end">CUT_CAP</text>
+<path d="M193.49 582H194.24A0.75 0.75 0 0 1 194.99 582.75V597.25A0.75 0.75 0 0 1 194.24 598H193.49Z" fill="#2a78d6"/>
+<text x="199.53" y="594" font-size="11" fill="#52514e" font-variant-numeric="tabular-nums">6</text>
 </g>
-<line x1="193.49" y1="374" x2="193.49" y2="620" stroke="#c3c2b7" stroke-width="1"/>
-<text x="24" y="640" font-size="11" fill="#52514e">Source: graph build a2598a28e164 · profile s42 · seed 42, N_USERS 8000 (verified) · data_end 2026-09-30 · renewal-graph/v1 · commit</text>
-<text x="24" y="655" font-size="11" fill="#52514e">013dd4e · regenerate with scripts/graph_evidence.py.</text>
+<line x1="193.49" y1="357" x2="193.49" y2="603" stroke="#c3c2b7" stroke-width="1"/>
+<text x="24" y="623" font-size="10.5" fill="#52514e">Graph build dde502e2a8e1, seed 42</text>
 </svg>
