@@ -279,7 +279,7 @@ def test_exposure_unknown_ids_are_repairable(ctx):
 
 
 @pytest.mark.parametrize(("query", "first"), [
-    ("Santosh", HERO), ("mya", HERO), ("sub_santosh:2026-10-07", HERO), ("August pricing change", "cap-cut-2026-08"),
+    ("Santosh", HERO), ("santsh", HERO), ("sub_santosh:2026-10-07", HERO), ("August pricing change", "cap-cut-2026-08"),
     ("the September cut", "cap-cut-2026-09"), ("inc 2", "inc-002"), ("incident", "inc-001"),
 ])
 def test_graph_find_resolves_names_ids_and_hubs(ctx, query, first):
