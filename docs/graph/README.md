@@ -133,7 +133,7 @@ checked in its container, the eval needs an LLM run).
 | Tier-1 Iceberg lineage facts (`build_lineage_local.py --iceberg`) | **built**; reads snapshots and refs through the REST catalog (2026-10-02) | [lineage.md](lineage.md#tiers) |
 | Feature cohorts, Cytoscape.js evidence views | **built, passing** (outside the contract) | [cohorts.md](results/cohorts.md) |
 | Spark SQL twin, Iceberg tags, PyIceberg REST reader, source-aware contract | **built, passing** (parity exact on tiny (24.4 s) and s42 (74.5 s) on pyspark 4.1.3 + Iceberg 1.12.0, 2026-10-02) | [graph-parity-s42.md](results/graph-parity-s42.md) |
-| Docker overlay, `make graph-e2e` / `run_graph_e2e.sh` | **built, passing** on the REST stack: `make graph-e2e` 103.5 s from empty volumes, `run_graph_e2e.sh` 87 s (2026-10-02) | [lakehouse-twin.md](lakehouse-twin.md#the-docker-run) |
+| Docker overlay, `make graph-e2e` / `run_graph_e2e.sh` | **built, passing** on the REST stack: `make graph-e2e` 115.1 s on existing volumes, `run_graph_e2e.sh` 98 s (2026-10-03; 103.5 s and 87 s from empty volumes on 2026-10-02) | [lakehouse-twin.md](lakehouse-twin.md#the-docker-run) |
 | Airflow DAG `lakehouse_graph` | **built, passing** on Airflow 3.3.2: all 7 tasks `success` in 132 s (2026-10-02, [airflow excerpt](../demo/airflow-e2e.excerpt.md)) | [lakehouse-twin.md](lakehouse-twin.md#airflow) |
 | Export fix in `src/jobs/churn/04_export_features.py` | **applied** | [lakehouse-twin.md](lakehouse-twin.md#the-export-fix-04_export_featurespy) |
 | These docs, charts and the evidence runner | **built** | `scripts/graph_evidence.py`, `scripts/graph_charts.py` |

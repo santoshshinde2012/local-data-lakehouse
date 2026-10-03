@@ -43,7 +43,8 @@ SILO (`STORE=silo`) was not part of this run.
 
 ## End-to-end steps
 
-Every step exited 0.
+Every step exited 0. ¹ Re-run on 2026-10-03 on the existing volumes after the sample customer was renamed to
+`sub_santosh` (see [docs/demo/README.md](docs/demo/README.md)); the other rows are from the original run.
 
 | Step | Time | Result | Excerpt |
 |---|---:|---|---|
@@ -52,14 +53,14 @@ Every step exited 0.
 | `make demo-light` | 4.8 s | retail 22 → 19 and time travel in 3 engines; churn twin 8,001 renewals | [light-demo.excerpt.md](docs/demo/light-demo.excerpt.md) |
 | `make up-full` | 11.1 s | Spark 4.1.3 + Iceberg 1.12.0 healthy | [stack-up.excerpt.md](docs/demo/stack-up.excerpt.md) |
 | `make e2e` (retail) | 95.6 s | bronze 22 → silver 19, gold 2 days, snapshot log + time travel | [retail-e2e.excerpt.md](docs/demo/retail-e2e.excerpt.md) |
-| `make churn-sample` | 2.0 s | 8,001 subscriptions, 176,217 usage rows | [churn-e2e.excerpt.md](docs/demo/churn-e2e.excerpt.md) |
-| `make churn-e2e` | 83.1 s | 8,001 renewals; 7,387 routed to the model; 3 exports | [churn-e2e.excerpt.md](docs/demo/churn-e2e.excerpt.md) |
+| `make churn-sample` ¹ | 2.4 s | 8,001 subscriptions, 176,217 usage rows | [churn-e2e.excerpt.md](docs/demo/churn-e2e.excerpt.md) |
+| `make churn-e2e` ¹ | 85.5 s | 8,001 renewals; 7,387 routed to the model; 3 exports | [churn-e2e.excerpt.md](docs/demo/churn-e2e.excerpt.md) |
 | `make churn-parity` | 14.6 s | 8,001 × 27 match (Spark SQL vs pandas) | [churn-parity.excerpt.md](docs/demo/churn-parity.excerpt.md) |
 | `pipelines/radar_consume.sh` | 66.6 s | 7,387 rows scored | [radar-consume.excerpt.md](docs/demo/radar-consume.excerpt.md) |
 | radar `pytest` | 40.8 s | 96 passed | [radar-consume.excerpt.md](docs/demo/radar-consume.excerpt.md) |
-| `make graph-e2e` (Docker, REST) | 103.5 s | publish → Iceberg build → strict contract → lineage → cohorts → promote | [graph-e2e.excerpt.md](docs/demo/graph-e2e.excerpt.md) |
-| `make churn-gold-local` | 3.7 s | pandas twin export (7,387 rows), export contract OK | [churn-e2e.excerpt.md](docs/demo/churn-e2e.excerpt.md) |
-| `make graph-local PROFILE=default` (strict) | 13.8 s | 40,204 nodes / 130,366 edges, golden s42 | [graph-e2e.excerpt.md](docs/demo/graph-e2e.excerpt.md) |
+| `make graph-e2e` (Docker, REST) ¹ | 115.1 s | publish → Iceberg build → strict contract → lineage → cohorts → promote | [graph-e2e.excerpt.md](docs/demo/graph-e2e.excerpt.md) |
+| `make churn-gold-local` ¹ | 3.3 s | pandas twin export (7,387 rows), export contract OK | [churn-e2e.excerpt.md](docs/demo/churn-e2e.excerpt.md) |
+| `make graph-local PROFILE=default` (strict) ¹ | 14.9 s | 40,204 nodes / 130,366 edges, golden s42 | [graph-e2e.excerpt.md](docs/demo/graph-e2e.excerpt.md) |
 | `make test-t3` (+ Trino 483) | 203.5 s | 7 passed | [tests.excerpt.md](docs/demo/tests.excerpt.md) |
 | `make test-t0` | 1.3 s | 19 passed | [tests.excerpt.md](docs/demo/tests.excerpt.md) |
 | `make airflow-up` | 30.3 s | 3 DAGs parse, 0 import errors | [airflow-e2e.excerpt.md](docs/demo/airflow-e2e.excerpt.md) |
