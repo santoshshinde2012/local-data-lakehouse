@@ -7,12 +7,12 @@
 | Status | **pass** (exit 0) |
 | Profile | tiny |
 | Command | `python scripts/check_graph_contract.py --profile tiny --graph-root $GRAPH_ROOT --strict` |
-| Commit | `adad48b` (working tree dirty: yes) |
+| Commit | `5d8e09f` (working tree dirty: yes) |
 | Date | 2026-10-03 (UTC) |
 | Host | macOS-26.6.2 (macosx_arm64) |
 | Python | 3.12.9 · ladybug 0.21.2 · pandas 3.0.6 · numpy 2.5.3 · pyarrow 25.0.1 · networkx 3.7 · mcp 2.2.0 · pydantic 2.13.5 · sqlglot 30.21.0 |
 | Spark venv | pyiceberg 0.12.0 · pyspark 4.1.3 |
-| Duration | 2.2 s |
+| Duration | 2.4 s |
 | Summary | Graph contract OK (renewal-graph/v1, profile tiny, build e2b501f9dbe9): 616 nodes / 1,949 edges; PIT parity 0 mismatches x 6 features in pandas and Cypher; naive wrong in 16 / 12 / 4 renewals; golden tiny; strict |
 
 ## Output

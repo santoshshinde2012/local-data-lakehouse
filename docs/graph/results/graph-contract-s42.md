@@ -7,12 +7,12 @@
 | Status | **pass** (exit 0) |
 | Profile | s42 |
 | Command | `python scripts/check_graph_contract.py --profile s42 --graph-root $GRAPH_ROOT --strict` |
-| Commit | `adad48b` (working tree dirty: yes) |
+| Commit | `5d8e09f` (working tree dirty: yes) |
 | Date | 2026-10-03 (UTC) |
 | Host | macOS-26.6.2 (macosx_arm64) |
 | Python | 3.12.9 · ladybug 0.21.2 · pandas 3.0.6 · numpy 2.5.3 · pyarrow 25.0.1 · networkx 3.7 · mcp 2.2.0 · pydantic 2.13.5 · sqlglot 30.21.0 |
 | Spark venv | pyiceberg 0.12.0 · pyspark 4.1.3 |
-| Duration | 9.2 s |
+| Duration | 9.6 s |
 | Summary | Graph contract OK (renewal-graph/v1, profile s42, build dde502e2a8e1): 40,204 nodes / 130,366 edges; PIT parity 0 mismatches x 6 features in pandas and Cypher; naive wrong in 1,165 / 681 / 114 renewals; golden s42; strict |
 
 ## Output
@@ -137,7 +137,7 @@ Graph contract renewal-graph/v1: profile s42, build dde502e2a8e1 ($GRAPH_ROOT/s4
 
 == Non-interference
   ok    data/sample/churn/* and data/export/* unchanged by this check (24 files)
-  note  user files changed since the build: ['data/export/churn_renewals_audit.csv', 'data/export/churn_user_features.csv', 'data/export/hero_inference_record.json', 'data/sample/churn/daily_usage.csv', 'data/sample/churn/invoices.csv', 'data/sample/churn/limit_events.csv']. No graph target writes them (the builder, graph-sample and this check each assert it); a churn-* target ran in between
+  ok    ... and unchanged since the build (manifest guarded sha256 equal)
 
 == Template lint
   ok    #10 all 32 Cypher templates have ORDER BY and LIMIT

@@ -5,13 +5,13 @@
 | | |
 |---|---|
 | Status | not run |
-| Commit | `adad48b` (working tree dirty: yes) |
+| Commit | `5d8e09f` (working tree dirty: yes) |
 | Date | 2026-10-03 (UTC) |
 | Host | macOS-26.6.2 (macosx_arm64) |
 | Python | 3.12.9 · ladybug 0.21.2 · pandas 3.0.6 · numpy 2.5.3 · pyarrow 25.0.1 · networkx 3.7 · mcp 2.2.0 · pydantic 2.13.5 · sqlglot 30.21.0 |
 | Spark venv | pyiceberg 0.12.0 · pyspark 4.1.3 |
-| Summary | The newest Iceberg-sourced build (e74f42fea9c6) was built on manylinux_aarch64, this host is macosx_arm64: the platform is part of its business_build_id, so a strict host re-check reports it stale. Its strict contract ran in ldl-graph; the recorded Docker run is in docker-e2e.md. |
+| Summary | The newest Iceberg-sourced build (b7591b1d7e0a) was built on manylinux_aarch64, this host is macosx_arm64: the platform is part of its business_build_id, so a strict host re-check reports it stale. Its strict contract ran in ldl-graph; the recorded Docker run is in docker-e2e.md. |
 
-The newest Iceberg-sourced build (e74f42fea9c6) was built on manylinux_aarch64, this host is macosx_arm64: the platform is part of its business_build_id, so a strict host re-check reports it stale. Its strict contract ran in ldl-graph; the recorded Docker run is in docker-e2e.md.
+The newest Iceberg-sourced build (b7591b1d7e0a) was built on manylinux_aarch64, this host is macosx_arm64: the platform is part of its business_build_id, so a strict host re-check reports it stale. Its strict contract ran in ldl-graph; the recorded Docker run is in docker-e2e.md.
 
 [Back to the results index](index.md)
