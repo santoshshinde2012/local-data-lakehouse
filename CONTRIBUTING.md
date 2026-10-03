@@ -35,7 +35,7 @@ One convention for the whole repo, checked by `make docs-check` (`scripts/check_
 
 | Where | Rule | Examples |
 |---|---|---|
-| Repo root, standard files | Conventional uppercase names | `README.md`, `CONTRIBUTING.md`, `MIGRATION.md`, `RESULTS.md`, `LICENSE` |
+| Repo root, standard files | Conventional uppercase names | `README.md`, `CONTRIBUTING.md`, `CHANGELOG.md`, `RESULTS.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `LICENSE` |
 | Any folder, directory index | `README.md` | `docs/graph/README.md` |
 | Other `.md` and `.mmd` files | Lowercase kebab-case; dots only between parts | `docs/object-store.md`, `docs/demo/churn-e2e.excerpt.md`, `lineage-limit-hits-14d.mmd` |
 | Everything under `docs/` and `results/` | Lowercase, no spaces (`a-z 0-9 . _ -`) | `docs/demo/img/airflow-lakehouse_churn.png` |
@@ -43,7 +43,7 @@ One convention for the whole repo, checked by `make docs-check` (`scripts/check_
 | Python | PEP 8: `snake_case.py` modules, tests `test_*.py` | `scripts/build_churn_gold_local.py` |
 | Shell, SQL, YAML | Lowercase `snake_case` or kebab-case, as already used in that folder | `pipelines/radar_consume.sh` |
 
-Tool-required names are the only exceptions (for example a Claude Code skill's `SKILL.md`). Rename
+Tool-required names are the only exceptions (a Claude Code skill's `SKILL.md`, GitHub's `.github/pull_request_template.md`). Rename
 with `git mv` so history follows the file, then run `make docs-check`: it also fails on any relative
 link or `#anchor` in a tracked Markdown file that no longer resolves.
 

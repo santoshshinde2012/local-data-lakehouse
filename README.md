@@ -175,8 +175,10 @@ How the gold is built: [docs/renewal-features.md](docs/renewal-features.md).
 | [docs/reference.md](docs/reference.md) | Prerequisites, pinned versions, ports and UIs, all make targets, repo layout |
 | [docs/troubleshooting.md](docs/troubleshooting.md) | Common problems and their fixes |
 | [docs/diagrams.md](docs/diagrams.md) | The diagram palette and rules |
-| [config/catalog.md](config/catalog.md) | Catalog, namespaces and tables |
-| [MIGRATION.md](MIGRATION.md) | Moving from the older JDBC-catalog stack |
+| [docs/catalog.md](docs/catalog.md) | Catalog, namespaces and tables |
+| [docs/migration.md](docs/migration.md) | Moving from the older JDBC-catalog stack |
+| [CHANGELOG.md](CHANGELOG.md) | Notable changes per PR |
+| [CONTRIBUTING.md](CONTRIBUTING.md) · [SECURITY.md](SECURITY.md) · [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) | How to contribute, report a vulnerability, and behave |
 
 ## How the two repos connect
 

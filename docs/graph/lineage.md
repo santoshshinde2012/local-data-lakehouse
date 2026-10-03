@@ -167,7 +167,7 @@ What building the lineage graph found in the repo (at `3efe31a`, still true at `
    `RADAR_DIR`, full profile).
 4. Nine silver churn columns are never read by gold.
 5. `DUNNING_DAYS = 14` is defined and never read.
-6. `config/catalog.md` still lists the old churn tables.
+6. `docs/catalog.md` still lists the old churn tables.
 7. `src/jobs/retail/05_query_timetravel.py` sets appName `05_query_and_timetravel` (job-name drift;
    `check_repo_contracts.py` warns).
 

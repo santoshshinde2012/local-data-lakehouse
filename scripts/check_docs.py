@@ -23,7 +23,7 @@ from pathlib import Path, PurePosixPath
 ROOT = Path(__file__).resolve().parents[1]
 KEBAB = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*(?:\.[a-z0-9]+(?:-[a-z0-9]+)*)*\.(?:md|mmd)$")
 LOWER = re.compile(r"^[a-z0-9._-]+$")
-ALLOWED_NAMES = {"README.md", "SKILL.md"}  # directory index; Claude Code requires SKILL.md in a skill folder
+ALLOWED_NAMES = {"README.md", "SKILL.md", "pull_request_template.md"}  # directory index; Claude Code skill; GitHub PR template
 LOWER_DIRS = ("docs/", "results/")
 LINK = re.compile(r"(?<!\\)!?\[(?:[^\]\\]|\\.)*\]\(\s*<?([^)\s>]+)>?(?:\s+\"[^\"]*\")?\s*\)")
 REF = re.compile(r"^\s{0,3}\[[^\]]+\]:\s*<?(\S+?)>?(?:\s+\"[^\"]*\")?\s*$", re.M)

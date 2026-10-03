@@ -21,7 +21,7 @@ pyarrow==25.0.1
 
 # SQL engine on the host: ATTACH ... (TYPE ICEBERG) to the REST catalog; INSERT/UPDATE/DELETE/MERGE.
 # MIT. NOTE: DuckDB 1.5.x reaches end of life on 2026-11-01 (2.0 is due 2026-10-21): re-test the
-# iceberg extension before bumping (MIGRATION.md).
+# iceberg extension before bumping (docs/migration.md).
 duckdb==1.5.6
 
 # DataFrames over Iceberg. MIT. Gotcha: the native Iceberg reader ignores vended credentials and

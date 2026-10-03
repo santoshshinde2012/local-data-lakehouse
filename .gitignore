@@ -29,3 +29,28 @@ data/graph/
 .venv/
 airflow/auth/
 .ruff_cache/
+
+# Python tooling caches and build output
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+.ipynb_checkpoints/
+*.egg-info/
+build/
+dist/
+
+# Node (mermaid-cli via npx) and local env variants (.env.example stays tracked)
+node_modules/
+.env.*
+!.env.example
+
+# Local agent and scratch state: Claude Code personal settings, graph scratch, editor swap files
+.claude/settings.local.json
+.graph-work/
+*.swp
+*~
+
+# Article drafts stay out of the repo (Medium drafts live outside it)
+medium-drafts/
+*.medium.md
