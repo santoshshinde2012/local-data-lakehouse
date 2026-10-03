@@ -32,7 +32,7 @@ Wall-clock time of the `make` target until every container is healthy.
 | `make churn-sample` | 1.9 s | 2.1 s |
 | `make churn-e2e` (bronze → silver → gold → 3 exports) | 85.0 s | 92.4 s |
 | `make churn-parity` (Spark SQL vs pandas, 8,001 × 27) | 15.3 s | 15.8 s |
-| radar consume (train + score 7,387 renewals) | 72.4 s | 75.9 s |
+| radar consume (venv install + score 7,387 renewals with the committed model) | 72.4 s | 75.9 s |
 | radar `pytest` on the consumer checkout | 38.2 s | 41.7 s |
 | `make graph-e2e` (Docker, REST catalog) | 103.1 s | 126.6 s |
 | `make churn-gold-local` (no Docker) | 3.9 s | 4.0 s |
