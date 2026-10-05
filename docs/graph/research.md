@@ -65,10 +65,10 @@ date-sensitive fact.
 | Kùzu | archived 2025-10-10 at v0.11.3 (acquired); `.kuzu` files are not openable by its fork |
 | Neo4j CE | GPLv3, a ~1.5 GB JVM server (Docker or a native install), the default new Browser is closed source; **not used** |
 | Memgraph, FalkorDB / FalkorDBLite, ArangoDB 3.12+, SurrealDB, TuringDB, PuppyGraph, Kumo | not open source (BSL, SSPL or proprietary) |
-| DuckPGQ | a research extension built for DuckDB 1.5.4 only, no property graph over views, slow variable-length paths |
+| DuckPGQ | a research extension; DuckDB's graph-queries guide says it is not available on DuckDB 1.5.x and to use v1.4.4 (re-checked 2026-10-05); no property graph over views, slow variable-length paths |
 | DuckDB as a product dependency | 1.5.x reaches end of life 2026-11-01, 2.0 ships 2026-10-21; eval-only instead |
 | Apache AGE, ArcadeDB, Grafeo, Oxigraph | a sibling Postgres container with no algorithms; a JVM and many 2026 advisories; one committer with format breaks (watch list); RDF only |
-| CozoDB, RyuGraph, NebulaGraph OSS, JanusGraph, TuGraph; PostgreSQL 19 SQL/PGQ | unmaintained or stalled; SQL/PGQ was reverted on 2026-09-07 |
+| CozoDB, RyuGraph, NebulaGraph OSS, JanusGraph, TuGraph; PostgreSQL 19 SQL/PGQ | unmaintained or stalled; SQL/PGQ support was reverted in PostgreSQL 19 Beta 4 (released 2026-09-24; re-checked 2026-10-05) |
 | `mcp-server-ladybug` 0.1.3 | opens read-write, installs extensions from the network at start, one raw query tool, pins `mcp<2` |
 | Ladybug vector (HNSW) and FTS extensions | not in the wheel, downloaded per version, segfaults measured; exact numpy kNN and a stdlib token index cost nothing at this scale |
 | Text-to-SQL or raw Cypher for small models | a 3B model passed 0 of 40 text-to-SQL cases; Ladybug Cypher is not Neo4j Cypher |
@@ -150,7 +150,10 @@ Fetched 2026-09-30 unless marked; versions as stated.
 - Source-available licences: https://github.com/memgraph/memgraph/blob/master/LICENSE ·
   https://raw.githubusercontent.com/FalkorDB/FalkorDB/master/LICENSE.txt
 - DuckPGQ: https://github.com/cwida/duckpgq-extension · DuckDB release calendar:
-  https://duckdb.org/release_calendar
+  https://duckdb.org/release_calendar · DuckDB graph-queries guide (fetched 2026-10-05):
+  https://duckdb.org/docs/current/guides/sql_features/graph_queries
+- PostgreSQL 19 Beta 4 release notes, "Revert SQL/PGQ (property graph query) support" (fetched 2026-10-05):
+  https://www.postgresql.org/about/news/postgresql-19-beta-4-released-3386/
 - Other engines: https://github.com/GrafeoDB/grafeo · https://github.com/oxigraph/oxigraph ·
   https://incubator.apache.org/projects/graphar.html
 - Community detection: https://github.com/igraph/python-igraph · https://github.com/vtraag/leidenalg

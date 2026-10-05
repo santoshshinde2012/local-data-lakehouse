@@ -2,6 +2,12 @@
 
 Notable changes, newest first. Dates are when the change was verified. Each entry links its PR.
 
+## 2026-10-05: graph engine re-check (PR #19)
+
+- `docs/graph/research.md`: the DuckPGQ row now follows DuckDB's graph-queries guide (not available on DuckDB 1.5.x;
+  use v1.4.4), and the PostgreSQL 19 SQL/PGQ row cites the Beta 4 release notes (revert shipped 2026-09-24).
+  Both sources are added to the Sources list.
+
 ## Unreleased: repo structure cleanup
 
 - `config/catalog.md` moved to `docs/catalog.md` and `MIGRATION.md` to `docs/migration.md`.
