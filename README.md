@@ -147,7 +147,7 @@ comes from a committed console excerpt; the full page is **[RESULTS.md](RESULTS.
 | `make churn-e2e` | 85.0 s | 8,001 renewals; 7,387 routed to the model; 3 export files |
 | `make churn-parity` | 15.3 s | 8,001 × 27 cells match between Spark SQL and pandas |
 | radar consume + pytest | 72.4 s + 38.2 s | 7,387 renewals scored; 101 radar tests passed |
-| `make graph-e2e` | 118.1 s | Iceberg-sourced graph build, strict contract, lineage, cohorts, promote |
+| `make graph-e2e` | 103.1 s | Iceberg-sourced graph build, strict contract, lineage, cohorts, promote |
 | T0 / T1 / T2 / T3 | 1.5 / 7.4 / 5.9 / 213.5 s | 25 / 5 / 6 / 7 passed |
 | `make airflow-up`, then the 3 DAGs | 31.3 s; 270.3 s + 240.3 s | 3 DAGs parse with 0 import errors; retail 5/5, renewal 4/4 and graph 7/7 tasks succeed |
 
