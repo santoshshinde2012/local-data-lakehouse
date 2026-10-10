@@ -6,19 +6,19 @@ Counts are seed 42: 40,204 nodes, 130,366 edges.
 
 ## System
 
-Gold in, a graph out. Spark pins 11 inputs and tags every table. PyIceberg holds no keys. Parquet is the graph. LadybugDB is the copy you can delete. The dashed box is the pandas twin, the no-Docker path, and it joins the builder.
+Gold in, a graph out. The dashed pandas twin joins the builder with the same numbers. Spark commits through Lakekeeper and writes bytes to RustFS. PyIceberg reads the tag, then those bytes, and holds no keys. Parquet is the graph. LadybugDB is the copy. A strict pass promotes it to the tools.
 
 ![System: gold, build, then typed tools](figures/system.png)
 
 ## Iceberg tags
 
-Read the tag, not the clock. The publish job writes `gold.graph_*` and creates `graph_<build_id>`. It never moves an existing tag. The reader checks the tag, the snapshot id and the row count, then runs the same builder.
+Read the tag, not the clock. The publish job writes `gold.graph_*` and creates `graph_<build_id>`. Lakekeeper keeps that pin. Postgres holds catalog state and does not feed the files. PyIceberg reads the tag, then the bytes on RustFS, and runs the same builder.
 
 ![Tags: publish, catalog, then the reader](figures/tags.png)
 
 ## Schema
 
-Ten node types and eleven dated edges. Each event box names its edge. `SIMILAR_TO` is ten nearest renewals on the same plan, not a social graph. 14,862 of 34,348 event edges fall after their renewal’s T-7. They stay in the graph. No tool serves them for that decision.
+Ten node types and eleven dated edges. Arrows leave the source: Subscription to its events, its renewal and its incidents; Renewal to Plan, to PricingChange, and to other renewals on the same plan. `SIMILAR_TO` is similar features, not a social graph. 14,862 of 34,348 event edges fall after their renewal’s T-7. They stay in the graph. No tool serves them for that decision.
 
 ![Schema: events, subscription, renewal, plan](figures/schema.png)
 
