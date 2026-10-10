@@ -160,9 +160,8 @@ socket proxy allows `docker exec` into `ldl-spark` and `ldl-graph` only). With t
 port, set `AIRFLOW_API_PORT` in `.env`. Optional OpenLineage: `--conf '{"openlineage": true}'`.
 
 The DAG now runs on **Airflow 3.3.2** (`airflow.sdk.DAG`, the standard provider's `BashOperator`; the task
-chain is unchanged). `tests/graph/test_dag_graph.py` checks the chain with stubbed Airflow modules; the
-`lakehouse_graph` DAG itself has not been triggered on Airflow 3 yet (the retail and churn DAGs have, see
-[the Airflow excerpt](../demo/airflow-e2e.excerpt.md)). The DAG module shares its name with the
+chain is unchanged). `tests/graph/test_dag_graph.py` checks the chain with stubbed Airflow modules. The
+recorded Airflow 3 run is below: `lakehouse_graph` finished 7/7 tasks. The DAG module shares its name with the
 `lakehouse_graph` package; Airflow loads DAG files by path, so this is harmless there.
 
 ## The Docker run
@@ -173,7 +172,7 @@ Docker is not started by the docs tooling; these are recorded runs on this Mac (
 (`run_graph_e2e.sh` itself 109 s) with 40,204 nodes / 130,366 edges, both contracts passing, 15 Leiden and 15 Louvain
 cohorts, and promote. The Airflow `lakehouse_graph` DAG then ran all 7 tasks `success` in 141.8 s. The record, with
 every step's timing and the summary lines, is [results/docker-e2e.md](results/docker-e2e.md). Earlier the same day,
-from empty volumes, `make graph-e2e` took 118.1 s and 103.1 s ([graph-e2e.excerpt.md](../demo/graph-e2e.excerpt.md)).
+from empty volumes, `make graph-e2e` took 103.1 s ([graph-e2e.excerpt.md](../demo/graph-e2e.excerpt.md)).
 
 **2026-10-02, after the Iceberg 1.12.0 bump** (`ldl-graph` on python 3.12.15, ladybug 0.21.2): `make
 graph-e2e` passed again, 161 s including the overlay build (`run_graph_e2e.sh` itself 97 s), with the same
