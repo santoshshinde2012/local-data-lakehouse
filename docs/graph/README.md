@@ -30,7 +30,7 @@ every check is in [results/index.md](results/index.md). The table is generated f
 
 ## Architecture
 
-From the renewal gold to an agent answer. The detailed build, serve and lakehouse diagram, the build
+From the renewal gold to an agent answer. The left-to-right drawings are in [figures.md](figures.md). The detailed build, serve and lakehouse diagram, the build
 profiles and the directory layout are in [architecture.md](architecture.md).
 
 ```mermaid
@@ -105,6 +105,7 @@ Then start Claude Code in the repo root and approve the project servers in `.mcp
 
 | Page | What it covers |
 |---|---|
+| [figures.md](figures.md) | the five left-to-right drawings: system, tags, schema, engine, agent boundary |
 | [architecture.md](architecture.md) | build, serve and lakehouse modes; profiles; build identity; directory layout; code map |
 | [data-model.md](data-model.md) | nodes, edges, SIMILAR_TO, point-in-time rules, the contract, goldens, provenance |
 | [agent.md](agent.md) | the four MCP servers and 14 tools, the envelope, hygiene, routing, the Claude and open-source paths, the threat model |
