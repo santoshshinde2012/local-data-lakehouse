@@ -32,10 +32,10 @@ numpy>=2.5,<3
 networkx==3.7
 
 # MCP Python SDK (MCPServer, stdio) for the agent toolsets (PR2). License: MIT.
-mcp>=2.2,<3
+mcp>=2.3.0,<3
 
 # Tool argument validation (enums, id regexes, caps) (PR2). License: MIT.
-pydantic>=2,<3
+pydantic>=2.14.0,<3
 
 # Tier-0 lineage extraction over sql/churn/*.sql (PR3). License: MIT.
 sqlglot==30.21.0
