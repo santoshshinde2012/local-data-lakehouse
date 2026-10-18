@@ -13,7 +13,7 @@
 
 # pandas gold twin (scripts/build_churn_gold_local.py) + sample generator. BSD-3-Clause.
 pandas>=3.0,<4
-numpy>=2.5,<3
+numpy>=2.5.4,<3
 
 # Iceberg REST client (Lakekeeper), vended credentials; s3fs = FsspecFileIO. Apache-2.0.
 pyiceberg[pyarrow,s3fs]==0.12.0
