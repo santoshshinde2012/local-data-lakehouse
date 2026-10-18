@@ -19,7 +19,7 @@
 ladybug==0.21.2
 
 # Canonical Parquet node/edge tables with explicit schemas. License: Apache-2.0.
-pyarrow==25.0.1
+pyarrow==26.0.0
 
 # pandas gold twin (scripts/build_churn_gold_local.py), graph builder, oracle. License: BSD-3-Clause.
 pandas>=3.0,<4
