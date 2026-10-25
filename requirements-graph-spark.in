@@ -20,7 +20,7 @@
 # Local Spark, the same version as the ldl-spark image (apache/spark:4.1.3-scala2.13-java21), with
 # the Iceberg 1.12.0 runtime for Spark 4.1. License: Apache-2.0.
 # sdist only on PyPI: uv builds the wheel once and caches it.
-pyspark==4.1.3
+pyspark==4.2.0
 
 # pyspark's build backend (the sdist is built locally). License: MIT.
 setuptools>=70
