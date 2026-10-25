@@ -32,7 +32,7 @@ x-lakekeeper-env: &lakekeeper-env
 
 services:
   postgres:
-    image: postgres:18.6-alpine@sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873
+    image: postgres:18.6-alpine@sha256:898c60cb390d1085bc97bdd6a1ae968757421df394b071848b52b1c09c89d6a5
     container_name: ldl-postgres
     profiles: [light, full]
     environment:
@@ -84,7 +84,7 @@ services:
   objectstore:
     # RustFS 1.0 (Apache-2.0): S3 API + STS AssumeRole, which Lakekeeper uses to vend credentials.
     # Alternative: SILO (MinIO fork), docker compose -f docker-compose.yml -f docker-compose.silo.yml
-    image: rustfs/rustfs:1.0.0@sha256:8cc9801755448b71a786705ce76692c77e14936cccd87cf2fc31842e58f4d1ff
+    image: rustfs/rustfs:1.0.3@sha256:9ca9559533b537d10482fe923288b676ad08f92a7069d9a17327fbae3cab688b
     container_name: ldl-objectstore
     profiles: [light, full]
     environment:
@@ -115,7 +115,7 @@ services:
     # Idempotent: bucket (SigV4 PUT) -> Lakekeeper bootstrap -> warehouse with STS (vended
     # credentials). Re-running it on a populated stack changes nothing. Stays up (idle) and turns
     # healthy when setup is done: the signal `up --wait`, spark and trino wait for.
-    image: curlimages/curl:8.22.0@sha256:58adaa4e8dca9c988bae2aba4ab3434a0bb2da16bbe3f92dec39ec7785166777
+    image: curlimages/curl:8.23.0@sha256:11e64e28c5f58c8d93ee95fcf22ac055f48b0bc440e0ce7d8013bbb5ad6aa8ac
     container_name: ldl-lakehouse-init
     profiles: [light, full]
     entrypoint: ["/bin/sh", "/init/bootstrap.sh"]
@@ -174,7 +174,7 @@ services:
 
   trino:
     # Optional second engine: --profile trino (with light or full). -Xmx1G (config/trino/jvm.config).
-    image: trinodb/trino:483@sha256:db58cc93e593a2706553745f276bb119c9810e69918be56ecde088ba7ccb0534
+    image: trinodb/trino:484@sha256:2704eb53935af5e582d63d6033e9bf99d20c325e9b0e30b1016ef59a4773979f
     container_name: ldl-trino
     profiles: [trino]
     depends_on:
