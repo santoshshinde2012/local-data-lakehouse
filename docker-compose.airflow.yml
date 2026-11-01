@@ -44,7 +44,7 @@ x-airflow-common: &airflow-common
 
 services:
   docker-proxy:
-    image: wollomatic/socket-proxy:1.13.1@sha256:3935b709275e4ec35d6ed5a5c4a1f0d01ed31eec5e7234efc3357ecd47689002
+    image: wollomatic/socket-proxy:1.13.2@sha256:ff95d6ff6c27853005ef85eb8f4ab5923dc3d2f1e055f98fb6aeeaceec3fe848
     container_name: ldl-docker-proxy
     profiles: [full]
     user: "0:0"   # reads /var/run/docker.sock (root:root on Docker Desktop and most Linux hosts)
@@ -70,7 +70,7 @@ services:
     networks: [lakehouse]
 
   airflow-postgres:
-    image: postgres:18.6-alpine@sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873
+    image: postgres:18.6-alpine@sha256:10a5c69a83035ab5239f5620d708520e8b28f5aa1f2b20143e6024532edadfb5
     container_name: ldl-airflow-postgres
     profiles: [full]
     environment:
