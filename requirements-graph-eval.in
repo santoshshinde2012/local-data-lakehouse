@@ -26,7 +26,7 @@ pyyaml>=6,<7
 
 # SE arm only (eval): the same precomputed Parquet behind one SELECT-only tool on in-memory DuckDB.
 # License: MIT. 1.5.x is EOL on 2026-11-01 (PLAN 14 decision 11): eval-only, never a product dependency.
-duckdb==1.5.6
+duckdb==2.0.0
 
 # scripts/graph_bench.py: max RSS of the MCP server children. License: BSD-3-Clause.
 psutil>=7,<8
