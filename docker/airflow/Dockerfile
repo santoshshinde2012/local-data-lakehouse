@@ -1,7 +1,7 @@
 # Local-demo Airflow 3.3 image: + a static Docker CLI so BashOperator tasks can `docker exec ldl-spark …`
 # through the overlay's docker-proxy (DOCKER_HOST=tcp://docker-proxy:2375). Runs as the image's
 # non-root airflow user. Not a production image.
-FROM apache/airflow:3.3.2-python3.12@sha256:9df9c8be4096b9cc626bd7cb1f2b8c712eef66c59c615f8c7e6200871ca10bd1
+FROM apache/airflow:3.4.0-python3.12@sha256:818f94affc5bd7ce0be0cc04f2ace09aa8382e65190a73a08881229ff32700cb
 
 USER root
 ARG TARGETARCH
