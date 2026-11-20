@@ -1,6 +1,6 @@
 # Graph figures
 
-Five drawings of the graph on gold, in the same palette as [diagrams.md](../diagrams.md). They read left to right. The pandas twin is attached to the builder, the denied list is a wall, and the engine filter is one row. Tap through the same pictures in the [gold graph atlas](https://grok.com/preview/84d2d56a-e013-4c9a-8a97-1b1eda6d44b5).
+Five drawings of the graph on gold, in the same palette as [diagrams.md](../diagrams.md). They read left to right. The pandas twin is attached to the builder, the denied list is a wall, and the engine filter is one row. The article atlas draws the same five subjects as layers, so those pictures are not these files.
 
 Counts are seed 42: 40,204 nodes, 130,366 edges.
 
